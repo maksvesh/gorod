@@ -527,16 +527,6 @@ confirmBtn.addEventListener('click', function() {
         }
     }, 1000);
 });
-            // Восстанавливаем кнопку через 3 секунды
-            setTimeout(() => {
-                this.textContent = originalText;
-                this.disabled = false;
-                this.style.background = 'linear-gradient(45deg, #004466, #0088aa)';
-                this.style.cursor = 'pointer';
-            }, 3000);
-        }
-    }, 1000);
-});
 
         function createParticle(x, y) {
             const particle = document.createElement('div');
