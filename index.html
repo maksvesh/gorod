@@ -493,15 +493,16 @@
         });
 
           
-// Анимация кнопки подтверждения (открытие сразу)
+// Анимация кнопки подтверждения
 const confirmBtn = document.querySelector('.confirm-btn');
 confirmBtn.addEventListener('click', function() {
+    // Сохраняем исходный текст
     const originalText = this.textContent;
     
+    // Меняем текст и делаем кнопку неактивной
     this.textContent = 'Активация протокола... 5';
     this.disabled = true;
     this.style.background = 'linear-gradient(45deg, #444466, #666688)';
-    this.style.cursor = 'not-allowed';
     
     let seconds = 5;
     const countdown = setInterval(() => {
@@ -513,15 +514,19 @@ confirmBtn.addEventListener('click', function() {
             this.textContent = 'Протокол активирован!';
             this.style.background = 'linear-gradient(45deg, #006600, #00aa00)';
             
-            // Эффект частиц
+            // Создаем эффект частиц
             for (let i = 0; i < 30; i++) {
                 createParticle(this.getBoundingClientRect().left + this.offsetWidth/2, 
                               this.getBoundingClientRect().top + this.offsetHeight/2);
             }
             
-            // СРАЗУ открываем новую вкладку
-            window.open('https://vk.me/join/lcHucdgQACMFlDMBk9CrscO3dAr8XXTbjdA=', '_blank'); // ЗАМЕНИТЕ НА ВАШУ ССЫЛКУ
-            
+            // Переход по ссылке через 2 секунды после завершения
+            setTimeout(() => {
+                window.location.href = "https://vk.me/join/lcHucdgQACMFlDMBk9CrscO3dAr8XXTbjdA="; // ЗАМЕНИТЕ НА ВАШУ ССЫЛКУ
+            }, 2000);
+        }
+    }, 1000);
+});
             // Восстанавливаем кнопку через 3 секунды
             setTimeout(() => {
                 this.textContent = originalText;
