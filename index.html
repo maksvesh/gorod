@@ -462,6 +462,50 @@
     </div>
 
     <script>
+
+// Усиленная защита от просмотра кода
+(function() {
+  'use strict';
+  
+  // Блокировка клавиш
+  document.onkeydown = function(e) {
+    if (e.keyCode === 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) return false; // Ctrl+Shift+I
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) return false; // Ctrl+Shift+J
+    if (e.ctrlKey && e.keyCode === 85) return false; // Ctrl+U
+  };
+  
+  // Блокировка правого клика
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Детектирование открытия DevTools
+  let devToolsOpen = false;
+  
+  const checkDevTools = () => {
+    const widthThreshold = window.outerWidth - window.innerWidth > 100;
+    const heightThreshold = window.outerHeight - window.innerHeight > 100;
+    const orientation = widthThreshold ? 'vertical' : 'horizontal';
+    
+    if (!(heightThreshold && widthThreshold) && 
+        ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || 
+         widthThreshold || heightThreshold)) {
+      devToolsOpen = true;
+      document.body.innerHTML = '<div style="padding:20px;text-align:center;color:red;"><h1>Доступ запрещен</h1><p>🔒 Операция заблокирована системой безопасности Темного города</p></div>';
+      document.body.style.background = 'black';
+      return;
+    }
+    
+    devToolsOpen = false;
+  };
+  
+  setInterval(checkDevTools, 1000);
+})();
+
+var _0x1a2b=['\x44\x6f\x73\x74\x75\x70\x20\x7a\x61\x62\x6c\x6f\x6b\x69\x72\x6f\x76\x61\x6e'];(function(_0x1a2b3,_0x1a2b4){var _0x1a2b5=function(_0x1a2b6){while(--_0x1a2b6){_0x1a2b3['push'](_0x1a2b3['shift']());}};_0x1a2b5(++_0x1a2b4);}(_0x1a2b,0x1a2));var _0x1a2b7=function(_0x1a2b8,_0x1a2b9){_0x1a2b8=_0x1a2b8-0x0;var _0x1a2ba=_0x1a2b[_0x1a2b8];return _0x1a2ba;};console['log'](_0x1a2b7('0x0'));
+        
         // 3D эффекты при скролле
         document.addEventListener('scroll', function() {
             const scrolled = window.pageYOffset;
@@ -567,48 +611,6 @@ confirmBtn.addEventListener('click', function() {
 //конец
 
 
-// Усиленная защита от просмотра кода
-(function() {
-  'use strict';
-  
-  // Блокировка клавиш
-  document.onkeydown = function(e) {
-    if (e.keyCode === 123) return false; // F12
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) return false; // Ctrl+Shift+I
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) return false; // Ctrl+Shift+J
-    if (e.ctrlKey && e.keyCode === 85) return false; // Ctrl+U
-  };
-  
-  // Блокировка правого клика
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-  });
-  
-  // Детектирование открытия DevTools
-  let devToolsOpen = false;
-  
-  const checkDevTools = () => {
-    const widthThreshold = window.outerWidth - window.innerWidth > 100;
-    const heightThreshold = window.outerHeight - window.innerHeight > 100;
-    const orientation = widthThreshold ? 'vertical' : 'horizontal';
-    
-    if (!(heightThreshold && widthThreshold) && 
-        ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || 
-         widthThreshold || heightThreshold)) {
-      devToolsOpen = true;
-      document.body.innerHTML = '<div style="padding:20px;text-align:center;color:red;"><h1>Доступ запрещен</h1><p>🔒 Операция заблокирована системой безопасности Темного города</p></div>';
-      document.body.style.background = 'black';
-      return;
-    }
-    
-    devToolsOpen = false;
-  };
-  
-  setInterval(checkDevTools, 1000);
-})();
-
-var _0x1a2b=['\x44\x6f\x73\x74\x75\x70\x20\x7a\x61\x62\x6c\x6f\x6b\x69\x72\x6f\x76\x61\x6e'];(function(_0x1a2b3,_0x1a2b4){var _0x1a2b5=function(_0x1a2b6){while(--_0x1a2b6){_0x1a2b3['push'](_0x1a2b3['shift']());}};_0x1a2b5(++_0x1a2b4);}(_0x1a2b,0x1a2));var _0x1a2b7=function(_0x1a2b8,_0x1a2b9){_0x1a2b8=_0x1a2b8-0x0;var _0x1a2ba=_0x1a2b[_0x1a2b8];return _0x1a2ba;};console['log'](_0x1a2b7('0x0'));
     </script>
 </body>
 </html>
