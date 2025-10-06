@@ -563,6 +563,22 @@ confirmBtn.addEventListener('click', function() {
             
             animate();
         }
+// Добавьте этот код в самый конец вашего скрипта
+(function() {
+  // Блокировка основных комбинаций
+  const blockKeys = (e) => {
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U')) {
+      e.preventDefault();
+      alert('🔒 Операция заблокирована системой безопасности Темного города');
+      return false;
+    }
+  };
+  
+  document.addEventListener('keydown', blockKeys);
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
+})();
     </script>
 </body>
 </html>
