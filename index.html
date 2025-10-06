@@ -563,22 +563,52 @@ confirmBtn.addEventListener('click', function() {
             
             animate();
         }
-// Добавьте этот код в самый конец вашего скрипта
+
+//конец
+
+
+// Усиленная защита от просмотра кода
 (function() {
-  // Блокировка основных комбинаций
-  const blockKeys = (e) => {
-    if (e.key === 'F12' || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-        (e.ctrlKey && e.key === 'U')) {
-      e.preventDefault();
-      alert('🔒 Операция заблокирована системой безопасности Темного города');
-      return false;
-    }
+  'use strict';
+  
+  // Блокировка клавиш
+  document.onkeydown = function(e) {
+    if (e.keyCode === 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) return false; // Ctrl+Shift+I
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) return false; // Ctrl+Shift+J
+    if (e.ctrlKey && e.keyCode === 85) return false; // Ctrl+U
   };
   
-  document.addEventListener('keydown', blockKeys);
-  document.addEventListener('contextmenu', (e) => e.preventDefault());
+  // Блокировка правого клика
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Детектирование открытия DevTools
+  let devToolsOpen = false;
+  
+  const checkDevTools = () => {
+    const widthThreshold = window.outerWidth - window.innerWidth > 100;
+    const heightThreshold = window.outerHeight - window.innerHeight > 100;
+    const orientation = widthThreshold ? 'vertical' : 'horizontal';
+    
+    if (!(heightThreshold && widthThreshold) && 
+        ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || 
+         widthThreshold || heightThreshold)) {
+      devToolsOpen = true;
+      document.body.innerHTML = '<div style="padding:20px;text-align:center;color:red;"><h1>Доступ запрещен</h1><p>🔒 Операция заблокирована системой безопасности Темного города</p></div>';
+      document.body.style.background = 'black';
+      return;
+    }
+    
+    devToolsOpen = false;
+  };
+  
+  setInterval(checkDevTools, 1000);
 })();
+
+
     </script>
 </body>
 </html>
