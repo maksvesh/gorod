@@ -492,10 +492,25 @@
             });
         });
 
-        // Анимация кнопки подтверждения
-        const confirmBtn = document.querySelector('.confirm-btn');
-        confirmBtn.addEventListener('click', function() {
-            this.textContent = 'Протокол активирован';
+// Анимация кнопки подтверждения
+const confirmBtn = document.querySelector('.confirm-btn');
+confirmBtn.addEventListener('click', function() {
+    // Сохраняем исходный текст
+    const originalText = this.textContent;
+    
+    // Меняем текст и делаем кнопку неактивной
+    this.textContent = 'Активация протокола... 5';
+    this.disabled = true;
+    this.style.background = 'linear-gradient(45deg, #444466, #666688)';
+    
+    let seconds = 5;
+    const countdown = setInterval(() => {
+        seconds--;
+        this.textContent = `Активация протокола... ${seconds}`;
+        
+        if (seconds <= 0) {
+            clearInterval(countdown);
+            this.textContent = 'Протокол активирован!';
             this.style.background = 'linear-gradient(45deg, #006600, #00aa00)';
             
             // Создаем эффект частиц
@@ -503,7 +518,14 @@
                 createParticle(this.getBoundingClientRect().left + this.offsetWidth/2, 
                               this.getBoundingClientRect().top + this.offsetHeight/2);
             }
-        });
+            
+            // Переход по ссылке через 2 секунды после завершения
+            setTimeout(() => {
+                window.location.href = "https://your-link-here.com"; // ЗАМЕНИТЕ НА ВАШУ ССЫЛКУ
+            }, 2000);
+        }
+    }, 1000);
+});
 
         function createParticle(x, y) {
             const particle = document.createElement('div');
