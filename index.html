@@ -500,18 +500,18 @@ confirmBtn.addEventListener('click', function() {
     const originalText = this.textContent;
     
     // Меняем текст и делаем кнопку неактивной
-    this.textContent = 'Активация протокола... 5';
+    this.textContent = 'Активация протокола (переход в беседу)... 5';
     this.disabled = true;
     this.style.background = 'linear-gradient(45deg, #444466, #666688)';
     
     let seconds = 5;
     const countdown = setInterval(() => {
         seconds--;
-        this.textContent = `Активация протокола... ${seconds}`;
+        this.textContent = `Активация протокола (переход в беседу)... ${seconds}`;
         
         if (seconds <= 0) {
             clearInterval(countdown);
-            this.textContent = 'Протокол активирован!';
+            this.textContent = 'Протокол активирован! (переход)';
             this.style.background = 'linear-gradient(45deg, #006600, #00aa00)';
             
             // Создаем эффект частиц
