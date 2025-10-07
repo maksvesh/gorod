@@ -355,6 +355,79 @@
                 flex-direction: column;
             }
         }
+
+                /* Навигационные кнопки */
+                .navigation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: perspective(500px) rotateX(5deg);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover {
+            transform: perspective(500px) rotateX(0deg) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
+            border-color: #00ff88;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Адаптивность для кнопок */
+        @media (max-width: 768px) {
+            .navigation-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .nav-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+                min-width: 250px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -372,7 +445,17 @@
                 <p>Сигнал принят. Агент на связи.</p>
             </div>
         </header>
-
+        <!-- Навигационные кнопки -->
+        <div class="navigation-buttons">
+            <a href="sotrud.html" class="nav-btn">
+                <span class="btn-icon">👥</span>
+                Сотрудники
+            </a>
+            <a href="games.html" class="nav-btn">
+                <span class="btn-icon">🎮</span>
+                Игровая зона
+            </a>
+        </div>
         <section>
             <h2 style="text-align: center; color: #00ffff; margin: 40px 0; font-size: 2rem;">ОПЕРАТИВНЫЙ ПРОТОКОЛ №1: УСТАВ «ТЕМНОГО ГОРОДА»</h2>
             
@@ -563,52 +646,6 @@ confirmBtn.addEventListener('click', function() {
             
             animate();
         }
-
-//конец
-
-
-// Усиленная защита от просмотра кода
-(function() {
-  'use strict';
-  
-  // Блокировка клавиш
-  document.onkeydown = function(e) {
-    if (e.keyCode === 123) return false; // F12
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) return false; // Ctrl+Shift+I
-    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) return false; // Ctrl+Shift+J
-    if (e.ctrlKey && e.keyCode === 85) return false; // Ctrl+U
-  };
-  
-  // Блокировка правого клика
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-  });
-  
-  // Детектирование открытия DevTools
-  let devToolsOpen = false;
-  
-  const checkDevTools = () => {
-    const widthThreshold = window.outerWidth - window.innerWidth > 100;
-    const heightThreshold = window.outerHeight - window.innerHeight > 100;
-    const orientation = widthThreshold ? 'vertical' : 'horizontal';
-    
-    if (!(heightThreshold && widthThreshold) && 
-        ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || 
-         widthThreshold || heightThreshold)) {
-      devToolsOpen = true;
-      document.body.innerHTML = '<div style="padding:20px;text-align:center;color:red;"><h1>Доступ запрещен</h1><p>🔒 Операция заблокирована системой безопасности Темного города</p></div>';
-      document.body.style.background = 'black';
-      return;
-    }
-    
-    devToolsOpen = false;
-  };
-  
-  setInterval(checkDevTools, 1000);
-})();
-
-var _0x1a2b=['\x44\x6f\x73\x74\x75\x70\x20\x7a\x61\x62\x6c\x6f\x6b\x69\x72\x6f\x76\x61\x6e'];(function(_0x1a2b3,_0x1a2b4){var _0x1a2b5=function(_0x1a2b6){while(--_0x1a2b6){_0x1a2b3['push'](_0x1a2b3['shift']());}};_0x1a2b5(++_0x1a2b4);}(_0x1a2b,0x1a2));var _0x1a2b7=function(_0x1a2b8,_0x1a2b9){_0x1a2b8=_0x1a2b8-0x0;var _0x1a2ba=_0x1a2b[_0x1a2b8];return _0x1a2ba;};console['log'](_0x1a2b7('0x0'));
     </script>
 </body>
 </html>
