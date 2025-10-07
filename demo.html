@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Змейка - Мобильная версия</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial;
+            margin: 0;
+            padding: 20px;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+        #score {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        canvas {
+            border: 2px solid white;
+            max-width: 100%;
+            height: auto;
+            touch-action: none;
+        }
+        #controls-info {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 16px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Счет: 0</div>
+    <canvas id="game" width="400" height="400"></canvas>
+    <div id="controls-info">Управление: свайпы или клавиши-стрелки</div>
+
+    <script>
+        // Инициализация игрового поля
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+
+        // Размер одной ячейки и переменные игры
+        const grid = 16;
+        let count = 0;
+        let score = 0;
+
+        // Инициализация змейки
+        const snake = {
+            x: 160,
+            y: 160,
+            dx: grid, // Скорость по x
+            dy: 0,    // Скорость по y
+            cells: [], // Массив для хранения сегментов тела
+            maxCells: 4 // Начальная длина
+        };
+
+        // Инициализация еды (зеленое яблоко - можно есть)
+        let greenApple = {
+            x: 320,
+            y: 320
+        };
+
+        // Инициализация красного яблока (нельзя есть)
+        let redApple = {
+            x: 160,
+            y: 320
+        };
+
+        // Переменные для обработки свайпов
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isTouchActive = false;
+
+        // Функция для получения случайного числа в диапазоне
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        // Функция для размещения яблок в случайных позициях
+        function placeApples() {
+            // Размещаем зеленое яблоко
+            greenApple.x = getRandomInt(0, 25) * grid;
+            greenApple.y = getRandomInt(0, 25) * grid;
+            
+            // Размещаем красное яблоко, убеждаясь что оно не в той же позиции что и зеленое
+            do {
+                redApple.x = getRandomInt(0, 25) * grid;
+                redApple.y = getRandomInt(0, 25) * grid;
+            } while (redApple.x === greenApple.x && redApple.y === greenApple.y);
+        }
+
+        // Функция для обновления счета
+        function updateScore() {
+            scoreElement.textContent = 'Счет: ' + score;
+        }
+
+        // Главный игровой цикл
+        function loop() {
+            requestAnimationFrame(loop);
+            
+            // Замедление игры до ~35 кадров в секунду
+            if (++count < 15) {
+                return;
+            }
+            count = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Движение змейки
+            snake.x += snake.dx;
+            snake.y += snake.dy;
+
+            // Прохождение через стены
+            if (snake.x < 0) snake.x = canvas.width - grid;
+            else if (snake.x >= canvas.width) snake.x = 0;
+            if (snake.y < 0) snake.y = canvas.height - grid;
+            else if (snake.y >= canvas.height) snake.y = 0;
+
+            // Добавление новой головы
+            snake.cells.unshift({ x: snake.x, y: snake.y });
+            
+            // Удаление хвоста, если не съели еду
+            if (snake.cells.length > snake.maxCells) {
+                snake.cells.pop();
+            }
+
+            // Отрисовка зеленого яблока (можно есть)
+            ctx.fillStyle = 'green';
+            ctx.fillRect(greenApple.x, greenApple.y, grid - 1, grid - 1);
+
+            // Отрисовка красного яблока (нельзя есть)
+            ctx.fillStyle = 'red';
+            ctx.fillRect(redApple.x, redApple.y, grid - 1, grid - 1);
+
+            // Отрисовка змейки
+            ctx.fillStyle = 'blue';
+            snake.cells.forEach(function(cell, index) {
+                ctx.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+
+                // Проверка на съедание зеленого яблока
+                if (cell.x === greenApple.x && cell.y === greenApple.y) {
+                    snake.maxCells++;
+                    score++;
+                    updateScore();
+                    // Размещение яблок в новых случайных местах
+                    placeApples();
+                }
+
+                // Проверка на столкновение с красным яблоком
+                if (cell.x === redApple.x && cell.y === redApple.y) {
+                    // Игра начинается заново
+                    resetGame();
+                }
+
+                // Проверка на столкновение с самой собой (начиная со второго сегмента)
+                for (let i = index + 1; i < snake.cells.length; i++) {
+                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+                        // Сброс игры
+                        resetGame();
+                    }
+                }
+            });
+        }
+
+        // Функция сброса игры
+        function resetGame() {
+            snake.x = 160;
+            snake.y = 160;
+            snake.cells = [];
+            snake.maxCells = 4;
+            snake.dx = grid;
+            snake.dy = 0;
+            score = 0;
+            updateScore();
+            placeApples();
+        }
+
+        // Обработка нажатий клавиш для управления
+        document.addEventListener('keydown', function(e) {
+            // Стрелка влево
+            if (e.which === 37 && snake.dx === 0) {
+                snake.dx = -grid;
+                snake.dy = 0;
+            }
+            // Стрелка вверх
+            else if (e.which === 38 && snake.dy === 0) {
+                snake.dy = -grid;
+                snake.dx = 0;
+            }
+            // Стрелка вправо
+            else if (e.which === 39 && snake.dx === 0) {
+                snake.dx = grid;
+                snake.dy = 0;
+            }
+            // Стрелка вниз
+            else if (e.which === 40 && snake.dy === 0) {
+                snake.dy = grid;
+                snake.dx = 0;
+            }
+        });
+
+        // Обработка свайпов для мобильных устройств
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isTouchActive = true;
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            if (!isTouchActive) return;
+            
+            const touch = e.changedTouches[0];
+            const touchEndX = touch.clientX;
+            const touchEndY = touch.clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Минимальная дистанция для определения свайпа
+            const minSwipeDistance = 30;
+            
+            // Определяем направление свайпа
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+                // Горизонтальный свайп
+                if (deltaX > 0 && snake.dx === 0) {
+                    // Свайп вправо
+                    snake.dx = grid;
+                    snake.dy = 0;
+                } else if (deltaX < 0 && snake.dx === 0) {
+                    // Свайп влево
+                    snake.dx = -grid;
+                    snake.dy = 0;
+                }
+            } else if (Math.abs(deltaY) > minSwipeDistance) {
+                // Вертикальный свайп
+                if (deltaY > 0 && snake.dy === 0) {
+                    // Свайп вниз
+                    snake.dx = 0;
+                    snake.dy = grid;
+                } else if (deltaY < 0 && snake.dy === 0) {
+                    // Свайп вверх
+                    snake.dx = 0;
+                    snake.dy = -grid;
+                }
+            }
+            
+            isTouchActive = false;
+        }, { passive: false });
+
+        // Запуск игры
+        updateScore();
+        placeApples(); // Размещаем яблоки при запуске
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
