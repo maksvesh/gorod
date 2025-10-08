@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пятнашки | Темный город</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: #0a0a12;
+            color: #c0c0c0;
+            overflow-x: hidden;
+            perspective: 1000px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Анимированный фон */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(30, 30, 60, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(40, 40, 80, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
+            animation: pulse 15s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Сетка сканирования */
+        .scan-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                transparent 50%, 
+                rgba(0, 255, 255, 0.03) 50%);
+            background-size: 100% 4px;
+            z-index: -1;
+            pointer-events: none;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* Заголовок и приветствие */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(5deg); }
+            50% { transform: translateY(-10px) rotateX(5deg); }
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: flicker 3s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            }
+            20%, 24%, 55% {
+                opacity: 0.8;
+                text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+            }
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #80ffff;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Контейнер игры */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .puzzle-container {
+            width: 400px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 2px;
+            background-color: rgba(0, 20, 40, 0.7);
+            padding: 5px;
+            border-radius: 5px;
+            margin: 0 auto;
+            border: 1px solid #004466;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.5s;
+        }
+
+        .puzzle-container:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        .tile {
+            background: linear-gradient(135deg, #004466, #0088aa);
+            border-radius: 3px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 5px rgba(0, 200, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tile:hover {
+            background: linear-gradient(135deg, #006688, #00aacc);
+            transform: translateZ(10px);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .tile:hover::before {
+            left: 100%;
+        }
+
+        .empty {
+            background-color: transparent;
+            cursor: default;
+            border: 1px solid rgba(0, 100, 150, 0.3);
+            box-shadow: none;
+        }
+
+        .empty:hover {
+            background-color: transparent;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty:hover::before {
+            display: none;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .game-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: perspective(500px) rotateX(5deg);
+        }
+
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .game-btn:hover {
+            transform: perspective(500px) rotateX(0deg) translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
+            border-color: #00ff88;
+        }
+
+        .game-btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+
+        .congrats {
+            text-align: center;
+            font-size: 24px;
+            color: #00ff88;
+            margin: 20px;
+            display: none;
+            text-shadow: 0 0 10px #00ff88;
+            background: rgba(0, 40, 20, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            animation: flicker 2s infinite alternate;
+        }
+
+        /* Навигационные кнопки */
+        .navigation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: perspective(500px) rotateX(5deg);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover {
+            transform: perspective(500px) rotateX(0deg) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
+            border-color: #00ff88;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Агентский эффект */
+        .agent-effect {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 3s infinite alternate;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .puzzle-container {
+                width: 350px;
+                height: 350px;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .nav-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+                min-width: 250px;
+                justify-content: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .puzzle-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .tile {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="scan-lines"></div>
+    <div class="agent-effect"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Пятнашки</h1>
+            <p class="subtitle">Операция "Упорядочивание". Восстановите последовательность чисел.</p>
+        </header>
+
+        <!-- Навигационные кнопки -->
+        <div class="navigation-buttons">
+            <a href="index.html" class="nav-btn">
+                <span class="btn-icon">🏠</span>
+                Главная
+            </a>
+            <a href="games.html" class="nav-btn">
+                <span class="btn-icon">⬅️</span>
+                Назад к играм
+            </a>
+        </div>
+
+        <div class="game-container">
+            <div class="puzzle-container" id="puzzle"></div>
+            <div class="controls">
+                <button class="game-btn" onclick="shuffleTiles()">
+                    <span class="btn-icon">🔄</span>
+                    Перемешать
+                </button>
+            </div>
+            <div class="congrats" id="congrats">Поздравляем! Вы решили головоломку!</div>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('puzzle');
+        const congrats = document.getElementById('congrats');
+        let tiles = [];
+        const size = 4;
+
+        // Создание игрового поля
+        function createPuzzle() {
+            container.innerHTML = '';
+            tiles = [];
+            
+            for (let i = 1; i <= size * size - 1; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.textContent = i;
+                tile.dataset.index = i;
+                tile.addEventListener('click', () => moveTile(i));
+                tiles.push(tile);
+            }
+
+            // Добавляем пустую плитку
+            tiles.push(null);
+            updatePuzzle();
+        }
+
+        // Обновление отображения
+        function updatePuzzle() {
+            container.innerHTML = '';
+            tiles.forEach(tile => {
+                if (tile) {
+                    container.appendChild(tile);
+                } else {
+                    const empty = document.createElement('div');
+                    empty.className = 'tile empty';
+                    container.appendChild(empty);
+                }
+            });
+        }
+
+        // Проверка решенной головоломки
+        function checkSolution() {
+            for (let i = 0; i < tiles.length - 1; i++) {
+                if (!tiles[i] || parseInt(tiles[i].textContent) !== i + 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Перемещение плитки
+        function moveTile(num) {
+            const index = tiles.findIndex(tile => tile && tile.textContent == num);
+            const emptyIndex = tiles.indexOf(null);
+
+            const validMoves = [
+                emptyIndex - 1,    // слева
+                emptyIndex + 1,    // справа
+                emptyIndex - size, // сверху
+                emptyIndex + size  // снизу
+            ];
+
+            if (validMoves.includes(index)) {
+                // Меняем местами плитку и пустую ячейку
+                [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
+                updatePuzzle();
+                
+                if (checkSolution()) {
+                    congrats.style.display = 'block';
+                    // Добавляем эффект частиц при победе
+                    for (let i = 0; i < 20; i++) {
+                        createParticle(
+                            container.getBoundingClientRect().left + container.offsetWidth/2, 
+                            container.getBoundingClientRect().top + container.offsetHeight/2
+                        );
+                    }
+                }
+            }
+        }
+
+        // Перемешивание плиток
+        function shuffleTiles() {
+            congrats.style.display = 'none';
+            do {
+                for (let i = tiles.length - 1; i > 0; i--) {
+                    if (tiles[i]) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+                    }
+                }
+            } while (checkSolution());
+            updatePuzzle();
+        }
+
+        // Функция создания частиц для эффекта победы
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.width = '5px';
+            particle.style.height = '5px';
+            particle.style.backgroundColor = '#00ffff';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '1000';
+            
+            document.body.appendChild(particle);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 3;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+            
+            let opacity = 1;
+            const animate = () => {
+                particle.style.left = parseFloat(particle.style.left) + vx + 'px';
+                particle.style.top = parseFloat(particle.style.top) + vy + 'px';
+                opacity -= 0.02;
+                particle.style.opacity = opacity;
+                
+                if (opacity > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    document.body.removeChild(particle);
+                }
+            };
+            
+            animate();
+        }
+
+        // Инициализация игры
+        createPuzzle();
+        shuffleTiles();
+    </script>
+</body>
+</html>
