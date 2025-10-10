@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +34,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: 
+            background:
                 radial-gradient(circle at 20% 30%, rgba(30, 30, 60, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(40, 40, 80, 0.3) 0%, transparent 50%),
                 linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
@@ -41,8 +42,13 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         /* Сетка сканирования */
@@ -52,9 +58,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, 
-                transparent 50%, 
-                rgba(0, 255, 255, 0.03) 50%);
+            background: linear-gradient(to bottom,
+                    transparent 50%,
+                    rgba(0, 255, 255, 0.03) 50%);
             background-size: 100% 4px;
             z-index: -1;
             pointer-events: none;
@@ -62,8 +68,13 @@
         }
 
         @keyframes scan {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(4px); }
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(4px);
+            }
         }
 
         /* Заголовок и приветствие */
@@ -76,8 +87,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0) rotateX(5deg); }
-            50% { transform: translateY(-10px) rotateX(5deg); }
+
+            0%,
+            100% {
+                transform: translateY(0) rotateX(5deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotateX(5deg);
+            }
         }
 
         .title {
@@ -91,11 +109,22 @@
         }
 
         @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
                 opacity: 1;
                 text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             }
-            20%, 24%, 55% {
+
+            20%,
+            24%,
+            55% {
                 opacity: 0.8;
                 text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
             }
@@ -303,8 +332,15 @@
         }
 
         @keyframes pulse-glow {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.2); opacity: 0.8; }
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
         }
 
         .greeting {
@@ -327,12 +363,12 @@
             .title {
                 font-size: 2.5rem;
             }
-            
+
             .games-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .navigation-buttons {
                 flex-direction: column;
                 align-items: center;
@@ -361,6 +397,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="bg-animation"></div>
     <div class="scan-lines"></div>
@@ -370,29 +407,29 @@
         <header class="header">
             <h1 class="title">🎮 Игровая зона</h1>
             <p class="subtitle">Тренировочные миссии для агентов Темного города</p>
-            
+
 
         </header>
 
-                    <!-- Навигационные кнопки -->
-                    <div class="navigation-buttons">
-                        <a href="index.html" class="nav-btn">
-                            <span class="btn-icon">←</span>
-                            На главную
-                        </a>
-                        <a href="sotrud.html" class="nav-btn">
-                            <span class="btn-icon">👥</span>
-                            Сотрудники
-                        </a>
-                    </div>
+        <!-- Навигационные кнопки -->
+        <div class="navigation-buttons">
+            <a href="index.html" class="nav-btn">
+                <span class="btn-icon">←</span>
+                На главную
+            </a>
+            <a href="sotrud.html" class="nav-btn">
+                <span class="btn-icon">👥</span>
+                Сотрудники
+            </a>
+        </div>
         <div class="games-grid">
             <!-- Только змейка -->
             <div class="game-card">
                 <div class="game-icon">🐍</div>
                 <h3 class="game-title">Операция "Змея"</h3>
                 <p class="game-description">
-                    Секретная миссия по сбору разведданных. Управляйте змейкой-агентом, 
-                    собирайте ценные данные и избегайте столкновений. Каждый собранный файл 
+                    Секретная миссия по сбору разведданных. Управляйте змейкой-агентом,
+                    собирайте ценные данные и избегайте столкновений. Каждый собранный файл
                     увеличивает вашу базу знаний и счет операции.
                 </p>
                 <a href="zmeika.html" class="play-btn">Начать миссию</a>
@@ -402,45 +439,55 @@
                 <div class="game-icon">🧱</div>
                 <h3 class="game-title">Операция "Блоки"</h3>
                 <p class="game-description">
-                    Элитная миссия по стратегическому планированию. Управляйте агентом-блоками, 
-                    вращайте и размещайте элементы разведки для формирования ключевых линий. 
+                    Элитная миссия по стратегическому планированию. Управляйте агентом-блоками,
+                    вращайте и размещайте элементы разведки для формирования ключевых линий.
                     Каждое завершенное решение усиливает вашу тактику и счет операции.
                 </p>
                 <a href="tetris.html" class="play-btn">Начать миссию</a>
             </div>
         </div>
 
-                    <!-- пятнашки -->
-                    <div class="game-card">
-                        <div class="game-icon">🧩</div>
-                        <h3 class="game-title">Операция "Пятнашки</h3>
-                        <p class="game-description">
-                            Секретная миссия по дешифровке. Перемещайте тайные фрагменты, 
-                собирайте мозаику разведданных для восстановления ключевой картины. 
+        <!-- пятнашки -->
+        <div class="game-card">
+            <div class="game-icon">🧩</div>
+            <h3 class="game-title">Операция "Пятнашки</h3>
+            <p class="game-description">
+                Секретная миссия по дешифровке. Перемещайте тайные фрагменты,
+                собирайте мозаику разведданных для восстановления ключевой картины.
                 Каждый правильно размещенный элемент раскрывает больше секретов и увеличивает счет операции.
-                        </p>
-                        <a href="pet.html" class="play-btn">Начать миссию</a>
-                    </div>
-                </div>
-
-        <div class="greeting">
-            <h3 style="color: #00ffff; margin-bottom: 15px;">⚠️ ВНИМАНИЕ АГЕНТАМ</h3>
-            <p>Все тренировочные миссии записываются в ваше досье. Покажите лучший результат в операции "Змея"!</p>
-            <p style="margin-top: 10px; color: #80ffff; font-size: 0.9rem;">
-                Управление: стрелки клавиатуры или свайпы на мобильных устройствах
             </p>
+            <a href="pet.html" class="play-btn">Начать миссию</a>
         </div>
-        
+    </div>
+            <!-- Детектив -->
+            <div class="game-card">
+                <div class="game-icon">🧩</div>
+                <h3 class="game-title">Операция "Детектив"</h3>
+                <p class="game-description">
+                    Описание отсуствует
+                </p>
+                <a href="detectiv+2.html" class="play-btn">Начать миссию</a>
+            </div>
+        </div>
+
+    <div class="greeting">
+        <h3 style="color: #00ffff; margin-bottom: 15px;">⚠️ ВНИМАНИЕ АГЕНТАМ</h3>
+        <p>Все тренировочные миссии записываются в ваше досье. Покажите лучший результат в операции "Змея"!</p>
+        <p style="margin-top: 10px; color: #80ffff; font-size: 0.9rem;">
+            Управление: стрелки клавиатуры или свайпы на мобильных устройствах
+        </p>
+    </div>
+
     </div>
 
     <script>
         // Анимация появления карточек
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const cards = document.querySelectorAll('.game-card');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(30px)';
-                
+
                 setTimeout(() => {
                     card.style.transition = 'all 0.6s ease';
                     card.style.opacity = '1';
@@ -452,32 +499,33 @@
         // 3D эффект при наведении (как в основном сайте)
         const gameCards = document.querySelectorAll('.game-card');
         gameCards.forEach(card => {
-            card.addEventListener('mousemove', function(e) {
+            card.addEventListener('mousemove', function (e) {
                 const rect = this.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
+
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                
+
                 const angleY = (x - centerX) / 25;
                 const angleX = (centerY - y) / 25;
-                
+
                 this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(10px)`;
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
             });
         });
 
         // 3D эффекты при скролле
-        document.addEventListener('scroll', function() {
+        document.addEventListener('scroll', function () {
             const scrolled = window.pageYOffset;
             const rate = scrolled * -0.5;
-            
+
             document.querySelector('.bg-animation').style.transform = `translateY(${rate}px)`;
         });
     </script>
 </body>
+
 </html>
