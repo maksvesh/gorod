@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детектив: Тайна особняка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #0c0c1d;
+            color: #e6e6e6;
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+        }
+        
+        .game-container {
+            max-width: 100%;
+            background: rgba(18, 18, 45, 0.95);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid #2a2a5a;
+            margin-bottom: 70px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid #8e44ad;
+        }
+        
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            color: #d2b4de;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        
+        .scene-container {
+            padding: 15px;
+            background: #141432;
+        }
+        
+        .scene-image {
+            height: 180px;
+            background: #0f1a42;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border: 2px solid #2a5298;
+        }
+        
+        .hotspot {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 215, 0, 0.7);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid gold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #000;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .hotspot:hover {
+            background: rgba(255, 215, 0, 0.9);
+            transform: scale(1.15);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .scene-description {
+            background: rgba(30, 30, 70, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #8e44ad;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            min-height: 70px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #1a1a3a;
+            border-bottom: 2px solid #2a5298;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: #2c3e50;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            border-right: 1px solid #1a1a3a;
+        }
+        
+        .tab:last-child {
+            border-right: none;
+        }
+        
+        .tab.active {
+            background: #8e44ad;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: #1a1a3a;
+            min-height: 250px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .characters-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .character-card {
+            background: rgba(52, 73, 94, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #3a4a5a;
+        }
+        
+        .character-card:hover {
+            background: rgba(52, 73, 94, 0.9);
+            transform: translateY(-2px);
+        }
+        
+        .character-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            margin: 0 auto 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .character-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .character-role {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+        }
+        
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        
+        .inventory-item {
+            aspect-ratio: 1;
+            background: #2c3e50;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #3a4a5a;
+            font-size: 1.4rem;
+        }
+        
+        .inventory-item:hover {
+            background: #34495e;
+        }
+        
+        .inventory-item.combined {
+            background: rgba(142, 68, 173, 0.3);
+            border-color: #8e44ad;
+        }
+        
+        .clues-list {
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        
+        .clue {
+            background: rgba(142, 68, 173, 0.15);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #8e44ad;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            padding: 12px;
+            background: #1a1a3a;
+            border-radius: 12px;
+            border: 2px solid #2a5298;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .control-btn {
+            padding: 10px;
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 50px;
+        }
+        
+        .control-btn:hover {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            transform: translateY(-2px);
+        }
+        
+        .control-btn .icon {
+            font-size: 1.2rem;
+        }
+        
+        .control-btn .text {
+            font-size: 0.7rem;
+        }
+        
+        .hint-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .accuse-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: #1a1a3a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid #8e44ad;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            color: #8e44ad;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .dialogue-text {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .dialogue-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .dialogue-option {
+            padding: 10px;
+            background: #2c3e50;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        
+        .dialogue-option:hover {
+            background: #34495e;
+        }
+        
+        .safe-display {
+            font-size: 1.4rem;
+            margin: 15px 0;
+            padding: 10px;
+            background: #141432;
+            border-radius: 6px;
+            text-align: center;
+            letter-spacing: 3px;
+        }
+        
+        .safe-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .safe-btn {
+            padding: 12px;
+            font-size: 1.1rem;
+            background: #2c3e50;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .safe-btn:hover {
+            background: #34495e;
+        }
+        
+        .analysis-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .analysis-item {
+            aspect-ratio: 1;
+            background: #2c3e50;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+        }
+        
+        .analysis-item.selected {
+            background: rgba(142, 68, 173, 0.5);
+            border: 2px solid #8e44ad;
+        }
+        
+        .ending-image {
+            width: 100%;
+            max-width: 200px;
+            margin: 15px auto;
+            border-radius: 8px;
+            overflow: hidden;
+            text-align: center;
+            font-size: 3rem;
+        }
+        
+        @media (max-width: 480px) {
+            .characters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .inventory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .controls {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 6px;
+                padding: 10px;
+            }
+            
+            .control-btn {
+                padding: 8px;
+                min-height: 45px;
+            }
+            
+            .control-btn .icon {
+                font-size: 1rem;
+            }
+            
+            .control-btn .text {
+                font-size: 0.65rem;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+            
+            .scene-image {
+                height: 160px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .game-container {
+                max-width: 800px;
+                margin: 0 auto 70px;
+            }
+            
+            .scene-image {
+                height: 250px;
+            }
+            
+            .tab-content {
+                min-height: 350px;
+            }
+            
+            .controls {
+                max-width: 800px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Тайна особняка Вандербильтов</h1>
+            <p class="subtitle">Найдите убийцу Арчибальда Вандербильта</p>
+            <div class="stats">
+                <div class="stat">⏱️ <span id="timeLeft">45:00</span></div>
+                <div class="stat">🎯 <span id="cluesCount">0</span>/<span id="totalClues">15</span></div>
+                <div class="stat">💡 <span id="hintsLeft">5</span></div>
+            </div>
+        </div>
+        
+        <div class="scene-container">
+            <div class="scene-image" id="sceneImage">
+                <!-- Hotspots will be added here -->
+            </div>
+            <div class="scene-description" id="sceneDescription">
+                Вы стоите у входа в особняк Вандербильтов. Ночью здесь было совершено убийство известного коллекционера. Осмотрите особняк, соберите улики и найдите убийцу!
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="characters">👥 Персонажи</div>
+            <div class="tab" data-tab="inventory">🎒 Инвентарь</div>
+            <div class="tab" data-tab="clues">📝 Заметки</div>
+        </div>
+        
+        <div class="tab-content active" id="charactersTab">
+            <div class="characters-grid">
+                <div class="character-card" data-character="lawrence">
+                    <div class="character-img">Л</div>
+                    <div class="character-name">Лоренс Вандербильт</div>
+                    <div class="character-role">Сын, наследник</div>
+                </div>
+                <div class="character-card" data-character="isabella">
+                    <div class="character-img">И</div>
+                    <div class="character-name">Изабелла Кроули</div>
+                    <div class="character-role">Племянница, эксперт</div>
+                </div>
+                <div class="character-card" data-character="victor">
+                    <div class="character-img">В</div>
+                    <div class="character-name">Виктор Морган</div>
+                    <div class="character-role">Бизнес-партнёр</div>
+                </div>
+                <div class="character-card" data-character="edgar">
+                    <div class="character-img">Э</div>
+                    <div class="character-name">Эдгар Смит</div>
+                    <div class="character-role">Дворецкий</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="inventoryTab">
+            <div class="inventory-grid" id="inventory">
+                <!-- Inventory items will be added here -->
+            </div>
+            <button id="analyzeBtn" style="margin-top: 15px; width: 100%; padding: 10px; background: #8e44ad; color: white; border: none; border-radius: 6px; cursor: pointer;" disabled>Анализировать улики</button>
+        </div>
+        
+        <div class="tab-content" id="cluesTab">
+            <div class="clues-list" id="cluesList">
+                <!-- Clues will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- ФИКСИРОВАННОЕ УПРАВЛЕНИЕ -->
+    <div class="controls">
+        <button class="control-btn" id="prevScene">
+            <span class="icon">←</span>
+            <span class="text">Назад</span>
+        </button>
+        <button class="control-btn" id="nextScene">
+            <span class="icon">→</span>
+            <span class="text">Вперёд</span>
+        </button>
+        <button class="control-btn hint-btn" id="hintBtn">
+            <span class="icon">💡</span>
+            <span class="text">Подсказка</span>
+        </button>
+        <button class="control-btn accuse-btn" id="accuseBtn">
+            <span class="icon">⚖️</span>
+            <span class="text">Обвинить</span>
+        </button>
+    </div>
+    
+    <!-- Dialogue Modal -->
+    <div class="modal" id="dialogueModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="dialogueTitle">Диалог</h3>
+            <div class="dialogue-text" id="dialogueText"></div>
+            <div class="dialogue-options" id="dialogueOptions"></div>
+            <button id="closeDialogue" style="width: 100%; padding: 10px; background: #8e44ad; color: white; border: none; border-radius: 6px; cursor: pointer;">Закрыть</button>
+        </div>
+    </div>
+    
+    <!-- Safe Modal -->
+    <div class="modal" id="safeModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Сейф Арчибальда</h3>
+            <p>Код: день рождения собаки (ддмм)</p>
+            <div class="safe-display" id="safeDisplay">----</div>
+            <div class="safe-controls">
+                <button class="safe-btn" data-number="1">1</button>
+                <button class="safe-btn" data-number="2">2</button>
+                <button class="safe-btn" data-number="3">3</button>
+                <button class="safe-btn" data-number="4">4</button>
+                <button class="safe-btn" data-number="5">5</button>
+                <button class="safe-btn" data-number="6">6</button>
+                <button class="safe-btn" data-number="7">7</button>
+                <button class="safe-btn" data-number="8">8</button>
+                <button class="safe-btn" data-number="9">9</button>
+                <button class="safe-btn" data-number="0">0</button>
+                <button class="safe-btn" id="safeClear">C</button>
+                <button class="safe-btn" id="safeEnter">✓</button>
+            </div>
+            <button id="closeSafe" style="width: 100%; padding: 10px; background: #8e44ad; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px;">Отмена</button>
+        </div>
+    </div>
+    
+    <!-- Analysis Modal -->
+    <div class="modal" id="analysisModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Анализ улик</h3>
+            <p>Выберите 2 улики для анализа:</p>
+            <div class="analysis-items" id="analysisItems"></div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="analyzeItems" style="flex: 2; padding: 10px; background: #8e44ad; color: white; border: none; border-radius: 6px; cursor: pointer;">Анализировать</button>
+                <button id="cancelAnalysis" style="flex: 1; padding: 10px; background: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer;">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accusation Modal -->
+    <div class="modal" id="accusationModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Кто убийца?</h3>
+            <p>Выберите подозреваемого:</p>
+            <div class="characters-grid" style="margin: 15px 0;">
+                <div class="character-card accuse-option" data-suspect="Лоренс">
+                    <div class="character-img">Л</div>
+                    <div class="character-name">Лоренс</div>
+                </div>
+                <div class="character-card accuse-option" data-suspect="Изабелла">
+                    <div class="character-img">И</div>
+                    <div class="character-name">Изабелла</div>
+                </div>
+                <div class="character-card accuse-option" data-suspect="Виктор">
+                    <div class="character-img">В</div>
+                    <div class="character-name">Виктор</div>
+                </div>
+                <div class="character-card accuse-option" data-suspect="Эдгар">
+                    <div class="character-img">Э</div>
+                    <div class="character-name">Эдгар</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="confirmAccusation" style="flex: 2; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer;">Обвинить</button>
+                <button id="cancelAccusation" style="flex: 1; padding: 10px; background: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer;">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ending Modal -->
+    <div class="modal" id="endingModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="endingTitle">Результат</h3>
+            <div class="ending-image" id="endingImage"></div>
+            <div class="dialogue-text" id="endingText"></div>
+            <button id="restartGame" style="width: 100%; padding: 10px; background: #8e44ad; color: white; border: none; border-radius: 6px; cursor: pointer;">Играть снова</button>
+        </div>
+    </div>
+
+    <script>
+        const gameState = {
+            currentScene: 0,
+            inventory: [],
+            clues: [],
+            killer: "",
+            safeCode: "",
+            timeLeft: 45 * 60,
+            hints: 5,
+            accused: null,
+            examinedItems: new Set(),
+            combinedClues: new Set(),
+            characterDialogues: {},
+            foundClues: new Set(),
+            totalClues: 15,
+            safeOpened: false,
+            keyFound: false,
+            postcardFound: false // Новое свойство для отслеживания найденной открытки
+        };
+
+        const scenes = [
+            {
+                name: "Вход в особняк",
+                description: "Вы стоите перед величественным особняком Вандербильтов. Массивная дубовая дверь ведёт внутрь.",
+                image: "#1a1a2e",
+                hotspots: [
+                    { x: 50, y: 60, item: "door", description: "Входная дверь" },
+                    { x: 80, y: 30, item: "window", description: "Окно гостиной" },
+                    { x: 20, y: 40, item: "mailbox", description: "Почтовый ящик" },
+                    { x: 65, y: 75, item: "plant", description: "Декоративное растение" }
+                ]
+            },
+            {
+                name: "Гостиная", 
+                description: "Роскошная гостиная с высокими потолками и камином из чёрного мрамора.",
+                image: "#2c3e50",
+                hotspots: [
+                    { x: 70, y: 40, item: "desk", description: "Письменный стол" },
+                    { x: 30, y: 50, item: "fireplace", description: "Камин" },
+                    { x: 60, y: 70, item: "bookcase", description: "Книжный шкаф" },
+                    { x: 45, y: 25, item: "painting", description: "Картина на стене" }
+                ]
+            },
+            {
+                name: "Кабинет",
+                description: "Кабинет Арчибальда Вандербильта. Полки заставлены редкими книгами.",
+                image: "#34495e",
+                hotspots: [
+                    { x: 40, y: 60, item: "safe", description: "Сейф" },
+                    { x: 70, y: 30, item: "books", description: "Коллекция книг" },
+                    { x: 20, y: 40, item: "drawer", description: "Ящик стола" },
+                    { x: 55, y: 75, item: "globe", description: "Старинный глобус" }
+                ]
+            },
+            {
+                name: "Спальня",
+                description: "Спальня Арчибальда. Просторная комната с большой кроватью под балдахином.",
+                image: "#2d3436",
+                hotspots: [
+                    { x: 40, y: 50, item: "bed", description: "Кровать" },
+                    { x: 70, y: 30, item: "closet", description: "Гардероб" },
+                    { x: 20, y: 70, item: "nightstand", description: "Прикроватная тумбочка" },
+                    { x: 60, y: 45, item: "mirror", description: "Зеркало" }
+                ]
+            },
+            {
+                name: "Библиотека",
+                description: "Обширная библиотека с тысячами книг в кожаных переплётах.",
+                image: "#2c3e50",
+                hotspots: [
+                    { x: 50, y: 40, item: "table", description: "Центральный стол" },
+                    { x: 80, y: 60, item: "ladder", description: "Лестница для книг" },
+                    { x: 20, y: 70, item: "cabinet", description: "Шкаф с документами" },
+                    { x: 35, y: 25, item: "armchair", description: "Кресло для чтения" }
+                ]
+            },
+            {
+                name: "Столовая",
+                description: "Просторная столовая с длинным дубовым столом и хрустальной люстрой.",
+                image: "#34495e",
+                hotspots: [
+                    { x: 50, y: 60, item: "table", description: "Обеденный стол" },
+                    { x: 75, y: 35, item: "sideboard", description: "Буфет" },
+                    { x: 25, y: 45, item: "window2", description: "Окно в сад" },
+                    { x: 60, y: 25, item: "carpet", description: "Ковёр" }
+                ]
+            }
+        ];
+
+        const items = {
+            letter: { name: "Письмо с угрозами", emoji: "✉️", combinable: true },
+            key: { name: "Ключ от сейфа", emoji: "🔑", combinable: false },
+            photo: { name: "Старая фотография", emoji: "🖼️", combinable: true },
+            book: { name: "Личный дневник", emoji: "📖", combinable: true },
+            poison: { name: "Подозрительный флакон", emoji: "🧪", combinable: true },
+            document: { name: "Важный документ", emoji: "📄", combinable: true },
+            glove: { name: "Перчатка", emoji: "🧤", combinable: true },
+            receipt: { name: "Чек из аптеки", emoji: "🧾", combinable: true },
+            note: { name: "Записка", emoji: "📝", combinable: true },
+            jewelry: { name: "Дорогое украшение", emoji: "💎", combinable: true },
+            watch: { name: "Наручные часы", emoji: "⌚", combinable: true },
+            cigarette: { name: "Окурок сигареты", emoji: "🚬", combinable: true }
+        };
+
+        const dialogueDatabase = {
+            lawrence: {
+                initial: [
+                    "Отец и я имели разногласия, но это нормально для семьи.",
+                    "Я до сих пор не могу поверить в случившееся...",
+                    "Отец был строгим человеком, но я его уважал.",
+                    "Мы редко виделись в последнее время."
+                ],
+                responses: {
+                    alibi: [
+                        "В ночь убийства я был в клубе, но уходил по личным делам.",
+                        "Я вернулся домой поздно, уже после полуночи.",
+                        "Был на деловой встрече, могу предоставить алиби.",
+                        "В тот вечер я чувствовал себя плохо и рано лёг спать."
+                    ],
+                    isabella: [
+                        "Изабелла слишком увлечена коллекцией отца.",
+                        "Она всегда хотела получить доступ к антиквариату.",
+                        "Изабелла и отец часто спорили о ценности предметов.",
+                        "Она эксперт, но иногда её одержимость пугала."
+                    ],
+                    victor: [
+                        "Виктор часто спорил с отцом о бизнесе.",
+                        "Их деловые отношения были напряжёнными.",
+                        "Виктор хотел больше контроля над компанией.",
+                        "Отец не доверял Виктору в последнее время."
+                    ],
+                    edgar: [
+                        "Эдгар работал здесь много лет, но в последнее время странно себя вёл.",
+                        "Отец собирался уволить Эдгара, но не успел.",
+                        "Эдгар знал все привычки отца.",
+                        "Он всегда был в курсе семейных дел."
+                    ],
+                    motives: [
+                        "Наследство значительное, но у меня свои средства.",
+                        "Отец собирался изменить завещание.",
+                        "У нас были финансовые разногласия.",
+                        "Я хотел больше самостоятельности в бизнесе."
+                    ]
+                }
+            },
+            isabella: {
+                initial: [
+                    "Дядя Арчибальд был для меня как отец.",
+                    "Я до сих пор в шоке от произошедшего...",
+                    "Дядя многому меня научил в антиквариате.",
+                    "Мы были очень близки в последние годы."
+                ],
+                responses: {
+                    alibi: [
+                        "Я была в своей комнате, но слышала голоса около 22:00.",
+                        "Читала в библиотеке до поздней ночи.",
+                        "Разбирала новую партию антиквариата.",
+                        "Разговаривала по телефону с коллегой."
+                    ],
+                    lawrence: [
+                        "Лоренс имел финансовые проблемы с отцом.",
+                        "Они серьёзно поссорились накануне убийства.",
+                        "Лоренс часто просил деньги у дяди.",
+                        "Отец и сын редко находили общий язык."
+                    ],
+                    victor: [
+                        "Виктор интересовался стоимостью коллекции.",
+                        "Он предлагал продать часть антиквариата.",
+                        "Виктор и дядя спорили о инвестициях.",
+                        "Он слишком вмешивался в семейные дела."
+                    ],
+                    edgar: [
+                        "Эдгар часто подслушивал разговоры.",
+                        "Он знал распорядок дня лучше всех.",
+                        "Эдгар в последнее время был очень нервным.",
+                        "Он мог свободно перемещаться по дому."
+                    ],
+                    motives: [
+                        "Дядя обещал передать мне часть коллекции.",
+                        "Мы спорили о методах реставрации.",
+                        "Я хотела больше влияния на коллекцию.",
+                        "Дядя не одобрял мои профессиональные планы."
+                    ]
+                }
+            },
+            victor: {
+                initial: [
+                    "Арчибальд и я были партнёрами много лет.",
+                    "Это ужасная трагедия для всех нас...",
+                    "Мы строили бизнес вместе долгие годы.",
+                    "Арчибальд был блестящим стратегом."
+                ],
+                responses: {
+                    alibi: [
+                        "Я ушёл около 21:30, но видел кого-то у особняка.",
+                        "Был на деловом ужине, могу подтвердить.",
+                        "Вернулся в отель и никуда не выходил.",
+                        "Работал над контрактами до поздней ночи."
+                    ],
+                    lawrence: [
+                        "Лоренс умолял отца о деньгах.",
+                        "Отец и сын имели серьёзные разногласия.",
+                        "Лоренс не справлялся с управлением.",
+                        "Он мог унаследовать состояние."
+                    ],
+                    isabella: [
+                        "Изабелла хотела получить коллекцию.",
+                        "Она слишком эмоционально attached к антиквариату.",
+                        "Изабелла и дядя спорили о наследии.",
+                        "Она видела в коллекции своё будущее."
+                    ],
+                    edgar: [
+                        "Эдгар знал все привычки Арчибальда.",
+                        "Он мог свободно перемещаться по дому.",
+                        "Эдгар слышал все разговоры.",
+                        "Он был недоволен своей позицией."
+                    ],
+                    motives: [
+                        "У нас были разногласия по поводу бизнеса.",
+                        "Арчибальд хотел изменить условия партнёрства.",
+                        "Я инвестировал много в нашу компанию.",
+                        "Наш последний проект был под угрозой."
+                    ]
+                }
+            },
+            edgar: {
+                initial: [
+                    "Я служил семье Вандербильтов 30 лет.",
+                    "Это ужасная потеря для всей семьи...",
+                    "Мистер Арчибальд был хорошим человеком.",
+                    "Я до сих пор не могу поверить в случившееся."
+                ],
+                responses: {
+                    alibi: [
+                        "В ту ночь я рано ушёл в свою комнату.",
+                        "Заканчивал уборку и проверял замки.",
+                        "Слышал странные звуки около 23:00.",
+                        "Как обычно, обходил дом перед сном."
+                    ],
+                    lawrence: [
+                        "Мистер Лоренс и мистер Арчибальд ссорились.",
+                        "Отец и сын редко общались в последнее время.",
+                        "Лоренс часто приходил без предупреждения.",
+                        "Их отношения были напряжёнными."
+                    ],
+                    isabella: [
+                        "Мисс Изабелла часто приходила в кабинет.",
+                        "Она и дядя спорили о коллекции.",
+                        "Изабелла знала ценность каждого предмета.",
+                        "Она проводила много времени с коллекцией."
+                    ],
+                    victor: [
+                        "Мистер Виктор оставлял странные документы.",
+                        "Он и мистер Арчибальд спорили о финансах.",
+                        "Виктор интересовался безопасностью дома.",
+                        "Он часто задерживался после встреч."
+                    ],
+                    motives: [
+                        "Мистер Арчибальд собирался меня уволить.",
+                        "У нас были разногласия по поводу управления домом.",
+                        "Я знал многие семейные секреты.",
+                        "Проработав 30 лет, я ожидал большего уважения."
+                    ]
+                }
+            }
+        };
+
+        const clueCombinations = {
+            "letter+photo": [
+                "Письмо и фотография указывают на старую семейную тайну.",
+                "На обороте фотографии найдены следы чернил от письма.",
+                "Письмо и фото связаны с прошлым семьи Вандербильтов."
+            ],
+            "book+document": [
+                "Дневник и документ раскрывают финансовые проблемы Арчибальда.",
+                "Записи в дневнике подтверждают информацию из документа.",
+                "Документ проливает свет на записи в дневнике."
+            ],
+            "poison+receipt": [
+                "Флакон и чек указывают на недавнюю покупку яда.",
+                "Следы вещества совпадают с описанием в чеке.",
+                "Чек подтверждает происхождение яда."
+            ],
+            "glove+poison": [
+                "На перчатке найдены следы ядовитого вещества.",
+                "Перчатка и флакон имеют одинаковые химические следы.",
+                "Размер перчатки соответствует одному из подозреваемых."
+            ],
+            "letter+book": [
+                "Письмо с угрозами связано с записями в дневнике.",
+                "Стиль письма совпадает с почерком в дневнике.",
+                "Угрозы в письме объясняют беспокойство Арчибальда."
+            ],
+            "jewelry+note": [
+                "Украшение и записка наводят на мысль о шантаже.",
+                "Записка упоминает пропавшее украшение.",
+                "Украшение было предметом спора в семье."
+            ]
+        };
+
+        function generateRandomDialogues(killer) {
+            const dialogues = {};
+            const characters = ['lawrence', 'isabella', 'victor', 'edgar'];
+            
+            characters.forEach(character => {
+                dialogues[character] = {
+                    title: getCharacterTitle(character),
+                    initial: getRandomElement(dialogueDatabase[character].initial),
+                    responses: {}
+                };
+                
+                Object.keys(dialogueDatabase[character].responses).forEach(responseType => {
+                    dialogues[character].responses[responseType] = getRandomElement(dialogueDatabase[character].responses[responseType]);
+                });
+            });
+            
+            return dialogues;
+        }
+        
+        function getCharacterTitle(character) {
+            const titles = {
+                lawrence: "Лоренс Вандербильт",
+                isabella: "Изабелла Кроули", 
+                victor: "Виктор Морган",
+                edgar: "Эдгар Смит"
+            };
+            return titles[character];
+        }
+        
+        function getRandomElement(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function initGame() {
+            const suspects = ["Лоренс", "Изабелла", "Виктор", "Эдгар"];
+            gameState.killer = suspects[Math.floor(Math.random() * suspects.length)];
+            
+            const day = Math.floor(Math.random() * 28) + 1;
+            const month = Math.floor(Math.random() * 12) + 1;
+            gameState.safeCode = `${day < 10 ? '0' + day : day}${month < 10 ? '0' + month : month}`;
+            
+            gameState.characterDialogues = generateRandomDialogues(gameState.killer);
+            
+            console.log("Убийца:", gameState.killer);
+            console.log("Код сейфа:", gameState.safeCode);
+            console.log("Диалоги:", gameState.characterDialogues);
+            
+            document.getElementById('totalClues').textContent = gameState.totalClues;
+            
+            renderScene();
+            startTimer();
+            setupEventListeners();
+        }
+
+        function renderScene() {
+            const scene = scenes[gameState.currentScene];
+            const sceneImage = document.getElementById('sceneImage');
+            const sceneDescription = document.getElementById('sceneDescription');
+            
+            sceneImage.style.background = scene.image;
+            sceneImage.innerHTML = '';
+            sceneDescription.textContent = scene.description;
+            
+            scene.hotspots.forEach(hotspot => {
+                const hotspotEl = document.createElement('div');
+                hotspotEl.className = 'hotspot';
+                hotspotEl.style.left = `${hotspot.x}%`;
+                hotspotEl.style.top = `${hotspot.y}%`;
+                hotspotEl.textContent = '?';
+                hotspotEl.title = hotspot.description;
+                hotspotEl.onclick = () => examineItem(hotspot.item, hotspot.description);
+                sceneImage.appendChild(hotspotEl);
+            });
+        }
+
+        function examineItem(item, description) {
+            // ИСКЛЮЧЕНИЕ ДЛЯ СЕЙФА: не добавляем в examinedItems и не показываем "вы уже осматривали"
+            if (item !== 'safe' && gameState.examinedItems.has(`${gameState.currentScene}-${item}`)) {
+                document.getElementById('sceneDescription').textContent = 
+                    `Вы уже осматривали ${description.toLowerCase()}.`;
+                return;
+            }
+
+            // Для всех предметов кроме сейфа добавляем в examinedItems
+            if (item !== 'safe') {
+                gameState.examinedItems.add(`${gameState.currentScene}-${item}`);
+            }
+            
+            let clue = '';
+            let foundItem = null;
+            
+            // ГАРАНТИРУЕМ, ЧТО КЛЮЧ БУДЕТ НАЙДЕН ПРИ ОСМОТРЕ ПИСЬМЕННОГО СТОЛА
+            if (item === 'desk' && !gameState.keyFound) {
+                clue = "В ящике нашли ключ от сейфа.";
+                foundItem = 'key';
+                gameState.keyFound = true;
+            } 
+            // ГАРАНТИРУЕМ, ЧТО ОТКРЫТКА С КОДОМ БУДЕТ НАЙДЕНА В ПОЧТОВОМ ЯЩИКЕ
+            else if (item === 'mailbox' && !gameState.postcardFound) {
+                clue = `Нашли открытку: ${gameState.safeCode.substring(0,2)}.${gameState.safeCode.substring(2,4)} - день рождения собаки.`;
+                gameState.postcardFound = true;
+            }
+            else {
+                // Случайные результаты осмотра для других предметов
+                const roomClues = {
+                    door: ["Нашли письмо с угрозами.", "Обнаружили следы взлома.", "Ничего подозрительного."],
+                    window: ["Видите разбитое стекло.", "На подоконнике странные следы.", "Окно было открыто."],
+                    mailbox: ["Почта не распечатана.", "Пусто.", "Ничего интересного."],
+                    plant: ["В горшке спрятана записка.", "Земля в горшке взрыхлена.", "Ничего необычного."],
+                    desk: ["На столе разбросаны документы.", "В ящике пусто.", "Всё в порядке."],
+                    fireplace: ["В золе нашли обгоревшие страницы дневника.", "В камине странный пепел.", "Камин чист."],
+                    bookcase: ["За книгами спрятана фотография.", "Одна книга выделяется.", "Обычные книги."],
+                    painting: ["За картиной найден тайник.", "Картина висит неровно.", "Ничего особенного."],
+                    safe: ["Сейф заперт. Нужен ключ.", "На сейфе царапины.", "Сейф выглядит нетронутым."],
+                    books: ["В книге закладка с пометками.", "Нашли любовные письма.", "Обычные книги."],
+                    drawer: ["В ящике лежит флакон с ядом.", "Нашли финансовые документы.", "Пусто."],
+                    globe: ["Внутри глобуса спрятаны украшения.", "Глобус испорчен.", "Обычный глобус."],
+                    bed: ["Под подушкой нашли записку.", "Постель не заправлена.", "Всё нормально."],
+                    closet: ["В кармане пиджака нашли чек.", "Одежда перевёрнута.", "Всё на месте."],
+                    nightstand: ["В тумбочке лежат часы.", "Нашли лекарства.", "Ничего подозрительного."],
+                    mirror: ["В отражении что-то странное.", "Зеркало треснуто.", "Обычное зеркало."],
+                    table: ["На столе оставлена перчатка.", "Стол накрыт для ужина.", "Всё чисто."],
+                    ladder: ["На ступеньке окурок.", "Лестница шатается.", "Обычная лестница."],
+                    cabinet: ["В шкафу найден важный документ.", "Документы перевёрнуты.", "Всё в порядке."],
+                    armchair: ["В кресле завалялась перчатка.", "Подушка сдвинута.", "Ничего необычного."],
+                    sideboard: ["В буфете странный запах.", "Сервиз не на месте.", "Всё нормально."],
+                    window2: ["На подоконнике следы грязи.", "Занавески порваны.", "Обычное окно."],
+                    carpet: ["Под ковром пятно.", "Ковёр сдвинут.", "Ничего особенного."]
+                };
+
+                if (roomClues[item]) {
+                    const clues = roomClues[item];
+                    clue = clues[Math.floor(Math.random() * clues.length)];
+                } else {
+                    clue = "Ничего интересного не найдено.";
+                }
+
+                // Случайное нахождение других предметов (кроме ключа и сейфа)
+                const isRedHerring = Math.random() < 0.3;
+                if (!isRedHerring && Math.random() < 0.4 && item !== 'safe' && item !== 'mailbox') {
+                    const availableItems = Object.keys(items).filter(itemKey => 
+                        !gameState.inventory.includes(itemKey) && 
+                        itemKey !== 'key' && // Ключ теперь гарантированно находится в столе
+                        (itemKey !== 'document' || item === 'cabinet')
+                    );
+                    
+                    if (availableItems.length > 0) {
+                        foundItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+                        clue += ` Нашли: ${items[foundItem].name}`;
+                    }
+                }
+            }
+
+            // ОСОБАЯ ЛОГИКА ДЛЯ СЕЙФА
+            if (item === 'safe') {
+                if (gameState.safeOpened) {
+                    clue = "Сейф уже открыт. Больше ничего интересного.";
+                } else if (gameState.inventory.includes('key')) {
+                    openSafe();
+                    return; // Выходим из функции, так как открыли модальное окно
+                } else {
+                    clue = "Сейф заперт. Нужен ключ от сейфа. Возможно, он где-то в кабинете...";
+                }
+            }
+
+            // Добавляем улику только если она уникальна
+            if (clue && !gameState.foundClues.has(clue)) {
+                gameState.foundClues.add(clue);
+                addClue(clue);
+            }
+            
+            if (foundItem && !gameState.inventory.includes(foundItem)) {
+                gameState.inventory.push(foundItem);
+                updateInventory();
+            }
+            
+            document.getElementById('sceneDescription').textContent = clue;
+            
+            // Обновляем счетчик найденных улик
+            updateCluesCounter();
+        }
+
+        function updateCluesCounter() {
+            const uniqueCluesCount = gameState.foundClues.size;
+            document.getElementById('cluesCount').textContent = uniqueCluesCount;
+        }
+
+        function updateInventory() {
+            const inventory = document.getElementById('inventory');
+            inventory.innerHTML = '';
+            
+            gameState.inventory.forEach(itemId => {
+                const item = items[itemId];
+                const itemEl = document.createElement('div');
+                itemEl.className = `inventory-item ${gameState.combinedClues.has(itemId) ? 'combined' : ''}`;
+                itemEl.textContent = item.emoji;
+                itemEl.title = item.name;
+                itemEl.onclick = () => {
+                    document.getElementById('sceneDescription').textContent = 
+                        `Осматриваете ${item.name.toLowerCase()}.`;
+                };
+                inventory.appendChild(itemEl);
+            });
+            
+            document.getElementById('analyzeBtn').disabled = gameState.inventory.length < 2;
+        }
+
+        function addClue(text) {
+            if (!gameState.clues.includes(text)) {
+                gameState.clues.push(text);
+                const cluesList = document.getElementById('cluesList');
+                const clueEl = document.createElement('div');
+                clueEl.className = 'clue';
+                clueEl.textContent = text;
+                cluesList.appendChild(clueEl);
+                cluesList.scrollTop = cluesList.scrollHeight;
+            }
+        }
+
+        function startTimer() {
+            const timer = setInterval(() => {
+                gameState.timeLeft--;
+                const minutes = Math.floor(gameState.timeLeft / 60);
+                const seconds = gameState.timeLeft % 60;
+                document.getElementById('timeLeft').textContent = 
+                    `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(timer);
+                    showEnding('timeout');
+                }
+            }, 1000);
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+                });
+            });
+
+            document.getElementById('prevScene').addEventListener('click', () => {
+                if (gameState.currentScene > 0) {
+                    gameState.currentScene--;
+                    renderScene();
+                }
+            });
+
+            document.getElementById('nextScene').addEventListener('click', () => {
+                if (gameState.currentScene < scenes.length - 1) {
+                    gameState.currentScene++;
+                    renderScene();
+                }
+            });
+
+            document.querySelectorAll('.character-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    if (!card.classList.contains('accuse-option')) {
+                        const character = card.dataset.character;
+                        startDialogue(character);
+                    }
+                });
+            });
+
+            document.getElementById('hintBtn').addEventListener('click', showHint);
+
+            document.getElementById('analyzeBtn').addEventListener('click', showAnalysis);
+            document.getElementById('analyzeItems').addEventListener('click', combineItems);
+            document.getElementById('cancelAnalysis').addEventListener('click', () => {
+                document.getElementById('analysisModal').style.display = 'none';
+            });
+
+            document.getElementById('accuseBtn').addEventListener('click', showAccusation);
+            document.querySelectorAll('.accuse-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.accuse-option').forEach(o => {
+                        o.style.background = '';
+                        o.style.borderColor = '#3a4a5a';
+                    });
+                    this.style.background = 'rgba(142, 68, 173, 0.3)';
+                    this.style.borderColor = '#8e44ad';
+                    gameState.accused = this.dataset.suspect;
+                });
+            });
+            document.getElementById('confirmAccusation').addEventListener('click', makeAccusation);
+            document.getElementById('cancelAccusation').addEventListener('click', () => {
+                document.getElementById('accusationModal').style.display = 'none';
+            });
+
+            document.querySelectorAll('.safe-btn').forEach(btn => {
+                if (btn.id !== 'safeClear' && btn.id !== 'safeEnter') {
+                    btn.addEventListener('click', function() {
+                        const current = document.getElementById('safeDisplay').textContent.replace(/-/g, '');
+                        if (current.length < 4) {
+                            document.getElementById('safeDisplay').textContent = 
+                                (current + this.dataset.number).padEnd(4, '-');
+                        }
+                    });
+                }
+            });
+            document.getElementById('safeClear').addEventListener('click', () => {
+                document.getElementById('safeDisplay').textContent = '----';
+            });
+            document.getElementById('safeEnter').addEventListener('click', checkSafeCode);
+            document.getElementById('closeSafe').addEventListener('click', () => {
+                document.getElementById('safeModal').style.display = 'none';
+            });
+
+            document.getElementById('restartGame').addEventListener('click', () => {
+                location.reload();
+            });
+
+            document.getElementById('closeDialogue').addEventListener('click', () => {
+                document.getElementById('dialogueModal').style.display = 'none';
+            });
+        }
+
+        function openSafe() {
+            document.getElementById('safeModal').style.display = 'flex';
+            document.getElementById('safeDisplay').textContent = '----';
+        }
+
+        function checkSafeCode() {
+            const entered = document.getElementById('safeDisplay').textContent.replace(/-/g, '');
+            if (entered === gameState.safeCode) {
+                gameState.safeOpened = true;
+                if (!gameState.foundClues.has("Сейф открыт! Найден важный документ.")) {
+                    gameState.foundClues.add("Сейф открыт! Найден важный документ.");
+                    addClue("Сейф открыт! Найден важный документ.");
+                    updateCluesCounter();
+                }
+                if (!gameState.inventory.includes('document')) {
+                    gameState.inventory.push('document');
+                    updateInventory();
+                }
+                document.getElementById('safeModal').style.display = 'none';
+                document.getElementById('sceneDescription').textContent = "Сейф открыт! Найден документ с важной информацией.";
+            } else {
+                document.getElementById('sceneDescription').textContent = "Неверный код! Попробуйте ещё раз.";
+                document.getElementById('safeDisplay').textContent = '----';
+            }
+        }
+
+        function startDialogue(character) {
+            const dialogue = gameState.characterDialogues[character];
+            document.getElementById('dialogueTitle').textContent = dialogue.title;
+            document.getElementById('dialogueText').textContent = dialogue.initial;
+            
+            const options = document.getElementById('dialogueOptions');
+            options.innerHTML = '';
+            
+            const questions = [
+                { text: "Где вы были в ночь убийства?", type: "alibi" },
+                { text: "Что вы знаете о Лоренсе?", type: "lawrence" },
+                { text: "Что вы знаете об Изабелле?", type: "isabella" },
+                { text: "Что вы знаете о Викторе?", type: "victor" },
+                { text: "Что вы знаете об Эдгаре?", type: "edgar" },
+                { text: "Были ли у вас мотивы?", type: "motives" }
+            ];
+
+            const shuffledQuestions = questions.sort(() => Math.random() - 0.5).slice(0, 4);
+
+            shuffledQuestions.forEach(question => {
+                const option = document.createElement('div');
+                option.className = 'dialogue-option';
+                option.textContent = question.text;
+                option.onclick = () => {
+                    const response = dialogue.responses[question.type];
+                    document.getElementById('dialogueText').textContent = response;
+                    const clueText = `${dialogue.title}: ${response}`;
+                    if (!gameState.foundClues.has(clueText)) {
+                        gameState.foundClues.add(clueText);
+                        addClue(clueText);
+                        updateCluesCounter();
+                    }
+                };
+                options.appendChild(option);
+            });
+            
+            document.getElementById('dialogueModal').style.display = 'flex';
+        }
+
+        function showHint() {
+            if (gameState.hints > 0) {
+                gameState.hints--;
+                document.getElementById('hintsLeft').textContent = gameState.hints;
+                
+                const hints = [
+                    "Осмотрите все комнаты - каждая может содержать улики.",
+                    "Поговорите со всеми персонажами, их рассказы могут противоречить.",
+                    "Код сейфа - день рождения собаки Арчибальда в формате ДДММ.",
+                    "Некоторые улики можно комбинировать для получения новой информации.",
+                    "Обращайте внимание на детали - иногда маленькая деталь ключевая."
+                ];
+                
+                const hint = hints[Math.floor(Math.random() * hints.length)];
+                if (!gameState.foundClues.has(`Подсказка: ${hint}`)) {
+                    gameState.foundClues.add(`Подсказка: ${hint}`);
+                    addClue(`Подсказка: ${hint}`);
+                    updateCluesCounter();
+                }
+                document.getElementById('sceneDescription').textContent = `Подсказка: ${hint}`;
+            } else {
+                document.getElementById('sceneDescription').textContent = "Подсказки закончились!";
+            }
+        }
+
+        function showAnalysis() {
+            const modal = document.getElementById('analysisModal');
+            const itemsContainer = document.getElementById('analysisItems');
+            itemsContainer.innerHTML = '';
+            window.selectedItems = [];
+            
+            gameState.inventory.forEach(itemId => {
+                const item = items[itemId];
+                if (item.combinable && !gameState.combinedClues.has(itemId)) {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'analysis-item';
+                    itemEl.textContent = item.emoji;
+                    itemEl.title = item.name;
+                    itemEl.onclick = function() {
+                        if (window.selectedItems.includes(itemId)) {
+                            window.selectedItems = window.selectedItems.filter(i => i !== itemId);
+                            this.classList.remove('selected');
+                        } else if (window.selectedItems.length < 2) {
+                            window.selectedItems.push(itemId);
+                            this.classList.add('selected');
+                        }
+                    };
+                    itemsContainer.appendChild(itemEl);
+                }
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        function combineItems() {
+            if (window.selectedItems.length !== 2) {
+                alert("Выберите 2 улики для анализа!");
+                return;
+            }
+            
+            const key = window.selectedItems.sort().join('+');
+            let result = "Эти улики не связаны между собой.";
+            
+            if (clueCombinations[key]) {
+                const possibleResults = clueCombinations[key];
+                result = possibleResults[Math.floor(Math.random() * possibleResults.length)];
+                
+                window.selectedItems.forEach(item => {
+                    gameState.combinedClues.add(item);
+                });
+            }
+            
+            if (!gameState.foundClues.has(`Анализ улик: ${result}`)) {
+                gameState.foundClues.add(`Анализ улик: ${result}`);
+                addClue(`Анализ улик: ${result}`);
+                updateCluesCounter();
+            }
+            document.getElementById('sceneDescription').textContent = result;
+            document.getElementById('analysisModal').style.display = 'none';
+            updateInventory();
+        }
+
+        function showAccusation() {
+            document.getElementById('accusationModal').style.display = 'flex';
+            gameState.accused = null;
+            document.querySelectorAll('.accuse-option').forEach(o => {
+                o.style.background = '';
+                o.style.borderColor = '#3a4a5a';
+            });
+        }
+
+        function makeAccusation() {
+            if (!gameState.accused) {
+                alert("Выберите подозреваемого!");
+                return;
+            }
+            
+            const endings = {
+                perfect: {
+                    title: "Блестящая работа!",
+                    text: "Вы раскрыли дело! Все улики указывают на виновность этого человека. Правосудие восторжествовало!",
+                    image: "🔍✅"
+                },
+                good: {
+                    title: "Дело раскрыто!",
+                    text: "Вы правильно определили убийцу! Хотя некоторые детали остались неясными, основные улики подтверждают вашу теорию.",
+                    image: "🎯"
+                },
+                wrong: {
+                    title: "Ошибка!",
+                    text: `К сожалению, вы обвинили невиновного человека. Настоящий убийца: ${gameState.killer}. Дело останется нераскрытым.`,
+                    image: "❌"
+                }
+            };
+            
+            let ending;
+            if (gameState.accused === gameState.killer) {
+                if (gameState.foundClues.size >= 10 && gameState.combinedClues.size >= 2) {
+                    ending = endings.perfect;
+                } else {
+                    ending = endings.good;
+                }
+            } else {
+                ending = endings.wrong;
+            }
+            
+            document.getElementById('endingTitle').textContent = ending.title;
+            document.getElementById('endingText').textContent = ending.text;
+            document.getElementById('endingImage').textContent = ending.image;
+            document.getElementById('endingModal').style.display = 'flex';
+            document.getElementById('accusationModal').style.display = 'none';
+        }
+
+        function showEnding(type) {
+            const endings = {
+                timeout: {
+                    title: "Время вышло!",
+                    text: `Вы не успели раскрыть дело. Полиция забрала дело, и убийца остался безнаказанным. Настоящий убийца: ${gameState.killer}.`,
+                    image: "⏰"
+                }
+            };
+            
+            const ending = endings[type];
+            document.getElementById('endingTitle').textContent = ending.title;
+            document.getElementById('endingText').textContent = ending.text;
+            document.getElementById('endingImage').textContent = ending.image;
+            document.getElementById('endingModal').style.display = 'flex';
+        }
+
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
