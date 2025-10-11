@@ -1952,10 +1952,10 @@ async function saveToGithub() {
     const filename = `security_report_${Date.now()}.txt`;
     
     // Отправка через GitHub API
-    const response = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/reports/${filename}`, {
+    const response = await fetch(`https://api.github.com/repos/${maksvesh}/${bamk}/contents/reports/${filename}`, {
         method: 'PUT',
         headers: {
-            'Authorization': `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 ${token}`,
+            'Authorization': `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 ${token}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -1973,4 +1973,5 @@ async function saveToGithub() {
 }
     </script>
 </body>
+
 </html>
