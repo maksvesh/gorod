@@ -291,6 +291,108 @@
             animation: clearLine 0.3s ease;
         }
 
+        /* Адаптив для экрана 1600x720 */
+        @media (min-width: 1400px) and (max-width: 1600px) and (min-height: 700px) and (max-height: 750px) {
+            .container {
+                max-width: 900px;
+                gap: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+            }
+            
+            #game-board {
+                width: 300px;
+                height: 600px;
+            }
+            
+            .side-panel {
+                min-width: 200px;
+                gap: 20px;
+            }
+            
+            .info-panel {
+                padding: 12px 15px;
+                margin-bottom: 12px;
+            }
+            
+            .info-label {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-size: 18px;
+            }
+            
+            .next-piece-container {
+                padding: 15px;
+            }
+            
+            .next-piece-label {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+            
+            #next-piece {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .controls {
+                padding: 15px;
+            }
+            
+            .controls h3 {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .control-row {
+                margin-bottom: 8px;
+            }
+            
+            .control-action {
+                font-size: 12px;
+            }
+            
+            .control-key {
+                font-size: 12px;
+                min-width: 70px;
+                padding: 4px 8px;
+            }
+            
+            .buttons {
+                gap: 8px;
+                margin-top: 10px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+            
+            #game-over {
+                max-width: 280px;
+                padding: 20px;
+            }
+            
+            #game-over h2 {
+                font-size: 22px;
+            }
+            
+            #final-score {
+                font-size: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -298,8 +400,8 @@
                 gap: 10px;
             }
             body {
-                                        position: relative;
-        top: 4%;
+                position: relative;
+                top: 4%;
             }
             .mobile-controls {
                 display: flex;
@@ -344,8 +446,7 @@
             }
             
             body {
-                        padding: 3px;
-
+                padding: 3px;
             }
         }
 
