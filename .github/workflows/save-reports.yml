@@ -1,8 +1,7 @@
 name: Save Game Reports
 
 on:
-  workflow_dispatch:  # Запуск вручную
-  repository_dispatch:  # Запуск через API
+  repository_dispatch:
     types: [game-report]
 
 jobs:
@@ -11,31 +10,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          token: ${{ secrets.GAME_REPORTS_TOKEN }}
 
-      - name: Save game report
+      - name: Create report file
+        run: |
+          mkdir -p reports
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          echo '${{ toJson(github.event.client_payload) }}' > reports/game_report_${TIMESTAMP}.json
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add reports/
+          git commit -m "🎮 Game report: ${{ github.event.client_payload.player.name }}"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GAME_REPORTS_TOKEN }}
-        run: |
-          # Создаем папку для отчетов
-          mkdir -p reports
-          
-          # Генерируем имя файла
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          FILENAME="reports/game_report_${TIMESTAMP}.json"
-          
-          # Создаем JSON с данными из события
-          echo '${{ toJson(github.event.client_payload) }}' > $FILENAME
-          
-          # Настраиваем Git
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          
-          # Коммитим и пушим
-          git add $FILENAME
-          git commit -m "🎮 Game report: $TIMESTAMP"
-          git push
