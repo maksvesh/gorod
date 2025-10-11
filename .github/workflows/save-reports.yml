@@ -1,30 +1,52 @@
-name: Save Game Reports
+name: Save Game Results
 
 on:
-  repository_dispatch:
-    types: [game-report]
+  workflow_dispatch:    # Ручной запуск из интерфейса
+  repository_dispatch:  # Запуск через API
+    types: [game_results]
+  push:                 # Запуск при пуше в main
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * *' # Ежедневно в полночь
 
 jobs:
-  save-report:
+  save-results:
     runs-on: ubuntu-latest
+    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GAME_REPORTS_TOKEN }}
-
-      - name: Create report file
-        run: |
-          mkdir -p reports
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITO }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Create results directory
+      run: mkdir -p game-results
+        
+    - name: Process game results
+      env:
+        GAME_DATA: ${{ github.event.client_payload.game_data }}
+        COMMIT_MESSAGE: ${{ github.event.client_payload.commit_message }}
+        PLAYER_NAME: ${{ github.event.client_payload.player_name }}
+      run: |
+        if [ -n "$GAME_DATA" ]; then
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          echo '${{ toJson(github.event.client_payload) }}' > reports/game_report_${TIMESTAMP}.json
-
-      - name: Commit and push
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add reports/
-          git commit -m "🎮 Game report: ${{ github.event.client_payload.player.name }}"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GAME_REPORTS_TOKEN }}
+          FILENAME="result_${TIMESTAMP}_${PLAYER_NAME}.json"
+          echo "$GAME_DATA" > "game-results/$FILENAME"
+          echo "✅ Результат сохранен: $FILENAME"
+        else
+          echo "⚠️ Нет данных для сохранения"
+        fi
+        
+    - name: Commit and push results
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add game-results/
+        git diff --staged --quiet || git commit -m "🎮 Добавлены результаты игры [automated]"
+        git push
