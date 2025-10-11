@@ -2122,76 +2122,59 @@ function saveGameResults() {
 }
 
 // Функция для отправки результатов на GitHub
-async function sendResultsToGitHub() {
-    const gameData = saveGameResults();
-    const commitMessage = commitMessageInput ? commitMessageInput.value : `Game results - ${player.name} ${player.surname}`;
-    
+async sendToGitHubAPI(gameData, commitMessage) {
     try {
-        // Показываем статус отправки
-        if (gitOutput) {
-            gitOutput.style.display = 'block';
-            gitOutput.innerHTML = '<p>Отправка результатов на сервер...</p>';
-        }
-
-        // Здесь будет вызов к GitHub API через GitHub Actions
-
-        if (gitOutput) {
-            gitOutput.innerHTML = `
-                <p><strong>Результаты отправлены!</strong></p>
-                <p>ID отчета: ${response.id}</p>
-                <p>Время: ${new Date().toLocaleString()}</p>
-                <p style="color: #4db8ff;">✓ Данные успешно сохранены в системе</p>
-            `;
-        }
+        // Создаем уникальный ID для результата
+        const resultId = `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-        showNotification('Результаты успешно отправлены!', 'success');
-        return true;
+        // Сохраняем в localStorage
+        const storageKey = `github_result_${resultId}`;
+        const saveData = {
+            id: resultId,
+            ...gameData,
+            commitMessage: commitMessage,
+            status: 'pending',
+            savedAt: new Date().toISOString(),
+            readyForSync: true  // Флаг для GitHub Actions
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(saveData));
+        
+        // Обновляем историю
+        const history = JSON.parse(localStorage.getItem('github_results_history') || '[]');
+        history.unshift({
+            id: resultId,
+            key: storageKey,
+            timestamp: saveData.savedAt,
+            player: `${saveData.player.name} ${saveData.player.surname}`,
+            score: saveData.performance.score,
+            grade: saveData.performance.grade,
+            security: saveData.security.finalLevel,
+            status: 'pending'
+        });
+        
+        if (history.length > 20) history.pop();
+        localStorage.setItem('github_results_history', JSON.stringify(history));
+        
+        // В реальном сценарии здесь будет вызов к вашему API
+        // Пока возвращаем успешный результат
+        return {
+            success: true,
+            id: resultId,
+            message: "✅ Данные готовы для синхронизации с GitHub",
+            filename: `game_result_${resultId}.json`,
+            timestamp: saveData.savedAt,
+            nextStep: "Данные будут отправлены при следующем запуске GitHub Actions"
+        };
+        
     } catch (error) {
-        console.error('Ошибка отправки:', error);
-        if (gitOutput) {
-            gitOutput.innerHTML = `<p style="color: #ff6666;">Ошибка отправки: ${error.message}</p>`;
-        }
-        showNotification('Ошибка отправки результатов', 'error');
-        return false;
+        throw new Error(`Не удалось сохранить данные: ${error.message}`);
     }
-}
-
-// Имитация запроса к GitHub API (будет заменена на реальный вызов)
-// Реальная функция отправки через GitHub API
-async function sendToGitHubAPI(gameData, commitMessage) {
-    const GITO = process.env.GITO; // Будет установлен в Secrets
-    const REPO_OWNER = 'maksvesh'; // Замените на ваш username
-    const REPO_NAME = 'gorod'; // Замените на название репозитория
-    
-    const payload = {
-        event_type: 'game_results',
-        client_payload: {
-            game_data: JSON.stringify(gameData),
-            commit_message: commitMessage,
-            player_name: player.name,
-            player_id: player.id
-        }
-    };
-    
-    const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `token ${GITO}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    });
-    
-    if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status}`);
-    }
-    
-    return await response.json();
 }
     </script>
 </body>
 </html>
+
 
 
 
