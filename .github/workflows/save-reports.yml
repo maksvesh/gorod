@@ -45,8 +45,8 @@ jobs:
         
     - name: Commit and push results
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "maksvesh@yandex.ru"
+        git config --local user.name "GITO"
         git add game-results/
         git diff --staged --quiet || git commit -m "🎮 Добавлены результаты игры [automated]"
         git push
