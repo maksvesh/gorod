@@ -2099,8 +2099,7 @@ async function sendResultsToGitHub() {
         }
 
         // Здесь будет вызов к GitHub API через GitHub Actions
-        const response = await simulateGitHubAPIRequest(gameData, commitMessage);
-        
+
         if (gitOutput) {
             gitOutput.innerHTML = `
                 <p><strong>Результаты отправлены!</strong></p>
@@ -2123,54 +2122,40 @@ async function sendResultsToGitHub() {
 }
 
 // Имитация запроса к GitHub API (будет заменена на реальный вызов)
-async function simulateGitHubAPIRequest(gameData, commitMessage) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                id: 'RES_' + Date.now(),
-                status: 'success',
-                message: 'Data received'
-            });
-        }, 2000);
-    });
-}
-
-// Обновляем функцию сохранения отчета
-function updateSaveReportFunction() {
-    if (saveReportButton) {
-        saveReportButton.addEventListener('click', async function() {
-            const commitMessage = commitMessageInput ? commitMessageInput.value.trim() : '';
-            
-            if (!commitMessage) {
-                showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
-                return;
-            }
-            
-            const success = await sendResultsToGitHub();
-            if (success) {
-                // Дополнительное локальное сохранение
-                saveLocalReport(gameData, commitMessage);
-            }
-        });
-    }
-}
-
-// Локальное сохранение отчета (резервное)
-function saveLocalReport(gameData, commitMessage) {
-    const report = {
-        message: commitMessage,
-        data: gameData,
-        localSave: true
+// Реальная функция отправки через GitHub API
+async function sendToGitHubAPI(gameData, commitMessage) {
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Будет установлен в Secrets
+    const REPO_OWNER = 'maksvesh'; // Замените на ваш username
+    const REPO_NAME = 'gorod'; // Замените на название репозитория
+    
+    const payload = {
+        event_type: 'game_results',
+        client_payload: {
+            game_data: JSON.stringify(gameData),
+            commit_message: commitMessage,
+            player_name: player.name,
+            player_id: player.id
+        }
     };
     
-    // Сохраняем в localStorage
-    const reports = JSON.parse(localStorage.getItem('bankSecurityReports') || '[]');
-    reports.push(report);
-    localStorage.setItem('bankSecurityReports', JSON.stringify(reports));
+    const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
     
-    console.log('Отчет сохранен локально:', report);
+    if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status}`);
+    }
+    
+    return await response.json();
 }
     </script>
 </body>
 </html>
+
 
