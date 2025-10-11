@@ -1109,7 +1109,7 @@
 
         // Инициализация игры
         function initGame() {
-            console.log('Инициализация игры...');
+           updateSaveReportFunction();
             
             // Получаем элементы DOM
             attemptsCount = document.getElementById('attempts-count');
@@ -2191,6 +2191,7 @@ async function sendToGitHubAPI(gameData, commitMessage) {
     </script>
 </body>
 </html>
+
 
 
 
