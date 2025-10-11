@@ -2060,6 +2060,117 @@
                 console.log(`Элемент ${id}:`, element ? 'найден' : 'НЕ НАЙДЕН');
             });
         });
+
+        //ГИТ
+
+        // Функция для сохранения результатов игры
+function saveGameResults() {
+    const gameData = {
+        player: {
+            name: player.name,
+            surname: player.surname,
+            id: player.id
+        },
+        mission: {
+            securityLevel: player.securityLevel,
+            ending: player.ending,
+            timeSpent: timerElement ? timerElement.textContent : '00:00',
+            choices: player.choicesHistory.length,
+            randomEvents: player.randomEvents.length,
+            consequences: player.consequences.length
+        },
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+    };
+
+    return gameData;
+}
+
+// Функция для отправки результатов на GitHub
+async function sendResultsToGitHub() {
+    const gameData = saveGameResults();
+    const commitMessage = commitMessageInput ? commitMessageInput.value : `Game results - ${player.name} ${player.surname}`;
+    
+    try {
+        // Показываем статус отправки
+        if (gitOutput) {
+            gitOutput.style.display = 'block';
+            gitOutput.innerHTML = '<p>Отправка результатов на сервер...</p>';
+        }
+
+        // Здесь будет вызов к GitHub API через GitHub Actions
+        const response = await simulateGitHubAPIRequest(gameData, commitMessage);
+        
+        if (gitOutput) {
+            gitOutput.innerHTML = `
+                <p><strong>Результаты отправлены!</strong></p>
+                <p>ID отчета: ${response.id}</p>
+                <p>Время: ${new Date().toLocaleString()}</p>
+                <p style="color: #4db8ff;">✓ Данные успешно сохранены в системе</p>
+            `;
+        }
+        
+        showNotification('Результаты успешно отправлены!', 'success');
+        return true;
+    } catch (error) {
+        console.error('Ошибка отправки:', error);
+        if (gitOutput) {
+            gitOutput.innerHTML = `<p style="color: #ff6666;">Ошибка отправки: ${error.message}</p>`;
+        }
+        showNotification('Ошибка отправки результатов', 'error');
+        return false;
+    }
+}
+
+// Имитация запроса к GitHub API (будет заменена на реальный вызов)
+async function simulateGitHubAPIRequest(gameData, commitMessage) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({
+                id: 'RES_' + Date.now(),
+                status: 'success',
+                message: 'Data received'
+            });
+        }, 2000);
+    });
+}
+
+// Обновляем функцию сохранения отчета
+function updateSaveReportFunction() {
+    if (saveReportButton) {
+        saveReportButton.addEventListener('click', async function() {
+            const commitMessage = commitMessageInput ? commitMessageInput.value.trim() : '';
+            
+            if (!commitMessage) {
+                showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
+                return;
+            }
+            
+            const success = await sendResultsToGitHub();
+            if (success) {
+                // Дополнительное локальное сохранение
+                saveLocalReport(gameData, commitMessage);
+            }
+        });
+    }
+}
+
+// Локальное сохранение отчета (резервное)
+function saveLocalReport(gameData, commitMessage) {
+    const report = {
+        message: commitMessage,
+        data: gameData,
+        localSave: true
+    };
+    
+    // Сохраняем в localStorage
+    const reports = JSON.parse(localStorage.getItem('bankSecurityReports') || '[]');
+    reports.push(report);
+    localStorage.setItem('bankSecurityReports', JSON.stringify(reports));
+    
+    console.log('Отчет сохранен локально:', report);
+}
     </script>
 </body>
 </html>
+
