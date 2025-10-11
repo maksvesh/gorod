@@ -1942,36 +1942,2045 @@
         });
 //Гит
 
-async function saveToGithub() {
-    const username = document.getElementById('github-username').value;
-    const repo = document.getElementById('github-repo').value;
-    const token = document.getElementById('github-token').value;
-    const email = document.getElementById('github-email').value;
-    
-    const report = generateReport();
-    const filename = `security_report_${Date.now()}.txt`;
-    
-    // Отправка через GitHub API
-    const response = await fetch(`https://api.github.com/repos/${maksvesh}/${bamk}/contents/reports/${filename}`, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `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 ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            message: 'Security report from bank mission',
-            content: btoa(report),
-            committer: { name: username, email: email }
-        })
-    });
-    
-    if (response.ok) {
-        showNotification('Отчет успешно сохранен в GitHub!', 'success');
-    } else {
-        showNotification('Ошибка сохранения в GitHub', 'error');
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Миссия: Защита Банка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d2b4d, #1a4a6b);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(0, 20, 40, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4db8ff;
+            text-shadow: 0 0 10px rgba(77, 184, 255, 0.5);
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: #4db8ff;
+            margin: 20px 0 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #4db8ff;
+            margin: 15px 0 10px;
+        }
+        
+        .scene {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .attempts {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 50, 50, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .mission-brief {
+            background: rgba(0, 30, 60, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4db8ff;
+            line-height: 1.6;
+        }
+        
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .choice {
+            background: rgba(30, 60, 90, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .choice:hover {
+            background: rgba(40, 80, 120, 0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .choice-number {
+            display: inline-block;
+            background: #4db8ff;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4db8ff;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4db8ff;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 16px;
+        }
+        
+        button {
+            background: linear-gradient(to right, #4db8ff, #0066cc);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: linear-gradient(to right, #0066cc, #004499);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        }
+        
+        .result {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+        
+        .success {
+            background: rgba(0, 150, 0, 0.3);
+            border: 1px solid #00cc00;
+            color: #00ff00;
+        }
+        
+        .failure {
+            background: rgba(150, 0, 0, 0.3);
+            border: 1px solid #ff3333;
+            color: #ff6666;
+        }
+        
+        .inventory {
+            background: rgba(0, 30, 60, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .inventory-item {
+            display: inline-block;
+            background: rgba(77, 184, 255, 0.2);
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            border: 1px solid rgba(77, 184, 255, 0.5);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .timer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 100, 200, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #4db8ff, #00cc99);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .scene-image {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-style: italic;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .security-level {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        
+        .security-bar {
+            height: 20px;
+            background: rgba(255, 0, 0, 0.2);
+            border-radius: 10px;
+            flex-grow: 1;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+        
+        .security-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff3333, #00cc00);
+            width: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .git-section {
+            background: rgba(0, 40, 80, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px dashed #4db8ff;
+        }
+        
+        .character-info {
+            background: rgba(0, 40, 80, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #4db8ff;
+        }
+        
+        .mini-game {
+            background: rgba(0, 30, 60, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #4db8ff;
+        }
+        
+        .code-input {
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+        
+        .hacking-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .hacking-cell {
+            background: rgba(0, 50, 100, 0.7);
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .hacking-cell:hover {
+            background: rgba(0, 100, 200, 0.7);
+        }
+        
+        .hacking-cell.active {
+            background: #4db8ff;
+            color: #000;
+        }
+        
+        .dialogue {
+            background: rgba(0, 20, 40, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4db8ff;
+        }
+        
+        .branching-choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .branching-choice {
+            background: rgba(30, 60, 90, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .branching-choice:hover {
+            background: rgba(40, 80, 120, 0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .consequence {
+            background: rgba(150, 100, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #ffaa00;
+        }
+        
+        .skill-check {
+            background: rgba(100, 0, 100, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #cc00cc;
+        }
+        
+        .notification {
+            background: rgba(0, 100, 200, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4db8ff;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .notification.success {
+            background: rgba(0, 150, 0, 0.7);
+            border-left: 4px solid #00cc00;
+        }
+        
+        .notification.error {
+            background: rgba(150, 0, 0, 0.7);
+            border-left: 4px solid #ff3333;
+        }
+        
+        .notification.warning {
+            background: rgba(150, 100, 0, 0.7);
+            border-left: 4px solid #ffaa00;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .random-event {
+            background: rgba(150, 50, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ff6600;
+            animation: pulse 2s infinite;
+        }
+        
+        .event-choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .event-choice {
+            background: rgba(200, 100, 0, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .event-choice:hover {
+            background: rgba(220, 120, 0, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 102, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); }
+        }
+        
+        .consequences-list {
+            background: rgba(100, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #ff3333;
+        }
+        
+        .consequence-item {
+            margin: 5px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .consequence-item:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #ff6666;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .attempts, .timer {
+                position: static;
+                display: inline-block;
+                margin: 10px;
+            }
+            
+            .branching-choices {
+                grid-template-columns: 1fr;
+            }
+            
+            .event-choices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="attempts">Попытки: <span id="attempts-count">3</span>/3</div>
+        <div class="timer">Время: <span id="timer">00:00</span></div>
+        
+        <h1>Миссия: Защита Банка</h1>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <!-- Область для уведомлений -->
+        <div id="notification-area"></div>
+        
+        <!-- Сцена 0: Ввод данных -->
+        <div class="scene active" id="scene-0">
+            <h2>Идентификация сотрудника безопасности</h2>
+            <div class="mission-brief">
+                <p>Добро пожаловать в систему безопасности банка "Федерал Резерв".</p>
+                <p>Для доступа к панели управления введите ваши данные.</p>
+            </div>
+            
+            <div class="character-info">
+                <h3>Введите ваши данные</h3>
+                <div class="input-group">
+                    <label for="player-name">Имя:</label>
+                    <input type="text" id="player-name" placeholder="Введите ваше имя">
+                </div>
+                
+                <div class="input-group">
+                    <label for="player-surname">Фамилия:</label>
+                    <input type="text" id="player-surname" placeholder="Введите вашу фамилию">
+                </div>
+                
+                <div class="input-group">
+                    <label for="player-id">ID сотрудника:</label>
+                    <input type="text" id="player-id" placeholder="Введите ваш ID">
+                </div>
+            </div>
+            
+            <button id="start-mission">Активировать систему безопасности</button>
+        </div>
+        
+        <!-- Сцена 1: Обзор системы безопасности -->
+        <div class="scene" id="scene-1">
+            <h2>Этап 1: Обзор системы безопасности</h2>
+            <div class="scene-image" style="background-color: #0d2b4d; display: flex; align-items: center; justify-content: center;">
+                <div>Центр управления безопасностью</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Вы в центре управления безопасностью банка. Система сообщает о подозрительной активности.</p>
+                <p>По данным разведки, группа преступников планирует ограбление на сегодняшнюю ночь.</p>
+                <p>Ваша задача - укрепить защиту банка и предотвратить ограбление.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level" style="width: 60%"></div>
+                </div>
+                <span id="security-percent">60%</span>
+            </div>
+            
+            <div class="choices">
+                <div class="choice" data-choice="1">
+                    <span class="choice-number">1</span>
+                    Усилить охрану на главном входе
+                </div>
+                <div class="choice" data-choice="2">
+                    <span class="choice-number">2</span>
+                    Проверить и обновить систему видеонаблюдения
+                </div>
+                <div class="choice" data-choice="3">
+                    <span class="choice-number">3</span>
+                    Активировать дополнительные датчики движения в хранилище
+                </div>
+                <div class="choice" data-choice="4">
+                    <span class="choice-number">4</span>
+                    Провести внеплановую проверку систем безопасности
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors">12</span> шт.</div>
+                <div class="inventory-item">Бюджет: $<span id="resource-budget">50,000</span></div>
+                <div class="inventory-item">Лояльность персонала: <span id="resource-loyalty">85</span>%</div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area"></div>
+        </div>
+        
+        <!-- Сцена 2: Тревога -->
+        <div class="scene" id="scene-2">
+            <h2>Этап 2: Тревога</h2>
+            <div class="scene-image" style="background-color: #1a4a6b; display: flex; align-items: center; justify-content: center;">
+                <div>Система оповещения</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Система безопасности зафиксировала подозрительную активность у периметра банка.</p>
+                <p>Возможно, грабители уже начали операцию. Вам нужно принять решение.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level-2" style="width: 60%"></div>
+                </div>
+                <span id="security-percent-2">60%</span>
+            </div>
+            
+            <div class="choices">
+                <div class="choice" data-choice="1">
+                    <span class="choice-number">1</span>
+                    Отправить патруль для проверки
+                </div>
+                <div class="choice" data-choice="2">
+                    <span class="choice-number">2</span>
+                    Поднять общую тревогу
+                </div>
+                <div class="choice" data-choice="3">
+                    <span class="choice-number">3</span>
+                    Включить систему оповещения и вызвать полицию
+                </div>
+                <div class="choice" data-choice="4">
+                    <span class="choice-number">4</span>
+                    Игнорировать как ложное срабатывание
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards-2">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras-2">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors-2">12</span> шт.</div>
+                <div class="inventory-item">Бюджет: $<span id="resource-budget-2">50,000</span></div>
+                <div class="inventory-item">Лояльность персонала: <span id="resource-loyalty-2">85</span>%</div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area-2"></div>
+        </div>
+        
+        <!-- Сцена 3: Внутренняя угроза -->
+        <div class="scene" id="scene-3">
+            <h2>Этап 3: Внутренняя угроза</h2>
+            <div class="scene-image" style="background-color: #0d2b4d; display: flex; align-items: center; justify-content: center;">
+                <div>Внутренняя безопасность</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Система обнаружила подозрительную активность сотрудника Джонса.</p>
+                <p>Он пытался получить доступ к защищенным зонам без авторизации.</p>
+                <p>Возможно, у грабителей есть сообщник внутри банка.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level-3" style="width: 60%"></div>
+                </div>
+                <span id="security-percent-3">60%</span>
+            </div>
+            
+            <div class="branching-choices">
+                <div class="branching-choice" data-choice="1">
+                    Немедленно допросить Джонса
+                </div>
+                <div class="branching-choice" data-choice="2">
+                    Проверить журналы активности
+                </div>
+                <div class="branching-choice" data-choice="3">
+                    Отстранить Джонса от duty
+                </div>
+                <div class="branching-choice" data-choice="4">
+                    Игнорировать как ошибку системы
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards-3">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras-3">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors-3">12</span> шт.</div>
+                <div class="inventory-item">Бюджет: $<span id="resource-budget-3">50,000</span></div>
+                <div class="inventory-item">Лояльность персонала: <span id="resource-loyalty-3">85</span>%</div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area-3"></div>
+        </div>
+        
+        <!-- Сцена 4: Кибератака -->
+        <div class="scene" id="scene-4">
+            <h2>Этап 4: Кибератака</h2>
+            <div class="scene-image" style="background-color: #1a4a6b; display: flex; align-items: center; justify-content: center;">
+                <div>Кибербезопасность</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Система кибербезопасности обнаружила попытку взлома.</p>
+                <p>Хакеры пытаются отключить систему сигнализации и камеры наблюдения.</p>
+                <p>Вам нужно защитить систему от кибератаки.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level-4" style="width: 60%"></div>
+                </div>
+                <span id="security-percent-4">60%</span>
+            </div>
+            
+            <div class="mini-game">
+                <h3>Мини-игра: Защита от хакеров</h3>
+                <p>Найдите и заблокируйте 3 точки доступа хакеров:</p>
+                <div class="hacking-grid" id="hacking-grid"></div>
+                <p>Найдено точек доступа: <span id="hacking-found">0</span>/3</p>
+            </div>
+            
+            <div class="choices">
+                <div class="choice" data-choice="1">
+                    <span class="choice-number">1</span>
+                    Перезагрузить систему безопасности
+                </div>
+                <div class="choice" data-choice="2">
+                    <span class="choice-number">2</span>
+                    Проверить журналы активности
+                </div>
+                <div class="choice" data-choice="3">
+                    <span class="choice-number">3</span>
+                    Перевести систему на автономный режим работы
+                </div>
+                <div class="choice" data-choice="4">
+                    <span class="choice-number">4</span>
+                    Отключить внешние подключения
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards-4">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras-4">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors-4">12</span> шт.</div>
+                <div class="inventory-item">Бюджет: $<span id="resource-budget-4">50,000</span></div>
+                <div class="inventory-item">Лояльность персонала: <span id="resource-loyalty-4">85</span>%</div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area-4"></div>
+        </div>
+        
+        <!-- Сцена 5: Тактическое отвлечение -->
+        <div class="scene" id="scene-5">
+            <h2>Этап 5: Тактическое отвлечение</h2>
+            <div class="scene-image" style="background-color: #0d2b4d; display: flex; align-items: center; justify-content: center;">
+                <div>Тактическая карта банка</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Грабители начали атаку в нескольких точках одновременно.</p>
+                <p>Похоже, это тактическое отвлечение. Вам нужно определить основное направление атаки.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level-5" style="width: 60%"></div>
+                </div>
+                <span id="security-percent-5">60%</span>
+            </div>
+            
+            <div class="branching-choices">
+                <div class="branching-choice" data-choice="1">
+                    Главный вход
+                </div>
+                <div class="branching-choice" data-choice="2">
+                    Крыша
+                </div>
+                <div class="branching-choice" data-choice="3">
+                    Подземный паркинг
+                </div>
+                <div class="branching-choice" data-choice="4">
+                    Разделить силы равномерно
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards-5">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras-5">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors-5">12</span> шт.</div>
+                <div class="inventory-item">Дроны: <span id="resource-drones">2</span> шт.</div>
+                <div class="inventory-item">Тактические группы: <span id="resource-tactical">2</span></div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area-5"></div>
+        </div>
+        
+        <!-- Сцена 6: Защита хранилища -->
+        <div class="scene" id="scene-6">
+            <h2>Этап 6: Защита хранилища</h2>
+            <div class="scene-image" style="background-color: #1a4a6b; display: flex; align-items: center; justify-content: center;">
+                <div>Хранилище банка</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Грабители прорвались к хранилищу банка.</p>
+                <p>У вас есть несколько вариантов защиты. Выберите наиболее эффективный.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level-6" style="width: 60%"></div>
+                </div>
+                <span id="security-percent-6">60%</span>
+            </div>
+            
+            <div class="choices">
+                <div class="choice" data-choice="1">
+                    <span class="choice-number">1</span>
+                    Активировать стальные двери хранилища
+                </div>
+                <div class="choice" data-choice="2">
+                    <span class="choice-number">2</span>
+                    Активировать систему газового подавления
+                </div>
+                <div class="choice" data-choice="3">
+                    <span class="choice-number">3</span>
+                    Отправить тактическую группу для защиты
+                </div>
+                <div class="choice" data-choice="4">
+                    <span class="choice-number">4</span>
+                    Использовать дроны для наблюдения
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards-6">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras-6">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors-6">12</span> шт.</div>
+                <div class="inventory-item">Дроны: <span id="resource-drones-6">2</span> шт.</div>
+                <div class="inventory-item">Тактические группы: <span id="resource-tactical-6">2</span></div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area-6"></div>
+        </div>
+        
+        <!-- Сцена 7: Финальная конфронтация -->
+        <div class="scene" id="scene-7">
+            <h2>Этап 7: Финальная конфронтация</h2>
+            <div class="scene-image" style="background-color: #0d2b4d; display: flex; align-items: center; justify-content: center;">
+                <div>Финальная конфронтация</div>
+            </div>
+            
+            <div class="mission-brief">
+                <p>Лидер грабителей связался с вами по внутренней связи.</p>
+                <p>Он угрожает взорвать часть здания, если вы не откроете хранилище.</p>
+                <p>Вам нужно принять окончательное решение.</p>
+            </div>
+            
+            <div class="security-level">
+                <span>Уровень безопасности:</span>
+                <div class="security-bar">
+                    <div class="security-fill" id="security-level-7" style="width: 60%"></div>
+                </div>
+                <span id="security-percent-7">60%</span>
+            </div>
+            
+            <div class="branching-choices">
+                <div class="branching-choice" data-choice="1">
+                    Попытаться договориться
+                </div>
+                <div class="branching-choice" data-choice="2">
+                    Притвориться, что соглашаетесь, чтобы выиграть время
+                </div>
+                <div class="branching-choice" data-choice="3">
+                    Попытаться обезвредить взрывчатку
+                </div>
+                <div class="branching-choice" data-choice="4">
+                    Начать штурм
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <h3>Доступные ресурсы:</h3>
+                <div class="inventory-item">Персонал охраны: <span id="resource-guards-7">8</span> чел.</div>
+                <div class="inventory-item">Камеры наблюдения: <span id="resource-cameras-7">24</span> шт.</div>
+                <div class="inventory-item">Датчики движения: <span id="resource-sensors-7">12</span> шт.</div>
+                <div class="inventory-item">Дроны: <span id="resource-drones-7">2</span> шт.</div>
+                <div class="inventory-item">Тактические группы: <span id="resource-tactical-7">2</span></div>
+                <div class="inventory-item">Патрули: <span id="resource-patrols">3</span></div>
+            </div>
+            
+            <!-- Область для случайных событий -->
+            <div id="random-events-area-7"></div>
+        </div>
+        
+        <!-- Сцена 8: Развязка -->
+        <div class="scene" id="scene-8">
+            <h2>Развязка</h2>
+            
+            <div class="mission-brief">
+                <p>Операция завершена. Полиция прибыла на место.</p>
+                <div id="ending-content">
+                    <!-- Содержание концовки будет добавлено динамически -->
+                </div>
+            </div>
+            
+            <div class="result" id="mission-result">
+                <!-- Результат будет добавлен динамически -->
+            </div>
+            
+            <div class="git-section">
+                <h3>Сохранение отчета</h3>
+                <p>Отчет о миссии будет сохранен в системе безопасности банка.</p>
+                <div class="input-group">
+                    <label for="commit-message">Сообщение для отчета:</label>
+                    <textarea id="commit-message" rows="3" placeholder="Опишите результаты операции..."></textarea>
+                </div>
+                <button id="save-report">Сохранить отчет</button>
+                <div id="git-output" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;"></div>
+            </div>
+            
+            <button id="restart">Начать новую смену</button>
+        </div>
+    </div>
+
+    <script>
+        // Игровые переменные
+        let player = {
+            name: '',
+            surname: '',
+            id: '',
+            attempts: 3,
+            currentAttempt: 0,
+            currentScene: 0,
+            securityLevel: 60,
+            resources: {
+                guards: 8,
+                cameras: 24,
+                sensors: 12,
+                alarm: true,
+                firewall: true,
+                gasSystem: true,
+                drones: 2,
+                budget: 50000,
+                loyalty: 85,
+                tacticalTeams: 2,
+                patrols: 3
+            },
+            correctChoices: {
+                1: '2',  // Проверить и обновить систему видеонаблюдения
+                2: '3',  // Включить систему оповещения и вызвать полицию
+                3: '2',  // Проверить журналы активности
+                4: '3',  // Перевести систему на автономный режим работы
+                5: '3',  // Подземный паркинг - незаметный доступ
+                6: '2',  // Активировать систему газового подавления
+                7: '2'   // Притвориться, что соглашаетесь, чтобы выиграть время
+            },
+            hackingPoints: [],
+            hackingFound: 0,
+            startTime: null,
+            timerInterval: null,
+            choicesHistory: [],
+            ending: '',
+            randomEvents: [],
+            consequences: [],
+            activeEvent: null
+        };
+
+        // Элементы DOM
+        let attemptsCount, timerElement, progressBar, playerNameInput, playerSurnameInput, playerIdInput;
+        let startMissionButton, restartButton, missionResult, saveReportButton, commitMessageInput, gitOutput;
+        let hackingGrid, hackingFoundElement, endingContent, notificationArea;
+
+        // Система случайных событий
+        const randomEvents = [
+            {
+                id: 1,
+                title: "Сбой в системе электропитания",
+                description: "Часть систем безопасности временно отключена из-за перебоев с электричеством. Требуется срочное решение.",
+                type: "technical",
+                scene: [1, 2, 3, 4],
+                choices: [
+                    {
+                        text: "Переключиться на резервные генераторы",
+                        effect: { budget: -5000, security: 5 },
+                        message: "Резервные генераторы успешно активированы. Системы безопасности восстановлены."
+                    },
+                    {
+                        text: "Временно отключить несущественные системы",
+                        effect: { security: -10 },
+                        message: "Некоторые системы отключены. Уровень безопасности снижен."
+                    },
+                    {
+                        text: "Отправить техников для срочного ремонта",
+                        effect: { budget: -8000, guards: -1, security: 8 },
+                        message: "Техники устранили проблему. Системы работают в штатном режиме."
+                    }
+                ],
+                chance: 0.3
+            },
+            {
+                id: 2,
+                title: "Техническая неисправность камер",
+                description: "Обнаружена неисправность в системе видеонаблюдения. Несколько камер вышли из строя.",
+                type: "technical",
+                scene: [1, 2, 3],
+                choices: [
+                    {
+                        text: "Запустить диагностику системы",
+                        effect: { cameras: -2, security: -5 },
+                        message: "Диагностика выявила проблему, но камеры временно недоступны."
+                    },
+                    {
+                        text: "Перераспределить зоны наблюдения",
+                        effect: { security: -3 },
+                        message: "Зоны наблюдения перераспределены, но остались слепые зоны."
+                    },
+                    {
+                        text: "Экстренный запас камер из хранилища",
+                        effect: { cameras: 4, budget: -3000, security: 3 },
+                        message: "Резервные камеры установлены. Система наблюдения восстановлена."
+                    }
+                ],
+                chance: 0.25
+            },
+            {
+                id: 3,
+                title: "Неожиданная помощь",
+                description: "Соседнее отделение полиции предложило дополнительную поддержку в связи с повышенной угрозой.",
+                type: "personnel",
+                scene: [2, 3, 4],
+                choices: [
+                    {
+                        text: "Принять помощь и усилить охрану",
+                        effect: { guards: 3, security: 8 },
+                        message: "Дополнительные силы прибыли. Уровень безопасности повышен."
+                    },
+                    {
+                        text: "Вежливо отказаться, полагаясь на свои силы",
+                        effect: { security: -5 },
+                        message: "Вы продемонстрировали уверенность в своих силах."
+                    },
+                    {
+                        text: "Попросить дежурную группу на случай экстренной ситуации",
+                        effect: { guards: 2, security: 5 },
+                        message: "Резервная группа будет готова к экстренному вызову."
+                    }
+                ],
+                chance: 0.2
+            }
+        ];
+
+        // Функция проверки уровня безопасности
+        function checkSecurityLevel() {
+            if (player.securityLevel <= 0) {
+                player.securityLevel = 0;
+                immediateMissionFailure('Уровень безопасности упал до нуля! Банк был ограблен.');
+                return true;
+            }
+            return false;
+        }
+
+        // Новая функция для немедленного завершения миссии при 0% безопасности
+        function immediateMissionFailure(reason) {
+            clearInterval(player.timerInterval);
+            player.ending = 'bad';
+            
+            showNotification(reason, 'error');
+            
+            completeMission(false, reason);
+        }
+
+        // Функция прокрутки наверх
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Инициализация игры
+        function initGame() {
+            attemptsCount = document.getElementById('attempts-count');
+            timerElement = document.getElementById('timer');
+            progressBar = document.getElementById('progress');
+            playerNameInput = document.getElementById('player-name');
+            playerSurnameInput = document.getElementById('player-surname');
+            playerIdInput = document.getElementById('player-id');
+            startMissionButton = document.getElementById('start-mission');
+            restartButton = document.getElementById('restart');
+            missionResult = document.getElementById('mission-result');
+            saveReportButton = document.getElementById('save-report');
+            commitMessageInput = document.getElementById('commit-message');
+            gitOutput = document.getElementById('git-output');
+            hackingGrid = document.getElementById('hacking-grid');
+            hackingFoundElement = document.getElementById('hacking-found');
+            endingContent = document.getElementById('ending-content');
+            notificationArea = document.getElementById('notification-area');
+
+            updateAttemptsDisplay();
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            setupEventListeners();
+            initHackingGame();
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            if (startMissionButton) {
+                startMissionButton.addEventListener('click', startMission);
+            }
+            
+            if (restartButton) {
+                restartButton.addEventListener('click', restartGame);
+            }
+            
+            if (saveReportButton) {
+                saveReportButton.addEventListener('click', saveReport);
+            }
+            
+            // Обработчики для выбора вариантов
+            document.querySelectorAll('.choice').forEach(choice => {
+                choice.addEventListener('click', handleChoice);
+            });
+            
+            // Обработчики для ветвящихся выборов
+            document.querySelectorAll('.branching-choice').forEach(choice => {
+                choice.addEventListener('click', handleBranchingChoice);
+            });
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            if (!notificationArea) return;
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            notificationArea.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+
+        // Генерация случайного события
+        function generateRandomEvent(scene) {
+            const eventsArea = document.getElementById(`random-events-area-${scene}`) || 
+                              document.getElementById('random-events-area');
+            
+            if (!eventsArea) return;
+            
+            eventsArea.innerHTML = '';
+            
+            if (Math.random() > 0.3) return;
+            
+            const availableEvents = randomEvents.filter(event => 
+                !player.randomEvents.includes(event.id) && 
+                event.scene.includes(scene) && 
+                Math.random() < event.chance
+            );
+            
+            if (availableEvents.length === 0) return;
+            
+            const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+            player.activeEvent = randomEvent;
+            
+            const eventElement = document.createElement('div');
+            eventElement.className = 'random-event';
+            eventElement.innerHTML = `
+                <h3>Случайное событие: ${randomEvent.title}</h3>
+                <p>${randomEvent.description}</p>
+                <div class="event-choices" id="event-choices-${randomEvent.id}"></div>
+            `;
+            
+            eventsArea.appendChild(eventElement);
+            
+            const choicesContainer = document.getElementById(`event-choices-${randomEvent.id}`);
+            randomEvent.choices.forEach((choice, index) => {
+                const choiceElement = document.createElement('div');
+                choiceElement.className = 'event-choice';
+                choiceElement.textContent = choice.text;
+                choiceElement.dataset.choice = index;
+                choiceElement.addEventListener('click', () => handleEventChoice(randomEvent, index));
+                choicesContainer.appendChild(choiceElement);
+            });
+            
+            showNotification(`Произошло случайное событие: ${randomEvent.title}`, 'warning');
+            
+            document.querySelectorAll('.choice, .branching-choice').forEach(choice => {
+                choice.style.pointerEvents = 'none';
+                choice.style.opacity = '0.5';
+            });
+        }
+
+        // Обработка выбора в случайном событии
+        function handleEventChoice(event, choiceIndex) {
+            const choice = event.choices[choiceIndex];
+            
+            applyEventEffects(choice.effect);
+            
+            player.randomEvents.push(event.id);
+            
+            showNotification(choice.message, 'success');
+            
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            
+            if (checkSecurityLevel()) return;
+            
+            const eventsArea = document.getElementById(`random-events-area-${player.currentScene}`) || 
+                              document.getElementById('random-events-area');
+            eventsArea.innerHTML = '';
+            
+            document.querySelectorAll('.choice, .branching-choice').forEach(choice => {
+                choice.style.pointerEvents = 'auto';
+                choice.style.opacity = '1';
+            });
+            
+            player.activeEvent = null;
+        }
+
+        // Применение эффектов события
+        function applyEventEffects(effects) {
+            for (const [key, value] of Object.entries(effects)) {
+                if (key in player.resources) {
+                    player.resources[key] += value;
+                    if (player.resources[key] < 0) player.resources[key] = 0;
+                } else if (key === 'security') {
+                    player.securityLevel += value;
+                    if (player.securityLevel < 0) player.securityLevel = 0;
+                    if (player.securityLevel > 100) player.securityLevel = 100;
+                }
+            }
+        }
+
+        // Инициализация мини-игры с хакерами
+        function initHackingGame() {
+            if (!hackingGrid) return;
+            
+            hackingGrid.innerHTML = '';
+            
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'hacking-cell';
+                cell.dataset.index = i;
+                cell.textContent = '?';
+                cell.addEventListener('click', handleHackingCellClick);
+                hackingGrid.appendChild(cell);
+            }
+            
+            player.hackingPoints = [];
+            while (player.hackingPoints.length < 3) {
+                const randomIndex = Math.floor(Math.random() * 25);
+                if (!player.hackingPoints.includes(randomIndex)) {
+                    player.hackingPoints.push(randomIndex);
+                }
+            }
+            
+            player.hackingFound = 0;
+            if (hackingFoundElement) {
+                hackingFoundElement.textContent = '0';
+            }
+        }
+
+        // Обработка клика по ячейке в мини-игре
+        function handleHackingCellClick(e) {
+            const cell = e.currentTarget;
+            const index = parseInt(cell.dataset.index);
+            
+            if (cell.classList.contains('active')) return;
+            
+            cell.classList.add('active');
+            
+            if (player.hackingPoints.includes(index)) {
+                cell.textContent = '✓';
+                cell.style.background = '#00cc00';
+                player.hackingFound++;
+                if (hackingFoundElement) {
+                    hackingFoundElement.textContent = player.hackingFound;
+                }
+                
+                if (player.hackingFound === 3) {
+                    setTimeout(() => {
+                        showNotification('Все точки доступа хакеров заблокированы!', 'success');
+                        player.securityLevel += 5;
+                        updateSecurityDisplay();
+                    }, 500);
+                }
+            } else {
+                cell.textContent = '✗';
+                cell.style.background = '#cc0000';
+            }
+        }
+
+        // Начать миссию
+        function startMission() {
+            if (!playerNameInput || !playerSurnameInput || !playerIdInput) return;
+            
+            player.name = playerNameInput.value.trim();
+            player.surname = playerSurnameInput.value.trim();
+            player.id = playerIdInput.value.trim();
+            
+            if (!player.name || !player.surname || !player.id) {
+                showNotification('Пожалуйста, заполните все поля!', 'error');
+                return;
+            }
+            
+            player.currentAttempt++;
+            updateAttemptsDisplay();
+            updateResourcesDisplay();
+            
+            player.startTime = new Date();
+            startTimer();
+            
+            showScene(1);
+            
+            showNotification(`Добро пожаловать, ${player.name} ${player.surname}! Миссия начата.`, 'success');
+            
+            setTimeout(scrollToTop, 100);
+        }
+
+        // Показать сцену
+        function showScene(sceneNumber) {
+            document.querySelectorAll('.scene').forEach(scene => {
+                scene.classList.remove('active');
+            });
+            
+            const targetScene = document.getElementById(`scene-${sceneNumber}`);
+            if (targetScene) {
+                targetScene.classList.add('active');
+            }
+            
+            player.currentScene = sceneNumber;
+            
+            updateProgress();
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            
+            if (sceneNumber === 4) {
+                initHackingGame();
+            }
+            
+            if (sceneNumber > 0 && sceneNumber < 8 && !player.activeEvent) {
+                setTimeout(() => {
+                    generateRandomEvent(sceneNumber);
+                }, 1000);
+            }
+            
+            setTimeout(scrollToTop, 100);
+        }
+
+        // Обработка выбора игрока
+        function handleChoice(e) {
+            if (player.activeEvent) {
+                showNotification('Сначала решите случайное событие!', 'warning');
+                return;
+            }
+            
+            const choice = e.currentTarget.getAttribute('data-choice');
+            const scene = player.currentScene;
+            
+            player.choicesHistory.push({scene, choice});
+            
+            if (choice === player.correctChoices[scene]) {
+                handleCorrectChoice(scene, choice);
+            } else {
+                handleIncorrectChoice(scene, choice);
+            }
+            
+            setTimeout(scrollToTop, 100);
+        }
+
+        // Обработка ветвящегося выбора
+        function handleBranchingChoice(e) {
+            if (player.activeEvent) {
+                showNotification('Сначала решите случайное событие!', 'warning');
+                return;
+            }
+            
+            const choice = e.currentTarget.getAttribute('data-choice');
+            const scene = player.currentScene;
+            
+            player.choicesHistory.push({scene, choice, branching: true});
+            
+            switch(scene) {
+                case 3:
+                    handleInternalThreat(choice);
+                    break;
+                case 5:
+                    handleTacticalDistraction(choice);
+                    break;
+                case 7:
+                    handleFinalConfrontation(choice);
+                    break;
+            }
+            
+            setTimeout(scrollToTop, 100);
+        }
+
+        // Обработка внутренней угрозы
+        function handleInternalThreat(choice) {
+            let success = false;
+            let message = '';
+            
+            switch(choice) {
+                case '1':
+                    if (Math.random() < 0.6) {
+                        success = true;
+                        message = 'Джонс признался в сотрудничестве с грабителями! Вы предотвратили внутреннюю угрозу.';
+                    } else {
+                        message = 'Джонс отрицает все обвинения. Вы не смогли доказать его причастность.';
+                    }
+                    break;
+                    
+                case '2':
+                    if (Math.random() < 0.8) {
+                        success = true;
+                        message = 'Журналы активности подтвердили подозрения! Джонс отстранен от duty.';
+                    } else {
+                        message = 'В журналах не найдено доказательств. Возможно, вы ошиблись.';
+                    }
+                    break;
+                    
+                case '3':
+                    message = 'Вы отстранили Джонса от duty. Это вызывает недовольство среди персонала.';
+                    player.securityLevel -= 5;
+                    player.resources.loyalty -= 10;
+                    showScene(4);
+                    showNotification(message, 'warning');
+                    if (checkSecurityLevel()) return;
+                    return;
+                    
+                case '4':
+                    if (Math.random() < 0.3) {
+                        message = 'Это действительно была ошибка системы. Никакой угрозы не было.';
+                    } else {
+                        message = 'Джонс действительно был сообщником грабителей! Теперь у них есть внутренний доступ.';
+                        player.securityLevel -= 15;
+                        player.resources.loyalty -= 15;
+                    }
+                    break;
+            }
+            
+            showNotification(message, success ? 'success' : 'warning');
+            
+            if (success) {
+                player.securityLevel += 5;
+            }
+            
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            
+            if (checkSecurityLevel()) return;
+            
+            showScene(4);
+        }
+
+        // Обработка тактического отвлечения
+        function handleTacticalDistraction(choice) {
+            let message = '';
+            let type = 'info';
+            
+            switch(choice) {
+                case '1':
+                    if (Math.random() < 0.6) {
+                        message = 'Вы угадали! Грабители пытались проникнуть через главный вход.';
+                        player.securityLevel += 10;
+                        type = 'success';
+                    } else {
+                        message = 'На главном входе никого не обнаружено. Основная атака была в другом месте.';
+                        player.securityLevel -= 10;
+                        type = 'warning';
+                    }
+                    break;
+                    
+                case '2':
+                    if (Math.random() < 0.4) {
+                        message = 'Вы обнаружили группу грабителей на крыше!';
+                        player.securityLevel += 5;
+                        type = 'success';
+                    } else {
+                        message = 'На крыше никого не обнаружено. Основная атака была в другом месте.';
+                        player.securityLevel -= 10;
+                        type = 'warning';
+                    }
+                    break;
+                    
+                case '3':
+                    if (Math.random() < 0.7) {
+                        message = 'Вы обнаружили группу грабителей в подземном паркинге!';
+                        player.securityLevel += 5;
+                        type = 'success';
+                    } else {
+                        message = 'В подземном паркинге никого не обнаружено. Основная атака была в другом месте.';
+                        player.securityLevel -= 10;
+                        type = 'warning';
+                    }
+                    break;
+                    
+                case '4':
+                    message = 'Разделение сил ослабило защиту в ключевых точках.';
+                    player.securityLevel -= 5;
+                    type = 'warning';
+                    break;
+            }
+            
+            showNotification(message, type);
+            updateSecurityDisplay();
+            
+            if (checkSecurityLevel()) return;
+            
+            showScene(6);
+        }
+
+        // Обработка финальной конфронтации
+        function handleFinalConfrontation(choice) {
+            let success = false;
+            let message = '';
+            let type = 'info';
+            
+            switch(choice) {
+                case '1':
+                    if (Math.random() < 0.3) {
+                        success = true;
+                        message = 'Вам удалось договориться! Грабители сдались без бой.';
+                        type = 'success';
+                    } else {
+                        message = 'Переговоры зашли в тупик. Грабители привели в действие часть взрывчатки.';
+                        player.securityLevel -= 30;
+                        type = 'error';
+                    }
+                    break;
+                    
+                case '2':
+                    if (Math.random() < 0.7) {
+                        success = true;
+                        message = 'Вы выиграли время! Спецназ успел обезвредить взрывчатку и захватить грабителей.';
+                        type = 'success';
+                    } else {
+                        message = 'Грабители раскусили ваш план и привели в действие взрывчатку.';
+                        player.securityLevel -= 40;
+                        type = 'error';
+                    }
+                    break;
+                    
+                case '3':
+                    if (Math.random() < 0.5) {
+                        success = true;
+                        message = 'Взрывчатка обезврежена! Грабители задержаны.';
+                        type = 'success';
+                    } else {
+                        message = 'Не удалось обезвредить всю взрывчатку. Часть здания повреждена.';
+                        player.securityLevel -= 25;
+                        type = 'error';
+                    }
+                    break;
+                    
+                case '4':
+                    if (Math.random() < 0.4) {
+                        success = true;
+                        message = 'Штурм успешен! Все грабители нейтрализованы.';
+                        type = 'success';
+                    } else {
+                        message = 'Штурм провалился. Грабители привели в действие взрывчатку.';
+                        player.securityLevel -= 50;
+                        type = 'error';
+                    }
+                    break;
+            }
+            
+            updateSecurityDisplay();
+            
+            if (checkSecurityLevel()) return;
+            
+            if (player.securityLevel > 70 && success) {
+                player.ending = 'good';
+            } else if (player.securityLevel > 40) {
+                player.ending = 'neutral';
+            } else {
+                player.ending = 'bad';
+            }
+            
+            showNotification(message, type);
+            completeMission(success, message);
+        }
+
+        // Обработка правильного выбора
+        function handleCorrectChoice(scene, choice) {
+            player.securityLevel += 10;
+            if (player.securityLevel > 100) player.securityLevel = 100;
+            
+            switch(scene) {
+                case 1:
+                    player.resources.cameras += 4;
+                    showScene(2);
+                    showNotification('Система видеонаблюдения успешно обновлена! Дополнительные камеры установлены.', 'success');
+                    break;
+                    
+                case 2:
+                    player.resources.guards += 2;
+                    showScene(3);
+                    showNotification('Полиция уведомлена и направляется к банку. Подкрепление прибыло.', 'success');
+                    break;
+                    
+                case 4:
+                    player.resources.firewall = true;
+                    showScene(5);
+                    showNotification('Кибератака отражена! Система переведена в автономный режим.', 'success');
+                    break;
+                    
+                case 6:
+                    showScene(7);
+                    showNotification('Система газового подавления активирована! Грабители нейтрализованы.', 'success');
+                    break;
+            }
+            
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            
+            checkSecurityLevel();
+        }
+
+        // Обработка неправильного выбора
+        function handleIncorrectChoice(scene, choice) {
+            player.securityLevel -= 15;
+            
+            addConsequence(scene, choice);
+            
+            switch(scene) {
+                case 1:
+                    showNotification('Неверное решение! Уровень безопасности снижен.', 'warning');
+                    break;
+                    
+                case 2:
+                    showNotification('Ошибка! Уровень безопасности снижен.', 'warning');
+                    break;
+                    
+                case 4:
+                    showNotification('Кибератака успешна! Часть систем безопасности отключена.', 'error');
+                    player.resources.cameras -= 8;
+                    break;
+                    
+                case 6:
+                    showNotification('Грабители преодолели защиту и проникли в хранилище!', 'error');
+                    player.securityLevel -= 25;
+                    break;
+            }
+            
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            
+            if (checkSecurityLevel()) return;
+            
+            if (scene < 6) {
+                showScene(scene + 1);
+            } else {
+                showScene(7);
+            }
+        }
+
+        // Добавление последствия
+        function addConsequence(scene, choice) {
+            const consequences = {
+                1: "Неэффективное использование ресурсов ослабило общую защиту.",
+                2: "Задержка в реагировании позволила грабителям продвинуться дальше.",
+                4: "Кибератака нанесла ущерб системам безопасности.",
+                6: "Грабители получили доступ к ценностям хранилища."
+            };
+            
+            if (consequences[scene]) {
+                player.consequences.push(consequences[scene]);
+            }
+        }
+
+        // Завершение миссии
+        function completeMission(success, message) {
+            clearInterval(player.timerInterval);
+            showScene(8);
+            
+            let resultText = '';
+            let resultClass = '';
+            
+            if (player.ending === 'good') {
+                resultText = 'МИССИЯ ВЫПОЛНЕНА БЛЕСТЯЩЕ!';
+                resultClass = 'success';
+            } else if (player.ending === 'neutral') {
+                resultText = 'МИССИЯ ВЫПОЛНЕНА ЧАСТИЧНО';
+                resultClass = 'success';
+            } else {
+                resultText = 'МИССИЯ ПРОВАЛЕНА';
+                resultClass = 'failure';
+            }
+            
+            if (missionResult) {
+                missionResult.textContent = resultText;
+                missionResult.className = `result ${resultClass}`;
+            }
+            
+            generateEndingContent(success, message);
+            
+            if (commitMessageInput) {
+                commitMessageInput.value = `Завершение миссии. Уровень безопасности: ${player.securityLevel}%. Сотрудник: ${player.name} ${player.surname}, ID: ${player.id}. Результат: ${resultText}`;
+            }
+            
+            setTimeout(scrollToTop, 100);
+        }
+
+        // Генерация контента концовки
+        function generateEndingContent(success, message) {
+            if (!endingContent) return;
+            
+            let content = '';
+            
+            if (player.ending === 'good') {
+                content = `
+                    <p>Поздравляем, ${player.name} ${player.surname}!</p>
+                    <p>Вы успешно защитили банк от ограбления. Все грабители задержаны, ущерб минимален.</p>
+                    <p>${message}</p>
+                    <p>Руководство банка высоко оценило ваши действия. Ожидайте повышения!</p>
+                `;
+            } else if (player.ending === 'neutral') {
+                content = `
+                    <p>${player.name} ${player.surname}, миссия завершена с переменным успехом.</p>
+                    <p>Банк удалось защитить, но были потери и повреждения.</p>
+                    <p>${message}</p>
+                    <p>Вам предстоит написать подробный отчет о произошедшем.</p>
+                `;
+            } else {
+                content = `
+                    <p>${player.name} ${player.surname}, миссия провалена.</p>
+                    <p>Банк понес значительные потери. Часть ценностей была похищена.</p>
+                    <p>${message}</p>
+                    <p>Вам предстоит объясниться перед руководством и, возможно, понести ответственность.</p>
+                `;
+            }
+            
+            content += `<p>Итоговый уровень безопасности: ${player.securityLevel}%</p>`;
+            content += `<p>Время выполнения миссии: ${timerElement ? timerElement.textContent : '00:00'}</p>`;
+            content += `<p>Количество решенных случайных событий: ${player.randomEvents.length}</p>`;
+            
+            if (player.consequences.length > 0) {
+                content += `<div class="consequences-list"><h4>Последствия ваших решений:</h4>`;
+                player.consequences.forEach(consequence => {
+                    content += `<div class="consequence-item">${consequence}</div>`;
+                });
+                content += `</div>`;
+            }
+            
+            endingContent.innerHTML = content;
+        }
+
+        // Провал миссии (используется только при исчерпании попыток)
+        function failMission(reason) {
+            player.attempts--;
+            updateAttemptsDisplay();
+            
+            if (player.attempts > 0) {
+                showNotification(`Миссия провалена: ${reason}. У вас осталось ${player.attempts} попытка(и). Начинаем заново.`, 'warning');
+                player.securityLevel = 60;
+                showScene(1);
+            } else {
+                showNotification('Исчерпаны все попытки. Миссия завершена.', 'error');
+                player.ending = 'bad';
+                completeMission(false, reason);
+            }
+        }
+
+        // Сохранение отчета
+        function saveReport() {
+            if (!commitMessageInput || !gitOutput) return;
+            
+            const commitMessage = commitMessageInput.value.trim();
+            
+            if (!commitMessage) {
+                showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
+                return;
+            }
+            
+            gitOutput.style.display = 'block';
+            gitOutput.innerHTML = '<p>Сохранение отчета...</p>';
+            
+            setTimeout(() => {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `security_report_${player.name}_${player.surname}_${timestamp}.txt`;
+                
+                gitOutput.innerHTML = `
+                    <p><strong>Отчет сохранен:</strong></p>
+                    <p>Файл: ${filename}</p>
+                    <p style="margin-top: 10px; color: #4db8ff;">✓ Отчет успешно сохранен в системе безопасности банка</p>
+                `;
+                
+                showNotification('Отчет успешно сохранен!', 'success');
+            }, 1500);
+        }
+
+        // Перезапуск игры
+        function restartGame() {
+            player.attempts = 3;
+            player.currentAttempt = 0;
+            player.currentScene = 0;
+            player.securityLevel = 60;
+            player.resources = {
+                guards: 8,
+                cameras: 24,
+                sensors: 12,
+                alarm: true,
+                firewall: true,
+                gasSystem: true,
+                drones: 2,
+                budget: 50000,
+                loyalty: 85,
+                tacticalTeams: 2,
+                patrols: 3
+            };
+            player.choicesHistory = [];
+            player.ending = '';
+            player.randomEvents = [];
+            player.consequences = [];
+            player.activeEvent = null;
+            
+            clearInterval(player.timerInterval);
+            updateAttemptsDisplay();
+            updateResourcesDisplay();
+            showScene(0);
+            
+            if (playerNameInput) playerNameInput.value = '';
+            if (playerSurnameInput) playerSurnameInput.value = '';
+            if (playerIdInput) playerIdInput.value = '';
+            if (commitMessageInput) commitMessageInput.value = '';
+            if (gitOutput) gitOutput.style.display = 'none';
+            
+            if (notificationArea) notificationArea.innerHTML = '';
+            
+            showNotification('Новая смена начата. Удачи!', 'success');
+            
+            setTimeout(scrollToTop, 100);
+        }
+
+        // Обновление отображения попыток
+        function updateAttemptsDisplay() {
+            if (attemptsCount) {
+                attemptsCount.textContent = player.attempts;
+            }
+        }
+
+        // Обновление уровня безопасности
+        function updateSecurityDisplay() {
+            const securityElements = [
+                document.getElementById('security-level'),
+                document.getElementById('security-level-2'),
+                document.getElementById('security-level-3'),
+                document.getElementById('security-level-4'),
+                document.getElementById('security-level-5'),
+                document.getElementById('security-level-6'),
+                document.getElementById('security-level-7')
+            ];
+            
+            const percentElements = [
+                document.getElementById('security-percent'),
+                document.getElementById('security-percent-2'),
+                document.getElementById('security-percent-3'),
+                document.getElementById('security-percent-4'),
+                document.getElementById('security-percent-5'),
+                document.getElementById('security-percent-6'),
+                document.getElementById('security-percent-7')
+            ];
+            
+            securityElements.forEach(el => {
+                if (el) el.style.width = `${player.securityLevel}%`;
+            });
+            
+            percentElements.forEach(el => {
+                if (el) el.textContent = `${player.securityLevel}%`;
+            });
+            
+            const securityFill = document.querySelectorAll('.security-fill');
+            securityFill.forEach(el => {
+                if (player.securityLevel > 70) {
+                    el.style.background = 'linear-gradient(to right, #ff3333, #00cc00)';
+                } else if (player.securityLevel > 40) {
+                    el.style.background = 'linear-gradient(to right, #ff3333, #ffff00)';
+                } else {
+                    el.style.background = 'linear-gradient(to right, #ff3333, #ff3333)';
+                }
+            });
+        }
+
+        // Обновление отображения ресурсов
+        function updateResourcesDisplay() {
+            document.querySelectorAll('[id^="resource-guards"]').forEach(el => {
+                if (el) el.textContent = player.resources.guards;
+            });
+            
+            document.querySelectorAll('[id^="resource-cameras"]').forEach(el => {
+                if (el) el.textContent = player.resources.cameras;
+            });
+            
+            document.querySelectorAll('[id^="resource-sensors"]').forEach(el => {
+                if (el) el.textContent = player.resources.sensors;
+            });
+            
+            const budgetElement = document.getElementById('resource-budget');
+            if (budgetElement) budgetElement.textContent = player.resources.budget.toLocaleString();
+            
+            document.querySelectorAll('[id^="resource-loyalty"]').forEach(el => {
+                if (el) el.textContent = player.resources.loyalty;
+            });
+            
+            const dronesElement = document.getElementById('resource-drones');
+            if (dronesElement) dronesElement.textContent = player.resources.drones;
+            
+            const tacticalElement = document.getElementById('resource-tactical');
+            if (tacticalElement) tacticalElement.textContent = player.resources.tacticalTeams;
+            
+            const patrolsElement = document.getElementById('resource-patrols');
+            if (patrolsElement) patrolsElement.textContent = player.resources.patrols;
+        }
+
+        // Запуск таймера
+        function startTimer() {
+            player.timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = Math.floor((now - player.startTime) / 1000);
+                const minutes = Math.floor(diff / 60);
+                const seconds = diff % 60;
+                if (timerElement) {
+                    timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        // Обновление прогресс-бара
+        function updateProgress() {
+            if (progressBar) {
+                const progress = (player.currentScene / 8) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+        }
+
+        // Инициализация игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initGame();
+        });
+//Гитclass GitHubManager {
+    constructor() {
+        this.token = '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';
+        this.repo = 'maksvesh/gorod';
+        this.baseURL = 'https://api.github.com';
+    }
+
+    async saveReport(reportData) {
+        try {
+            const filename = `security_report_${Date.now()}.json`;
+            const content = btoa(JSON.stringify(reportData, null, 2));
+            
+            const response = await fetch(`${this.baseURL}/repos/${this.repo}/contents/reports/${filename}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${this.token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `Security report: ${reportData.playerName}`,
+                    content: content,
+                    branch: 'main'
+                })
+            });
+
+            if (response.ok) {
+                return { success: true, filename: filename };
+            } else {
+                const error = await response.json();
+                return { success: false, error: error.message };
+            }
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getReports() {
+        try {
+            const response = await fetch(`${this.baseURL}/repos/${this.repo}/contents/reports`, {
+                headers: {
+                    'Authorization': `token ${this.token}`,
+                }
+            });
+
+            if (response.ok) {
+                const files = await response.json();
+                return { success: true, files: files };
+            } else {
+                return { success: false, error: 'Failed to fetch reports' };
+            }
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
     }
 }
+
+// Интеграция с игрой
+function setupGitHubIntegration() {
+    const github = new GitHubManager();
+    
+    // Модифицируем функцию сохранения отчета
+    const originalSaveReport = window.saveReport;
+    
+    window.saveReport = async function() {
+        const commitMessage = document.getElementById('commit-message').value;
+        
+        const reportData = {
+            playerName: player.name,
+            playerSurname: player.surname,
+            playerId: player.id,
+            securityLevel: player.securityLevel,
+            ending: player.ending,
+            timestamp: new Date().toISOString(),
+            choicesHistory: player.choicesHistory,
+            message: commitMessage
+        };
+        
+        // Сохраняем в GitHub
+        const result = await github.saveReport(reportData);
+        
+        if (result.success) {
+            showNotification('Отчет успешно сохранен в GitHub!', 'success');
+            document.getElementById('git-output').innerHTML = `
+                <p><strong>Отчет сохранен в GitHub:</strong></p>
+                <p>Файл: ${result.filename}</p>
+                <p>Репозиторий: ${github.repo}</p>
+            `;
+        } else {
+            showNotification('Ошибка сохранения в GitHub: ' + result.error, 'error');
+        }
+    };
+}
+    </script>
+</body>
+</html>
     </script>
 </body>
 
 </html>
+
