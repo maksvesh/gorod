@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Тетрис</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -13,21 +13,20 @@
         }
         
         html, body {
-            overflow: hidden;
+            overflow: auto;
             height: 100%;
         }
         
         body {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
-            max-height: 100vh;
             background: linear-gradient(135deg, #0c0c1d, #161632, #1a1a3a);
             color: #fff;
             font-family: 'Exo 2', sans-serif;
-            padding: 5px;
+            padding: 10px;
         }
         
         h1 {
@@ -229,7 +228,7 @@
         }
         
         #game-over {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -297,10 +296,7 @@
                 max-width: 900px;
                 gap: 25px;
             }
-            body{
-                position:relative;
-                top:4%;
-            }
+            
             h1 {
                 font-size: 2.2rem;
                 margin-bottom: 15px;
@@ -396,72 +392,151 @@
             }
         }
 
+        /* Адаптив для телефонов */
         @media (max-width: 768px) {
+            body {
+                overflow: auto;
+                padding: 10px;
+                height: auto;
+                min-height: 100vh;
+                justify-content: flex-start;
+            }
+            
             .container {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
+                max-width: 100%;
             }
-            body {
-                position: relative;
-                top: 4%;
-            }
+            
             .mobile-controls {
                 display: flex;
+                margin-top: 15px;
+                margin-bottom: 15px;
             }
             
             .controls {
-                display: none;
+                display: block;
+                width: 100%;
+                max-width: 300px;
+                margin-top: 10px;
             }
             
             #game-board {
-                width: 200px;
-                height: 400px;
+                width: 240px;
+                height: 480px;
             }
             
             #next-piece {
-                width: 80px;
-                height: 80px;
+                width: 100px;
+                height: 100px;
             }
             
             h1 {
-                font-size: 1.4rem;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
             }
             
             .side-panel {
                 width: 100%;
-                max-width: 220px;
+                max-width: 300px;
+                gap: 15px;
+            }
+            
+            .buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+            
+            .buttons button, .buttons .nav-btn {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .info-panel {
+                padding: 12px 15px;
+            }
+            
+            .info-label {
+                font-size: 11px;
+            }
+            
+            .info-value {
+                font-size: 16px;
+            }
+            
+            .mobile-btn {
+                padding: 12px 15px;
+                font-size: 14px;
+                min-width: 60px;
+            }
+            
+            .next-piece-container {
+                padding: 15px;
+            }
+            
+            .next-piece-label {
+                font-size: 14px;
+            }
+            
+            #game-over {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 100;
             }
         }
 
         @media (max-width: 480px) {
             #game-board {
-                width: 180px;
-                height: 360px;
+                width: 220px;
+                height: 440px;
             }
             
             .info-value {
-                font-size: 12px;
+                font-size: 14px;
             }
             
             h1 {
-                font-size: 1.2rem;
+                font-size: 1.6rem;
             }
             
-            body {
-                padding: 3px;
+            .mobile-btn {
+                min-width: 50px;
+                padding: 10px 12px;
+            }
+            
+            .buttons button, .buttons .nav-btn {
+                min-width: 100px;
+                font-size: 11px;
             }
         }
 
         @media (max-width: 360px) {
             #game-board {
-                width: 160px;
-                height: 320px;
+                width: 200px;
+                height: 400px;
             }
             
             .mobile-btn {
-                min-width: 35px;
-                padding: 6px 8px;
+                min-width: 45px;
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+            
+            .buttons button, .buttons .nav-btn {
+                min-width: 90px;
+                font-size: 10px;
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
             }
         }
     </style>
