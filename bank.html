@@ -1108,47 +1108,48 @@
         }
 
         // Инициализация игры
-        function initGame() {
-           updateSaveReportFunction();
-            
-            // Получаем элементы DOM
-            attemptsCount = document.getElementById('attempts-count');
-            timerElement = document.getElementById('timer');
-            progressBar = document.getElementById('progress');
-            playerNameInput = document.getElementById('player-name');
-            playerSurnameInput = document.getElementById('player-surname');
-            playerIdInput = document.getElementById('player-id');
-            startMissionButton = document.getElementById('start-mission');
-            restartButton = document.getElementById('restart');
-            missionResult = document.getElementById('mission-result');
-            saveReportButton = document.getElementById('save-report');
-            commitMessageInput = document.getElementById('commit-message');
-            gitOutput = document.getElementById('git-output');
-            hackingGrid = document.getElementById('hacking-grid');
-            hackingFoundElement = document.getElementById('hacking-found');
-            endingContent = document.getElementById('ending-content');
-            notificationArea = document.getElementById('notification-area');
+ // Инициализация игры
+function initGame() {
+    // Убрал вызов updateSaveReportFunction() - этой функции не существует
+    
+    // Получаем элементы DOM
+    attemptsCount = document.getElementById('attempts-count');
+    timerElement = document.getElementById('timer');
+    progressBar = document.getElementById('progress');
+    playerNameInput = document.getElementById('player-name');
+    playerSurnameInput = document.getElementById('player-surname');
+    playerIdInput = document.getElementById('player-id');
+    startMissionButton = document.getElementById('start-mission');
+    restartButton = document.getElementById('restart');
+    missionResult = document.getElementById('mission-result');
+    saveReportButton = document.getElementById('save-report');
+    commitMessageInput = document.getElementById('commit-message');
+    gitOutput = document.getElementById('git-output');
+    hackingGrid = document.getElementById('hacking-grid');
+    hackingFoundElement = document.getElementById('hacking-found');
+    endingContent = document.getElementById('ending-content');
+    notificationArea = document.getElementById('notification-area');
 
-            console.log('Найдены элементы:', {
-                startMissionButton: !!startMissionButton,
-                playerNameInput: !!playerNameInput,
-                playerSurnameInput: !!playerSurnameInput,
-                playerIdInput: !!playerIdInput
-            });
+    console.log('Найдены элементы:', {
+        startMissionButton: !!startMissionButton,
+        playerNameInput: !!playerNameInput,
+        playerSurnameInput: !!playerSurnameInput,
+        playerIdInput: !!playerIdInput
+    });
 
-            // Обновляем отображения
-            updateAttemptsDisplay();
-            updateSecurityDisplay();
-            updateResourcesDisplay();
-            
-            // Настраиваем обработчики событий
-            setupEventListeners();
-            
-            // Инициализируем мини-игру (если элемент существует)
-            if (hackingGrid) {
-                initHackingGame();
-            }
-        }
+    // Обновляем отображения
+    updateAttemptsDisplay();
+    updateSecurityDisplay();
+    updateResourcesDisplay();
+    
+    // Настраиваем обработчики событий
+    setupEventListeners();
+    
+    // Инициализируем мини-игру (если элемент существует)
+    if (hackingGrid) {
+        initHackingGame();
+    }
+}
 
         // Настройка обработчиков событий
         function setupEventListeners() {
@@ -2191,6 +2192,7 @@ async function sendToGitHubAPI(gameData, commitMessage) {
     </script>
 </body>
 </html>
+
 
 
 
