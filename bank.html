@@ -448,6 +448,31 @@
             color: #ff6666;
         }
         
+        .upload-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .upload-status.success {
+            background: rgba(0, 150, 0, 0.3);
+            border: 1px solid #00cc00;
+            color: #00ff00;
+        }
+        
+        .upload-status.error {
+            background: rgba(150, 0, 0, 0.3);
+            border: 1px solid #ff3333;
+            color: #ff6666;
+        }
+        
+        .upload-status.uploading {
+            background: rgba(0, 100, 200, 0.3);
+            border: 1px solid #4db8ff;
+            color: #4db8ff;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 15px;
@@ -916,7 +941,15 @@
                     <span>🔒 Сохранить отчет в архив</span>
                 </button>
                 
+                <!-- Новая кнопка для загрузки на GitHub -->
+                <button id="upload-github" style="margin-top: 10px; background: linear-gradient(to right, #00cc99, #009966);">
+                    <span>📤 Загрузить отчет на GitHub</span>
+                </button>
+                
                 <div id="report-output" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;"></div>
+                
+                <!-- Область для статуса загрузки -->
+                <div id="upload-status" class="upload-status" style="display: none;"></div>
                 
                 <div style="margin-top: 10px; font-size: 0.9em; color: #4db8ff;">
                     <p>✓ Шифрование данных: ВКЛ</p>
@@ -976,6 +1009,7 @@
         let attemptsCount, timerElement, progressBar, playerNameInput, playerSurnameInput, playerIdInput;
         let startMissionButton, restartButton, missionResult, saveReportButton, reportMessageInput, reportOutput;
         let hackingGrid, hackingFoundElement, endingContent, notificationArea;
+        let uploadGithubButton, uploadStatusElement;
 
         // Система случайных событий
         const randomEvents = [
@@ -1103,12 +1137,15 @@
             hackingFoundElement = document.getElementById('hacking-found');
             endingContent = document.getElementById('ending-content');
             notificationArea = document.getElementById('notification-area');
+            
+            // Новые элементы для загрузки на GitHub
+            uploadGithubButton = document.getElementById('upload-github');
+            uploadStatusElement = document.getElementById('upload-status');
 
             console.log('Найдены элементы:', {
                 startMissionButton: !!startMissionButton,
                 playerNameInput: !!playerNameInput,
-                playerSurnameInput: !!playerSurnameInput,
-                playerIdInput: !!playerIdInput
+                uploadGithubButton: !!uploadGithubButton
             });
 
             // Обновляем отображения
@@ -1119,7 +1156,7 @@
             // Настраиваем обработчики событий
             setupEventListeners();
             
-            // Инициализируем мини-игру (если элемент существует)
+            // Инициализируем мини-игру
             if (hackingGrid) {
                 initHackingGame();
             }
@@ -1132,9 +1169,6 @@
             // Обработчик для кнопки начала миссии
             if (startMissionButton) {
                 startMissionButton.addEventListener('click', startMission);
-                console.log('Обработчик для start-mission добавлен');
-            } else {
-                console.error('Кнопка start-mission не найдена');
             }
             
             // Обработчик для кнопки перезапуска
@@ -1145,6 +1179,11 @@
             // Обработчик для кнопки сохранения отчета
             if (saveReportButton) {
                 saveReportButton.addEventListener('click', saveReport);
+            }
+            
+            // Обработчик для кнопки загрузки на GitHub
+            if (uploadGithubButton) {
+                uploadGithubButton.addEventListener('click', uploadToGitHub);
             }
             
             // Обработчики для выбора вариантов
@@ -1185,6 +1224,134 @@
                         startMission();
                     }
                 });
+            }
+        }
+
+        // Функция для загрузки отчета на GitHub
+        async function uploadToGitHub() {
+            if (!uploadGithubButton || !uploadStatusElement) return;
+            
+            const reportMessage = reportMessageInput ? reportMessageInput.value.trim() : '';
+            
+            if (!reportMessage) {
+                showNotification('Пожалуйста, сначала создайте отчет!', 'error');
+                return;
+            }
+
+            // Показываем статус загрузки
+            uploadStatusElement.style.display = 'block';
+            uploadStatusElement.className = 'upload-status uploading';
+            uploadStatusElement.textContent = '📤 Подготовка и отправка отчета...';
+            
+            uploadGithubButton.disabled = true;
+            uploadGithubButton.innerHTML = '<span>⏳ Отправка...</span>';
+
+            try {
+                // Создаем данные для отчета
+                const reportData = {
+                    player: {
+                        name: player.name,
+                        surname: player.surname,
+                        id: player.id
+                    },
+                    mission: {
+                        securityLevel: player.securityLevel,
+                        ending: player.ending,
+                        time: timerElement ? timerElement.textContent : '00:00',
+                        attempts: player.currentAttempt,
+                        randomEventsSolved: player.randomEvents.length,
+                        choicesHistory: player.choicesHistory,
+                        consequences: player.consequences
+                    },
+                    report: reportMessage,
+                    timestamp: new Date().toISOString(),
+                    game: "bank_security_simulator"
+                };
+
+                // Создаем имя файла
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `security_report_${player.name}_${player.surname}_${timestamp}.json`;
+                
+                // Конвертируем в JSON
+                const fileContent = JSON.stringify(reportData, null, 2);
+                
+                // Отправляем через Netlify Function
+                const response = await uploadToGitHubViaNetlify(filename, fileContent);
+                
+                if (response.success) {
+                    uploadStatusElement.className = 'upload-status success';
+                    uploadStatusElement.innerHTML = `
+                        ✅ Отчет успешно загружен на GitHub!<br>
+                        <small>Файл: ${filename}</small>
+                    `;
+                    showNotification('Отчет успешно загружен на GitHub!', 'success');
+                } else {
+                    throw new Error(response.error || 'Неизвестная ошибка');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка загрузки на GitHub:', error);
+                uploadStatusElement.className = 'upload-status error';
+                uploadStatusElement.textContent = `❌ Ошибка загрузки: ${error.message}`;
+                showNotification('Ошибка при загрузке отчета на GitHub', 'error');
+            } finally {
+                uploadGithubButton.disabled = false;
+                uploadGithubButton.innerHTML = '<span>📤 Загрузить отчет на GitHub</span>';
+            }
+        }
+
+        // Функция для отправки через Netlify Function
+        async function uploadToGitHubViaNetlify(filename, content) {
+            try {
+                const response = await fetch('/.netlify/functions/upload-to-github', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        content: content,
+                        player: player.name + ' ' + player.surname
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Error uploading to GitHub:', error);
+                
+                // Fallback: сохраняем в localStorage и предлагаем скачать
+                return await saveAsDownload(filename, content);
+            }
+        }
+
+        // Fallback функция: сохраняет как файл для скачивания
+        async function saveAsDownload(filename, content) {
+            try {
+                // Создаем blob и ссылку для скачивания
+                const blob = new Blob([content], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                return {
+                    success: true,
+                    message: 'Файл сохранен локально'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    error: 'Не удалось сохранить файл: ' + error.message
+                };
             }
         }
 
