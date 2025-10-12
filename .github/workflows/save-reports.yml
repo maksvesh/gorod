@@ -1,37 +1,30 @@
-name: Save Game Results
+name: Deploy to GitHub Pages
 
 on:
-  repository_dispatch:
-    types: [save_game_result]
+  push:
+    branches:
+      - main
 
 jobs:
-  save-result:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          token: ${{ secrets.GITO }}
-          
-      - name: Create results directory
-        run: mkdir -p game-results
-        
-      - name: Save game result
-        env:
-          GAME_DATA: ${{ toJson(github.event.client_payload.game_data) }}
-          PLAYER_NAME: ${{ github.event.client_payload.player_name }}
-        run: |
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          # Очищаем имя файла от спецсимволов
-          CLEAN_NAME=$(echo "$PLAYER_NAME" | tr -cd 'a-zA-Z0-9_-')
-          FILENAME="game_result_${TIMESTAMP}_${CLEAN_NAME}.json"
-          echo "$GAME_DATA" > "game-results/$FILENAME"
-          echo "✅ Результат сохранен: $FILENAME"
-          
-      - name: Commit and push
-        run: |
-          git config --local user.email "maksvesh@yandex.ru"
-          git config --local user.name "Save Game Results"
-          git add game-results/
-          git commit -m "🎮 Новый результат игры: ${{ github.event.client_payload.player_name }}"
-          git push
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install  # Если нужен JS для сборки
+
+      - name: Build site
+        run: npm run build  # Или просто копируй HTML
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Это встроенный токен, или добавь свой в Secrets
+          publish_dir: ./dist  # Папка с готовым сайтом
