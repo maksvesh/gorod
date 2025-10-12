@@ -16,66 +16,35 @@
     <p>Введите текст в поле и нажмите кнопку.</p>
     
     <input type="text" id="myInput" placeholder="Введите что-нибудь...">
-    <button onclick="handleClick()">Отправить</button>
+    <button id="myButton">Отправить</button>  <!-- Добавил id -->
     
     <script>
-// Функция для обработки клика по кнопке
-function handleClick() {
-    // Получаем текст из поля ввода
-    const text = document.getElementById('myInput').value;
-    
-    if (!text.trim()) {
-        alert('Пожалуйста, введите текст!');
-        return;
-    }
-    
-    // Демо: вывод в консоль (всегда работает)
-    console.log('Введенный текст:', text);
-    
-    // Пример запроса к GitHub API (для создания issue в репозитории)
-    // ВНИМАНИЕ: НЕ храни токен здесь! Это для демонстрации.
-    // В реальности используй backend (Node.js, Python) или GitHub Actions.
-    const token = ${{ secrets.GITO }}; // Замени на реальный, но НЕ в клиентском коде!
-    const repoOwner = 'maksvesh'; // Владелец репозитория
-    const repoName = 'gorod'; // Название репозитория
-    
-    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `token ${GITO}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify({
-            title: `Новый issue: ${text}`,
-            body: 'Это issue создано с помощью сайта! 😊'
-        })
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error(`Ошибка: ${response.status} - ${response.statusText}`);
+    // Функция для обработки клика по кнопке
+    function handleClick() {
+        // Получаем текст из поля ввода
+        const text = document.getElementById('myInput').value;
+        
+        if (!text.trim()) {
+            alert('Пожалуйста, введите текст!');
+            return;
         }
-    })
-    .then(data => {
-        console.log('Issue успешно создан!', data);
-        alert('Issue создан в GitHub! Проверь консоль для деталей.');
-    })
-    .catch(error => {
-        console.error('Ошибка запроса:', error);
-        alert('Ошибка: Не удалось отправить в GitHub. Проверь токен и настройки.');
-    });
-}
-
-// Дополнительно: можно добавить обработку события без onclick в HTML
-document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('myButton'); // Если добавишь id для кнопки
-    if (button) {
-        button.addEventListener('click', handleClick);
+        
+        // Демо: вывод в консоль (всегда работает)
+        console.log('Введенный текст:', text);
+        alert(`Вы ввели: ${text}`);  // Или что-то другое
+        
+        // УБРАЛ fetch к GitHub API, так как токен не работает в статическом коде.
+        // Если нужно создать issue, используй backend или GitHub Actions.
+        // Пример: Можно добавить fetch позже, но с токеном из .env (локально) или через Actions.
     }
-});
-
+    
+    // Обработка клика через addEventListener (лучше, чем onclick)
+    document.addEventListener('DOMContentLoaded', function() {
+        const button = document.getElementById('myButton');
+        if (button) {
+            button.addEventListener('click', handleClick);
+        }
+    });
     </script>
 </body>
 </html>
