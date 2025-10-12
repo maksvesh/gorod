@@ -16,7 +16,7 @@ exports.handler = async function(event, context) {
     
     // Получаем токен из переменных окружения Netlify
     const githubToken = process.env.GITO;
-    const repo = process.env.maksvesh; // формат: username/repo-name
+    const repo = process.env.maksvesh/gorod; // формат: username/repo-name
     const branch = process.env.GITHUB_BRANCH || 'main';
     const path = process.env.GITHUB_PATH || 'game-results/';
     
