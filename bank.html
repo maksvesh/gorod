@@ -1,50 +1,40 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Простой сайт с полем и кнопкой</title>
+    <title>Создать Issue</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        input { padding: 10px; width: 200px; margin: 10px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        input, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+        button { background: #2ea44f; color: white; padding: 10px 20px; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h1>Привет! Это простой сайт</h1>
-    <p>Введите текст в поле и нажмите кнопку.</p>
-    
-    <input type="text" id="myInput" placeholder="Введите что-нибудь...">
-    <button id="myButton">Отправить</button>  <!-- Добавил id -->
-    
+    <h2>Создать обращение</h2>
+    <form id="issueForm">
+        <div class="form-group">
+            <label>Заголовок:</label>
+            <input type="text" id="title" required>
+        </div>
+        <div class="form-group">
+            <label>Описание:</label>
+            <textarea id="body" rows="5" required></textarea>
+        </div>
+        <button type="submit">Создать Issue на GitHub</button>
+    </form>
+
     <script>
-    // Функция для обработки клика по кнопке
-    function handleClick() {
-        // Получаем текст из поля ввода
-        const text = document.getElementById('myInput').value;
-        
-        if (!text.trim()) {
-            alert('Пожалуйста, введите текст!');
-            return;
-        }
-        
-        // Демо: вывод в консоль (всегда работает)
-        console.log('Введенный текст:', text);
-        alert(`Вы ввели: ${text}`);  // Или что-то другое
-        
-        // УБРАЛ fetch к GitHub API, так как токен не работает в статическом коде.
-        // Если нужно создать issue, используй backend или GitHub Actions.
-        // Пример: Можно добавить fetch позже, но с токеном из .env (локально) или через Actions.
-    }
-    
-    // Обработка клика через addEventListener (лучше, чем onclick)
-    document.addEventListener('DOMContentLoaded', function() {
-        const button = document.getElementById('myButton');
-        if (button) {
-            button.addEventListener('click', handleClick);
-        }
-    });
+        document.getElementById('issueForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = encodeURIComponent(document.getElementById('title').value);
+            const body = encodeURIComponent(document.getElementById('body').value);
+            
+            // Ссылка на создание issue с предзаполненными полями
+            const issueUrl = `https://github.com/YOUR_USERNAME/YOUR_REPO/issues/new?title=${title}&body=${body}&labels=from-website`;
+            
+            window.open(issueUrl, '_blank');
+        });
     </script>
 </body>
 </html>
