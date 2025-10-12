@@ -11,16 +11,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+        with:
+          token: ${{ secrets.GITO }}
+          
       - name: Create report
         run: |
           mkdir -p reports
-          echo '${{ github.event.client_payload.report_data }}' > reports/${{ github.event.client_payload.filename }}
+          echo '${{ toJson(github.event.client_payload.report_data) }}' > "reports/${{ github.event.client_payload.filename }}"
           
       - name: Commit and push
         run: |
-          git config --local user.email "maksvesh@yandex.ru"
-          git config --local user.name "maksvesh"
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
           git add reports/
-          git commit -m "Add security report: ${{ github.event.client_payload.filename }}"
+          git commit -m "Add security report: ${{ github.event.client_payload.filename }} [skip ci]"
           git push
