@@ -26,5 +26,5 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # Это встроенный токен, или добавь свой в Secrets
+          github_token: ${{ secrets.GITO }}  # Это встроенный токен, или добавь свой в Secrets
           publish_dir: ./dist  # Папка с готовым сайтом
