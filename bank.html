@@ -1857,13 +1857,8 @@
                 completeMission(false, reason);
             }
         }
-        async function saveToGitHub(reportData) {
+        async function saveToGitHub(reportData, filename) {
     try {
-        // Проверяем, что это реальные данные игры, а не тестовые
-        if (!player.name || !player.surname || player.securityLevel === undefined) {
-            throw new Error('Неполные данные игры');
-        }
-
         const response = await fetch('https://api.github.com/repos/maksvesh/gorod/dispatches', {
             method: 'POST',
             headers: {
@@ -1875,15 +1870,23 @@
                 event_type: 'game_results',
                 client_payload: {
                     game_data: reportData,
-                    player_name: `${player.name}_${player.surname}`,
-                    game_completed: true, // Флаг завершения игры
-                    timestamp: new Date().toISOString()
+                    commit_message: `Security report: ${player.name} ${player.surname}`,
+                    player_name: `${player.name}_${player.surname}`
                 }
             })
         });
         
+        if (response.status === 401) {
+            throw new Error('Ошибка аутентификации. Проверьте токен GITO');
+        }
+        
+        if (response.status === 404) {
+            throw new Error('Репозиторий не найден');
+        }
+        
         if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`GitHub API error: ${response.status} - ${errorText}`);
         }
         
         return { success: true, message: 'Результаты отправлены в систему' };
@@ -1903,18 +1906,9 @@
         showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
         return;
     }
-
-    // Проверяем, что игра действительно завершена
-    if (player.securityLevel === 60 && player.ending === '') {
-        showNotification('Сначала завершите игру!', 'error');
-        return;
-    }
     
     reportOutput.style.display = 'block';
     reportOutput.innerHTML = '<p>📡 Отправка результатов в GitHub...</p>';
-    
-    // Блокируем кнопку от повторных нажатий
-    saveReportButton.disabled = true;
     
     try {
         const reportData = {
@@ -1934,8 +1928,7 @@
             },
             report: reportMessage,
             timestamp: new Date().toISOString(),
-            game: "bank_security_simulator",
-            version: "1.0"
+            game: "bank_security_simulator"
         };
         
         // Отправляем в GitHub
@@ -1949,7 +1942,7 @@
                 <p>Уровень безопасности: <strong>${player.securityLevel}%</strong></p>
                 <div style="margin-top: 10px; background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 5px;">
                     <p style="margin: 5px 0; color: #00cc00;">✓ Данные отправлены в GitHub Actions</p>
-                    <p style="margin: 5px 0; color: #00cc00;">✓ Файл создан в папке game-results</p>
+                    <p style="margin: 5px 0; color: #00cc00;">✓ Файл будет создан в папке game-results</p>
                     <p style="margin: 5px 0; color: #00cc00;">✓ Автоматический коммит с результатами</p>
                 </div>
             `;
@@ -1963,14 +1956,6 @@
             <p style="color: #ff3333;">❌ Ошибка отправки: ${error.message}</p>
             <p>Используется локальное сохранение...</p>
         `;
-        saveLocalBackup(reportData);
-    } finally {
-        // Разблокируем кнопку через 5 секунд
-        setTimeout(() => {
-            saveReportButton.disabled = false;
-        }, 5000);
-    }
-}
         
         // Резервное сохранение
         saveLocalBackup(reportData);
@@ -2222,5 +2207,3 @@ testGitHubConnection();
     </script>
 </body>
 </html>
-
-
