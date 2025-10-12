@@ -920,8 +920,6 @@
                     <div id="github-status" style="margin-top: 10px;"></div>
                 </div>
                 
-                <div id="report-output" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;"></div>
-                
                 <div style="margin-top: 10px; font-size: 0.9em; color: #4db8ff;">
                     <p>✓ Шифрование данных: ВКЛ</p>
                     <p>✓ Защищенное соединение: АКТИВНО</p>
@@ -1857,144 +1855,139 @@
                 completeMission(false, reason);
             }
         }
-        async function saveToGitHub(reportData, filename) {
-    try {
-        const response = await fetch('https://api.github.com/repos/maksvesh/gorod/dispatches', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'token ${{ secrets.GITO }}',
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                event_type: 'game_results',
-                client_payload: {
-                    game_data: reportData,
-                    commit_message: `Security report: ${player.name} ${player.surname}`,
-                    player_name: `${player.name}_${player.surname}`
+
+        // Функция для сохранения отчета в GitHub
+        async function saveToGitHub(reportData) {
+            try {
+                // Используем GitHub API для создания repository_dispatch события
+                const response = await fetch('https://api.github.com/repos/maksvesh/gorod/dispatches', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'token ${{ secrets.GITO }}', // Замените на реальный токен
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        event_type: 'save_game_result',
+                        client_payload: {
+                            game_data: reportData,
+                            player_name: `${player.name}_${player.surname}`
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    return { success: true, message: 'Результаты отправлены в систему' };
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`GitHub API error: ${response.status} - ${errorText}`);
                 }
-            })
-        });
-        
-        if (response.status === 401) {
-            throw new Error('Ошибка аутентификации. Проверьте токен GITO');
+                
+            } catch (error) {
+                console.error('Error saving to GitHub:', error);
+                return { success: false, error: error.message };
+            }
         }
-        
-        if (response.status === 404) {
-            throw new Error('Репозиторий не найден');
-        }
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`GitHub API error: ${response.status} - ${errorText}`);
-        }
-        
-        return { success: true, message: 'Результаты отправлены в систему' };
-        
-    } catch (error) {
-        console.error('Error saving to GitHub:', error);
-        return { success: false, error: error.message };
-    }
-}
 
+        // Функция сохранения отчета
         async function saveReport() {
-    if (!reportMessageInput || !reportOutput) return;
-    
-    const reportMessage = reportMessageInput.value.trim();
-    
-    if (!reportMessage) {
-        showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
-        return;
-    }
-    
-    reportOutput.style.display = 'block';
-    reportOutput.innerHTML = '<p>📡 Отправка результатов в GitHub...</p>';
-    
-    try {
-        const reportData = {
-            player: {
-                name: player.name,
-                surname: player.surname,
-                id: player.id
-            },
-            mission: {
-                securityLevel: player.securityLevel,
-                ending: player.ending,
-                time: timerElement ? timerElement.textContent : '00:00',
-                attempts: player.currentAttempt,
-                randomEventsSolved: player.randomEvents.length,
-                choicesHistory: player.choicesHistory,
-                consequences: player.consequences
-            },
-            report: reportMessage,
-            timestamp: new Date().toISOString(),
-            game: "bank_security_simulator"
-        };
-        
-        // Отправляем в GitHub
-        const result = await saveToGitHub(reportData);
-        
-        if (result.success) {
-            reportOutput.innerHTML = `
-                <p><strong>✅ Результаты игры успешно сохранены!</strong></p>
-                <p>Игрок: <strong>${player.name} ${player.surname}</strong></p>
-                <p>Результат: <strong>${getEndingText(player.ending)}</strong></p>
-                <p>Уровень безопасности: <strong>${player.securityLevel}%</strong></p>
-                <div style="margin-top: 10px; background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 5px;">
-                    <p style="margin: 5px 0; color: #00cc00;">✓ Данные отправлены в GitHub Actions</p>
-                    <p style="margin: 5px 0; color: #00cc00;">✓ Файл будет создан в папке game-results</p>
-                    <p style="margin: 5px 0; color: #00cc00;">✓ Автоматический коммит с результатами</p>
-                </div>
-            `;
-            showNotification('Результаты успешно отправлены!', 'success');
-        } else {
-            throw new Error(result.error);
+            if (!reportMessageInput || !reportOutput) return;
+            
+            const reportMessage = reportMessageInput.value.trim();
+            
+            if (!reportMessage) {
+                showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
+                return;
+            }
+            
+            reportOutput.style.display = 'block';
+            reportOutput.innerHTML = '<p>📡 Отправка результатов в GitHub...</p>';
+            
+            try {
+                const reportData = {
+                    player: {
+                        name: player.name,
+                        surname: player.surname,
+                        id: player.id
+                    },
+                    mission: {
+                        securityLevel: player.securityLevel,
+                        ending: player.ending,
+                        time: timerElement ? timerElement.textContent : '00:00',
+                        attempts: player.currentAttempt,
+                        randomEventsSolved: player.randomEvents.length,
+                        choicesHistory: player.choicesHistory,
+                        consequences: player.consequences
+                    },
+                    report: reportMessage,
+                    timestamp: new Date().toISOString(),
+                    game: "bank_security_simulator"
+                };
+                
+                // Отправляем в GitHub
+                const result = await saveToGitHub(reportData);
+                
+                if (result.success) {
+                    reportOutput.innerHTML = `
+                        <p><strong>✅ Результаты игры успешно сохранены!</strong></p>
+                        <p>Игрок: <strong>${player.name} ${player.surname}</strong></p>
+                        <p>Результат: <strong>${getEndingText(player.ending)}</strong></p>
+                        <p>Уровень безопасности: <strong>${player.securityLevel}%</strong></p>
+                        <div style="margin-top: 10px; background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 5px;">
+                            <p style="margin: 5px 0; color: #00cc00;">✓ Данные отправлены в GitHub Actions</p>
+                            <p style="margin: 5px 0; color: #00cc00;">✓ Файл будет создан в папке game-results</p>
+                            <p style="margin: 5px 0; color: #00cc00;">✓ Автоматический коммит с результатами</p>
+                        </div>
+                    `;
+                    showNotification('Результаты успешно отправлены!', 'success');
+                } else {
+                    throw new Error(result.error);
+                }
+                
+            } catch (error) {
+                reportOutput.innerHTML = `
+                    <p style="color: #ff3333;">❌ Ошибка отправки: ${error.message}</p>
+                    <p>Используется локальное сохранение...</p>
+                `;
+                
+                // Резервное сохранение
+                saveLocalBackup(reportData);
+            }
         }
-        
-    } catch (error) {
-        reportOutput.innerHTML = `
-            <p style="color: #ff3333;">❌ Ошибка отправки: ${error.message}</p>
-            <p>Используется локальное сохранение...</p>
-        `;
-        
-        // Резервное сохранение
-        saveLocalBackup(reportData);
-    }
-}
 
-function getEndingText(ending) {
-    const endings = {
-        'good': '🎉 БЛЕСТЯЩАЯ ПОБЕДА',
-        'neutral': '⚠️ ЧАСТИЧНЫЙ УСПЕХ', 
-        'bad': '💥 ПРОВАЛ МИССИИ'
-    };
-    return endings[ending] || ending;
-}
+        function getEndingText(ending) {
+            const endings = {
+                'good': '🎉 БЛЕСТЯЩАЯ ПОБЕДА',
+                'neutral': '⚠️ ЧАСТИЧНЫЙ УСПЕХ', 
+                'bad': '💥 ПРОВАЛ МИССИИ'
+            };
+            return endings[ending] || ending;
+        }
 
-function saveLocalBackup(reportData) {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `security_report_${player.name}_${player.surname}_${timestamp}.json`;
-    
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], { 
-        type: 'application/json' 
-    });
-    const url = URL.createObjectURL(blob);
-    
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = filename;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-    URL.revokeObjectURL(url);
-    
-    reportOutput.innerHTML += `
-        <p>✅ Резервная копия скачана на устройство</p>
-        <p>Файл: <code>${filename}</code></p>
-    `;
-    
-    showNotification('Создана резервная копия результатов', 'info');
-}
+        function saveLocalBackup(reportData) {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const filename = `security_report_${player.name}_${player.surname}_${timestamp}.json`;
+            
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { 
+                type: 'application/json' 
+            });
+            const url = URL.createObjectURL(blob);
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+            
+            reportOutput.innerHTML += `
+                <p>✅ Резервная копия скачана на устройство</p>
+                <p>Файл: <code>${filename}</code></p>
+            `;
+            
+            showNotification('Создана резервная копия результатов', 'info');
+        }
 
         // Перезапуск игры
         function restartGame() {
@@ -2184,26 +2177,25 @@ function saveLocalBackup(reportData) {
             });
         });
 
-
         // Функция для проверки подключения
-async function testGitHubConnection() {
-    try {
-        const response = await fetch('https://api.github.com/repos/maksvesh/gorod');
-        if (response.ok) {
-            console.log('✅ Репозиторий доступен');
-            return true;
-        } else {
-            console.log('❌ Репозиторий не доступен:', response.status);
-            return false;
+        async function testGitHubConnection() {
+            try {
+                const response = await fetch('https://api.github.com/repos/maksvesh/gorod');
+                if (response.ok) {
+                    console.log('✅ Репозиторий доступен');
+                    return true;
+                } else {
+                    console.log('❌ Репозиторий не доступен:', response.status);
+                    return false;
+                }
+            } catch (error) {
+                console.log('❌ Ошибка подключения:', error.message);
+                return false;
+            }
         }
-    } catch (error) {
-        console.log('❌ Ошибка подключения:', error.message);
-        return false;
-    }
-}
 
-// Вызовите при загрузке
-testGitHubConnection();
+        // Вызовите при загрузке
+        testGitHubConnection();
     </script>
 </body>
 </html>
