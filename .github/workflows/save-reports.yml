@@ -1,52 +1,26 @@
-name: Save Game Results
+# .github/workflows/save-report.yml
+name: Save Security Report
 
 on:
-  workflow_dispatch:    # Ручной запуск из интерфейса
-  repository_dispatch:  # Запуск через API
-    types: [game_results]
-  push:                 # Запуск при пуше в main
-    branches: [ main, master ]
-  schedule:
-    - cron: '0 0 * * *' # Ежедневно в полночь
+  repository_dispatch:
+    types: [save_security_report]
 
 jobs:
-  save-results:
+  save-report:
     runs-on: ubuntu-latest
-    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITO }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
         
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        
-    - name: Create results directory
-      run: mkdir -p game-results
-        
-    - name: Process game results
-      env:
-        GAME_DATA: ${{ github.event.client_payload.game_data }}
-        COMMIT_MESSAGE: ${{ github.event.client_payload.commit_message }}
-        PLAYER_NAME: ${{ github.event.client_payload.player_name }}
-      run: |
-        if [ -n "$GAME_DATA" ]; then
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          FILENAME="result_${TIMESTAMP}_${PLAYER_NAME}.json"
-          echo "$GAME_DATA" > "game-results/$FILENAME"
-          echo "✅ Результат сохранен: $FILENAME"
-        else
-          echo "⚠️ Нет данных для сохранения"
-        fi
-        
-    - name: Commit and push results
-      run: |
-        git config --local user.email "maksvesh@yandex.ru"
-        git config --local user.name "GITO"
-        git add game-results/
-        git diff --staged --quiet || git commit -m "🎮 Добавлены результаты игры [automated]"
-        git push
+      - name: Create report
+        run: |
+          mkdir -p reports
+          echo '${{ github.event.client_payload.report_data }}' > reports/${{ github.event.client_payload.filename }}
+          
+      - name: Commit and push
+        run: |
+          git config --local user.email "maksvesh@yandex.ru"
+          git config --local user.name "maksvesh"
+          git add reports/
+          git commit -m "Add security report: ${{ github.event.client_payload.filename }}"
+          git push
