@@ -259,33 +259,6 @@
             transition: width 0.5s ease;
         }
         
-        .github-button {
-    background: linear-gradient(to right, #24292e, #2ea44f);
-    position: relative;
-    overflow: hidden;
-}
-
-.github-button:hover {
-    background: linear-gradient(to right, #2ea44f, #24292e);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(46, 164, 79, 0.4);
-}
-
-.github-button:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: 0.5s;
-}
-
-.github-button:hover:after {
-    left: 100%;
-}
-        
         .character-info {
             background: rgba(0, 40, 80, 0.5);
             padding: 15px;
@@ -922,35 +895,43 @@
                 <!-- Результат будет добавлен динамически -->
             </div>
             
-            <div class="git-section">
-    <h3>Сохранение отчета в системе безопасности</h3>
-    <p>Отчет о миссии будет сохранен в защищенной системе банка и отправлен в центральный архив.</p>
-    
-    <div class="input-group">
-        <label for="commit-message">Сообщение для отчета:</label>
-        <textarea id="commit-message" rows="3" placeholder="Опишите результаты операции..."></textarea>
-    </div>
-    
-    <div class="security-level">
-        <span>Конфиденциальность данных:</span>
-        <div class="security-bar">
-            <div class="security-fill" style="width: 95%; background: linear-gradient(to right, #4db8ff, #00cc99);"></div>
+            <div class="report-section">
+                <h3>Сохранение отчета в системе безопасности</h3>
+                <p>Отчет о миссии будет сохранен в защищенной системе банка и отправлен в центральный архив.</p>
+                
+                <div class="input-group">
+                    <label for="report-message">Сообщение для отчета:</label>
+                    <textarea id="report-message" rows="3" placeholder="Опишите результаты операции..."></textarea>
+                </div>
+                
+                <div class="security-level">
+                    <span>Конфиденциальность данных:</span>
+                    <div class="security-bar">
+                        <div class="security-fill" style="width: 95%; background: linear-gradient(to right, #4db8ff, #00cc99);"></div>
+                    </div>
+                    <span>95%</span>
+                </div>
+                
+                <button id="save-report">
+                    <span>🔒 Сохранить отчет в архив GitHub</span>
+                </button>
+                
+                <div id="report-output" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;">
+                    <div id="github-status" style="margin-top: 10px;"></div>
+                </div>
+                
+                <div id="report-output" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;"></div>
+                
+                <div style="margin-top: 10px; font-size: 0.9em; color: #4db8ff;">
+                    <p>✓ Шифрование данных: ВКЛ</p>
+                    <p>✓ Защищенное соединение: АКТИВНО</p>
+                    <p>✓ Резервное копирование: ВКЛ</p>
+                </div>
+            </div>
+            
+            <button id="restart" style="margin-top: 20px;">Начать новую миссию</button>
         </div>
-        <span>95%</span>
     </div>
-    
-    <button id="save-report" class="github-button">
-        <span>🔒 Сохранить отчет в архив</span>
-    </button>
-    
-    <div id="git-output" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;"></div>
-    
-    <div style="margin-top: 10px; font-size: 0.9em; color: #4db8ff;">
-        <p>✓ Шифрование данных: ВКЛ</p>
-        <p>✓ Защищенное соединение: АКТИВНО</p>
-        <p>✓ Резервное копирование: ВКЛ</p>
-    </div>
-</div>
 
     <script>
         // Игровые переменные
@@ -997,7 +978,7 @@
 
         // Элементы DOM
         let attemptsCount, timerElement, progressBar, playerNameInput, playerSurnameInput, playerIdInput;
-        let startMissionButton, restartButton, missionResult, saveReportButton, commitMessageInput, gitOutput;
+        let startMissionButton, restartButton, missionResult, saveReportButton, reportMessageInput, reportOutput;
         let hackingGrid, hackingFoundElement, endingContent, notificationArea;
 
         // Система случайных событий
@@ -1108,48 +1089,45 @@
         }
 
         // Инициализация игры
- // Инициализация игры
-function initGame() {
-    // Убрал вызов updateSaveReportFunction() - этой функции не существует
-    
-    // Получаем элементы DOM
-    attemptsCount = document.getElementById('attempts-count');
-    timerElement = document.getElementById('timer');
-    progressBar = document.getElementById('progress');
-    playerNameInput = document.getElementById('player-name');
-    playerSurnameInput = document.getElementById('player-surname');
-    playerIdInput = document.getElementById('player-id');
-    startMissionButton = document.getElementById('start-mission');
-    restartButton = document.getElementById('restart');
-    missionResult = document.getElementById('mission-result');
-    saveReportButton = document.getElementById('save-report');
-    commitMessageInput = document.getElementById('commit-message');
-    gitOutput = document.getElementById('git-output');
-    hackingGrid = document.getElementById('hacking-grid');
-    hackingFoundElement = document.getElementById('hacking-found');
-    endingContent = document.getElementById('ending-content');
-    notificationArea = document.getElementById('notification-area');
+        function initGame() {
+            // Получаем элементы DOM
+            attemptsCount = document.getElementById('attempts-count');
+            timerElement = document.getElementById('timer');
+            progressBar = document.getElementById('progress');
+            playerNameInput = document.getElementById('player-name');
+            playerSurnameInput = document.getElementById('player-surname');
+            playerIdInput = document.getElementById('player-id');
+            startMissionButton = document.getElementById('start-mission');
+            restartButton = document.getElementById('restart');
+            missionResult = document.getElementById('mission-result');
+            saveReportButton = document.getElementById('save-report');
+            reportMessageInput = document.getElementById('report-message');
+            reportOutput = document.getElementById('report-output');
+            hackingGrid = document.getElementById('hacking-grid');
+            hackingFoundElement = document.getElementById('hacking-found');
+            endingContent = document.getElementById('ending-content');
+            notificationArea = document.getElementById('notification-area');
 
-    console.log('Найдены элементы:', {
-        startMissionButton: !!startMissionButton,
-        playerNameInput: !!playerNameInput,
-        playerSurnameInput: !!playerSurnameInput,
-        playerIdInput: !!playerIdInput
-    });
+            console.log('Найдены элементы:', {
+                startMissionButton: !!startMissionButton,
+                playerNameInput: !!playerNameInput,
+                playerSurnameInput: !!playerSurnameInput,
+                playerIdInput: !!playerIdInput
+            });
 
-    // Обновляем отображения
-    updateAttemptsDisplay();
-    updateSecurityDisplay();
-    updateResourcesDisplay();
-    
-    // Настраиваем обработчики событий
-    setupEventListeners();
-    
-    // Инициализируем мини-игру (если элемент существует)
-    if (hackingGrid) {
-        initHackingGame();
-    }
-}
+            // Обновляем отображения
+            updateAttemptsDisplay();
+            updateSecurityDisplay();
+            updateResourcesDisplay();
+            
+            // Настраиваем обработчики событий
+            setupEventListeners();
+            
+            // Инициализируем мини-игру (если элемент существует)
+            if (hackingGrid) {
+                initHackingGame();
+            }
+        }
 
         // Настройка обработчиков событий
         function setupEventListeners() {
@@ -1813,8 +1791,8 @@ function initGame() {
             
             generateEndingContent(success, message);
             
-            if (commitMessageInput) {
-                commitMessageInput.value = `Завершение миссии. Уровень безопасности: ${player.securityLevel}%. Сотрудник: ${player.name} ${player.surname}, ID: ${player.id}. Результат: ${resultText}`;
+            if (reportMessageInput) {
+                reportMessageInput.value = `Завершение миссии. Уровень безопасности: ${player.securityLevel}%. Сотрудник: ${player.name} ${player.surname}, ID: ${player.id}. Результат: ${resultText}`;
             }
             
             setTimeout(scrollToTop, 100);
@@ -1879,34 +1857,123 @@ function initGame() {
                 completeMission(false, reason);
             }
         }
-
-        // Сохранение отчета
-        function saveReport() {
-            if (!commitMessageInput || !gitOutput) return;
-            
-            const commitMessage = commitMessageInput.value.trim();
-            
-            if (!commitMessage) {
-                showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
-                return;
-            }
-            
-            gitOutput.style.display = 'block';
-            gitOutput.innerHTML = '<p>Сохранение отчета...</p>';
-            
-            setTimeout(() => {
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-                const filename = `security_report_${player.name}_${player.surname}_${timestamp}.txt`;
-                
-                gitOutput.innerHTML = `
-                    <p><strong>Отчет сохранен:</strong></p>
-                    <p>Файл: ${filename}</p>
-                    <p style="margin-top: 10px; color: #4db8ff;">✓ Отчет успешно сохранен в системе безопасности банка</p>
-                `;
-                
-                showNotification('Отчет успешно сохранен!', 'success');
-            }, 1500);
+        async function saveToGitHub(reportData, filename) {
+    try {
+        const response = await fetch('https://api.github.com/repos/maksvesh/gorod/dispatches', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'token ${{ secrets.GITO }}', // GitHub Actions подставит токен
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                event_type: 'save_security_report',
+                client_payload: {
+                    report_data: JSON.stringify(reportData, null, 2),
+                    filename: filename
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`GitHub API error: ${response.status} - ${errorText}`);
         }
+        
+        return { success: true, message: 'Отчет отправлен в систему' };
+        
+    } catch (error) {
+        console.error('Error saving to GitHub:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+        async function saveReport() {
+    if (!reportMessageInput || !reportOutput) return;
+    
+    const reportMessage = reportMessageInput.value.trim();
+    
+    if (!reportMessage) {
+        showNotification('Пожалуйста, введите сообщение для отчета!', 'error');
+        return;
+    }
+    
+    reportOutput.style.display = 'block';
+    reportOutput.innerHTML = '<p>📡 Отправка отчета в GitHub...</p>';
+    
+    try {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `security_report_${player.name}_${player.surname}_${timestamp}.json`;
+        
+        const reportData = {
+            player: {
+                name: player.name,
+                surname: player.surname,
+                id: player.id
+            },
+            mission: {
+                securityLevel: player.securityLevel,
+                ending: player.ending,
+                time: timerElement ? timerElement.textContent : '00:00',
+                attempts: player.currentAttempt,
+                randomEventsSolved: player.randomEvents.length,
+                choicesHistory: player.choicesHistory,
+                consequences: player.consequences
+            },
+            report: reportMessage,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Отправляем в GitHub
+        const result = await saveToGitHub(reportData, filename);
+        
+        if (result.success) {
+            reportOutput.innerHTML = `
+                <p><strong>✅ Отчет успешно сохранен!</strong></p>
+                <p>Файл: <code>${filename}</code></p>
+                <p>📁 Путь: <code>reports/${filename}</code></p>
+                <div style="margin-top: 10px; background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 5px;">
+                    <p style="margin: 5px 0; color: #00cc00;">✓ Файл создан в репозитории</p>
+                    <p style="margin: 5px 0; color: #00cc00;">✓ Данные защищены токеном</p>
+                    <p style="margin: 5px 0; color: #00cc00;">✓ Доступно в истории коммитов</p>
+                </div>
+            `;
+            showNotification('Отчет успешно сохранен в GitHub!', 'success');
+        } else {
+            throw new Error(result.error);
+        }
+        
+    } catch (error) {
+        reportOutput.innerHTML = `
+            <p style="color: #ff3333;">❌ Ошибка сохранения: ${error.message}</p>
+            <p>Используется резервное сохранение...</p>
+        `;
+        
+        // Резервное сохранение
+        saveLocalBackup(reportData, filename);
+    }
+}
+
+// Резервная функция
+function saveLocalBackup(reportData, filename) {
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { 
+        type: 'application/json' 
+    });
+    const url = URL.createObjectURL(blob);
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = filename;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(url);
+    
+    reportOutput.innerHTML += `
+        <p>✅ Резервная копия скачана на устройство</p>
+        <p>Файл: <code>${filename}</code></p>
+    `;
+}
 
         // Перезапуск игры
         function restartGame() {
@@ -1941,8 +2008,8 @@ function initGame() {
             if (playerNameInput) playerNameInput.value = '';
             if (playerSurnameInput) playerSurnameInput.value = '';
             if (playerIdInput) playerIdInput.value = '';
-            if (commitMessageInput) commitMessageInput.value = '';
-            if (gitOutput) gitOutput.style.display = 'none';
+            if (reportMessageInput) reportMessageInput.value = '';
+            if (reportOutput) reportOutput.style.display = 'none';
             
             if (notificationArea) notificationArea.innerHTML = '';
             
@@ -2095,88 +2162,6 @@ function initGame() {
                 console.log(`Элемент ${id}:`, element ? 'найден' : 'НЕ НАЙДЕН');
             });
         });
-
-        //ГИТ
-
-        // Функция для сохранения результатов игры
-function saveGameResults() {
-    const gameData = {
-        player: {
-            name: player.name,
-            surname: player.surname,
-            id: player.id
-        },
-        mission: {
-            securityLevel: player.securityLevel,
-            ending: player.ending,
-            timeSpent: timerElement ? timerElement.textContent : '00:00',
-            choices: player.choicesHistory.length,
-            randomEvents: player.randomEvents.length,
-            consequences: player.consequences.length
-        },
-        timestamp: new Date().toISOString(),
-        version: '1.0'
-    };
-
-    return gameData;
-}
-
-// Функция для отправки результатов на GitHub
-async sendToGitHubAPI(gameData, commitMessage) {
-    try {
-        // Создаем уникальный ID для результата
-        const resultId = `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        // Сохраняем в localStorage
-        const storageKey = `github_result_${resultId}`;
-        const saveData = {
-            id: resultId,
-            ...gameData,
-            commitMessage: commitMessage,
-            status: 'pending',
-            savedAt: new Date().toISOString(),
-            readyForSync: true  // Флаг для GitHub Actions
-        };
-        
-        localStorage.setItem(storageKey, JSON.stringify(saveData));
-        
-        // Обновляем историю
-        const history = JSON.parse(localStorage.getItem('github_results_history') || '[]');
-        history.unshift({
-            id: resultId,
-            key: storageKey,
-            timestamp: saveData.savedAt,
-            player: `${saveData.player.name} ${saveData.player.surname}`,
-            score: saveData.performance.score,
-            grade: saveData.performance.grade,
-            security: saveData.security.finalLevel,
-            status: 'pending'
-        });
-        
-        if (history.length > 20) history.pop();
-        localStorage.setItem('github_results_history', JSON.stringify(history));
-        
-        // В реальном сценарии здесь будет вызов к вашему API
-        // Пока возвращаем успешный результат
-        return {
-            success: true,
-            id: resultId,
-            message: "✅ Данные готовы для синхронизации с GitHub",
-            filename: `game_result_${resultId}.json`,
-            timestamp: saveData.savedAt,
-            nextStep: "Данные будут отправлены при следующем запуске GitHub Actions"
-        };
-        
-    } catch (error) {
-        throw new Error(`Не удалось сохранить данные: ${error.message}`);
-    }
-}
     </script>
 </body>
 </html>
-
-
-
-
-
-
