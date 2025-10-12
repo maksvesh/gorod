@@ -1,8 +1,0 @@
-{
-  "name": "bank-security-game",
-  "version": "1.0.0",
-  "description": "Bank Security Mission Game",
-  "dependencies": {
-    "node-fetch": "^2.6.7"
-  }
-}
