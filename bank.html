@@ -1859,25 +1859,32 @@
         }
         async function saveToGitHub(reportData, filename) {
     try {
+        // Токен НЕ указываем здесь - он будет в secrets workflow
         const response = await fetch('https://api.github.com/repos/maksvesh/gorod/dispatches', {
             method: 'POST',
             headers: {
-                'Authorization': 'token ${{ secrets.GITO }}', // GitHub Actions подставит токен
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 event_type: 'save_security_report',
                 client_payload: {
-                    report_data: JSON.stringify(reportData, null, 2),
+                    report_data: reportData,
                     filename: filename
                 }
             })
         });
         
+        if (response.status === 404) {
+            throw new Error('Репозиторий не найден или нет доступа');
+        }
+        
+        if (response.status === 403) {
+            throw new Error('Нет разрешения на создание dispatch событий');
+        }
+        
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`GitHub API error: ${response.status} - ${errorText}`);
+            throw new Error(`GitHub API error: ${response.status}`);
         }
         
         return { success: true, message: 'Отчет отправлен в систему' };
