@@ -3,28 +3,21 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main  # Или твоя основная ветка
+  pull_request:
+    branches:
+      - main  # Опционально
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
-      - name: Install dependencies
-        run: npm install  # Если нужен JS для сборки
-
-      - name: Build site
-        run: npm run build  # Или просто копируй HTML
-
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'  # Деплоит только из main
         with:
-          github_token: ${{ secrets.GITO }}  # Это встроенный токен, или добавь свой в Secrets
-          publish_dir: ./dist  # Папка с готовым сайтом
+          github_token: ${{ secrets.GITO }}
+          publish_dir: ./  # Деплоит файлы из корня репозитория (index.html, script.js и т.д.)
