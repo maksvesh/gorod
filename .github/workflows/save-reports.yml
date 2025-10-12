@@ -1,23 +1,21 @@
-name: Deploy to GitHub Pages
+# .github/workflows/create-issue.yml
+name: Create Issue from Form
 
 on:
-  push:
-    branches:
-      - main  # Или твоя основная ветка
-  pull_request:
-    branches:
-      - main  # Опционально
+  repository_dispatch:
+    types: [create_issue]
 
 jobs:
-  deploy:
+  create-issue:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'  # Деплоит только из main
+      - name: Create Issue
+        uses: actions/github-script@v6
         with:
-          github_token: ${{ secrets.GITO }}
-          publish_dir: ./  # Деплоит файлы из корня репозитория (index.html, script.js и т.д.)
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `${{ github.event.client_payload.title }}`,
+              body: `${{ github.event.client_payload.body }}`
+            })
