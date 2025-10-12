@@ -5,6 +5,9 @@ on:
   repository_dispatch:
     types: [save_security_report]
 
+permissions:
+  contents: write
+
 jobs:
   save-report:
     runs-on: ubuntu-latest
@@ -14,15 +17,23 @@ jobs:
         with:
           token: ${{ secrets.GITO }}
           
-      - name: Create report
+      - name: Setup Git
         run: |
-          mkdir -p reports
-          echo '${{ toJson(github.event.client_payload.report_data) }}' > "reports/${{ github.event.client_payload.filename }}"
+          git config --global user.email "maksvesh@yandex.ru"
+          git config --global user.name "Save Security Report"
+          
+      - name: Create report directory
+        run: mkdir -p reports
+        
+      - name: Save report file
+        env:
+          REPORT_DATA: ${{ toJson(github.event.client_payload.report_data) }}
+          FILENAME: ${{ github.event.client_payload.filename }}
+        run: |
+          echo "$REPORT_DATA" > "reports/$FILENAME"
           
       - name: Commit and push
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
           git add reports/
-          git commit -m "Add security report: ${{ github.event.client_payload.filename }} [skip ci]"
+          git commit -m "Add security report: ${{ github.event.client_payload.filename }}"
           git push
