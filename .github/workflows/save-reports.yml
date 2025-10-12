@@ -1,4 +1,3 @@
-# .github/workflows/save-game-results.yml
 name: Save Game Results
 
 on:
