@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Операция "Синдром Елки" - Полная версия</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a1929;
+            color: #e0e0e0;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(28, 58, 83, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(40, 82, 122, 0.1) 0%, transparent 20%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: rgba(16, 42, 67, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 80, 150, 0.3);
+            overflow: hidden;
+            border: 1px solid #1e4976;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+        }
+        
+        .game-header {
+            background: linear-gradient(135deg, #0a2a4a 0%, #134277 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #2a5a8c;
+            position: relative;
+        }
+        
+        .game-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(120, 180, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(100, 160, 240, 0.1) 0%, transparent 50%);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(100, 180, 255, 0.7);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a0c8ff;
+            margin-bottom: 10px;
+        }
+        
+        .classification {
+            display: inline-block;
+            background-color: #8b0000;
+            color: #ffcc00;
+            padding: 5px 15px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border: 1px solid #ffcc00;
+        }
+        
+        .game-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .game-story {
+            flex: 3;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #1e4976;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .story-text {
+            margin-bottom: 20px;
+            line-height: 1.7;
+            flex: 1;
+        }
+        
+        .story-image {
+            width: 100%;
+            height: 180px;
+            background-color: #0d2b4a;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #4d9aff;
+            font-style: italic;
+            border: 1px solid #2a5a8c;
+            background-image: linear-gradient(45deg, #0d2b4a 25%, #134277 25%, #134277 50%, #0d2b4a 50%, #0d2b4a 75%, #134277 75%, #134277 100%);
+            background-size: 20px 20px;
+        }
+        
+        .game-choices {
+            flex: 2;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .choices-title {
+            color: #4d9aff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .choices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .choice-btn {
+            background: linear-gradient(135deg, #0f2d4e 0%, #1a3d64 100%);
+            border: 1px solid #2a5a8c;
+            color: #e0e0e0;
+            padding: 12px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .choice-btn:hover {
+            background: linear-gradient(135deg, #134277 0%, #1e5ba3 100%);
+            border-color: #4d9aff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .choice-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            background-color: #0d2b4a;
+            padding: 10px 20px;
+            border-top: 1px solid #1e4976;
+            font-size: 0.9rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-value {
+            color: #4d9aff;
+            font-weight: bold;
+        }
+        
+        .game-inventory {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: rgba(30, 73, 118, 0.3);
+            border-radius: 5px;
+            border: 1px solid #2a5a8c;
+        }
+        
+        .inventory-title {
+            color: #6bb1ff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .inventory-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .inventory-item {
+            background-color: #1e4976;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.85rem;
+        }
+        
+        .game-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .dialog-content {
+            background: linear-gradient(135deg, #0a2a4a 0%, #134277 100%);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid #4d9aff;
+        }
+        
+        .dialog-title {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .dialog-btn {
+            background: linear-gradient(135deg, #0f2d4e 0%, #1a3d64 100%);
+            border: 1px solid #2a5a8c;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dialog-btn:hover {
+            background: linear-gradient(135deg, #134277 0%, #1e5ba3 100%);
+            border-color: #4d9aff;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #4d9aff;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #4d9aff; }
+        }
+        
+        .relationship-bar {
+            height: 6px;
+            background-color: #1e4976;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .relationship-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #ffcc00, #4d9aff);
+            transition: width 0.5s ease;
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #0f2d4e 0%, #1a3d64 100%);
+            border: 1px solid #2a5a8c;
+            color: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+        
+        .control-btn:hover {
+            background: linear-gradient(135deg, #134277 0%, #1e5ba3 100%);
+            border-color: #4d9aff;
+        }
+        
+        @media (max-width: 768px) {
+            .game-content {
+                flex-direction: column;
+            }
+            
+            .game-story {
+                border-right: none;
+                border-bottom: 1px solid #1e4976;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>ОПЕРАЦИЯ "СИНДРОМ ЕЛКИ"</h1>
+            <div class="subtitle">Полная интерактивная шпионская игра</div>
+            <div class="classification">СОВЕРШЕННО СЕКРЕТНО</div>
+        </div>
+        
+        <div class="game-content">
+            <div class="game-story">
+                <div class="story-image" id="storyImage">
+                    <!-- Изображение будет меняться в зависимости от сцены -->
+                </div>
+                <div class="story-text" id="storyText">
+                    <!-- Текст истории будет здесь -->
+                </div>
+            </div>
+            
+            <div class="game-choices">
+                <div class="choices-title">Ваши действия:</div>
+                <div class="choices-list" id="choicesList">
+                    <!-- Варианты выбора будут здесь -->
+                </div>
+                
+                <div class="game-inventory">
+                    <div class="inventory-title">Инвентарь:</div>
+                    <div class="inventory-items" id="inventoryItems">
+                        <!-- Собранные предметы будут здесь -->
+                    </div>
+                </div>
+
+                <div class="game-inventory" id="relationshipsContainer">
+                    <div class="inventory-title">Отношения:</div>
+                    <div id="relationshipsList">
+                        <!-- Бары отношений будут здесь -->
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="control-btn" id="saveBtn">Сохранить</button>
+                    <button class="control-btn" id="loadBtn">Загрузить</button>
+                    <button class="control-btn" id="restartGameBtn">Начать заново</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-item">
+                <span>Доверие:</span>
+                <span class="stat-value" id="trustValue">50%</span>
+            </div>
+            <div class="stat-item">
+                <span>Расследование:</span>
+                <span class="stat-value" id="progressValue">0%</span>
+            </div>
+            <div class="stat-item">
+                <span>Время:</span>
+                <span class="stat-value" id="timeValue">1 января, 10:00</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="game-dialog hidden" id="startDialog">
+        <div class="dialog-content">
+            <div class="dialog-title">ОПЕРАЦИЯ "СИНДРОМ ЕЛКИ"</div>
+            <p>1 января. Вы и ваша команда элитных агентов собраны на экстренное совещание после новогодней вечеринки.</p>
+            <p>Пропал агент-курьер с устройством квантового шифрования. Ваша задача — найти его и раскрыть заговор внутри организации.</p>
+            <p>Каждое ваше решение повлияет на исход операции. Кому можно доверять? Кто предатель?</p>
+            <button class="dialog-btn" id="startBtn">ПРИНЯТЬ ВЫЗОВ</button>
+        </div>
+    </div>
+    
+    <div class="game-dialog hidden" id="endDialog">
+        <div class="dialog-content">
+            <div class="dialog-title" id="endTitle">КОНЕЦ ОПЕРАЦИИ</div>
+            <p id="endText"></p>
+            <div id="endStats"></div>
+            <button class="dialog-btn" id="restartBtn">НАЧАТЬ ЗАНОВО</button>
+        </div>
+    </div>
+
+    <script>
+        // Игровые переменные
+        let gameState = {
+            currentScene: 'start',
+            trust: 50,
+            progress: 0,
+            day: 1,
+            time: '10:00',
+            inventory: [],
+            clues: {
+                foundMicrochip: false,
+                analyzedRecording: false,
+                foundSnowGlobe: false,
+                identifiedDouble: false,
+                foundLab: false,
+                decodedMessage: false
+            },
+            relationships: {
+                volkov: 50,
+                snowmaiden: 50,
+                champagne: 50,
+                gnome: 50,
+                mandarin: 50
+            },
+            endings: {
+                good: false,
+                bad: false,
+                neutral: false
+            }
+        };
+
+        // Сцены игры
+        const scenes = {
+            start: {
+                image: "ШТАБ-КВАРТИРА | УТРО 1 ЯНВАРЯ",
+                text: "Вы просыпаетесь с тяжелым похмельем после новогодней вечеринки. Внезапно приходит экстренный вызов на совещание. Директор Волков сообщает: пропал агент-курьер с 'Новогодним Пакетом' — устройством квантового шифрования. Последний раз его видели на вечеринке. Вам поручено возглавить расследование.",
+                choices: [
+                    { text: "Осмотреть кабинет Волкова", next: "office" },
+                    { text: "Опросить свидетелей на месте", next: "witnesses" },
+                    { text: "Проверить системные логи", next: "logs" }
+                ]
+            },
+
+            office: {
+                image: "КАБИНЕТ ВОЛКОВА",
+                text: "Кабинет Волкова в беспорядке после вечеринки. На столе остались недопитые бокалы, серпантин и конфетти. При тщательном осмотре вы находите под столом микрочип от пропавшего устройства. Он был намеренно оставлен кем-то. Это не кража, а послание.",
+                choices: [
+                    { text: "Расспросить Волкова о вечеринке", next: "volkov_interview" },
+                    { text: "Показать микрочип Снегурочке", next: "snowmaiden_chip" },
+                    { text: "Искать другие улики", next: "search_more" }
+                ],
+                onEnter: function() {
+                    if (!gameState.clues.foundMicrochip) {
+                        gameState.clues.foundMicrochip = true;
+                        gameState.progress += 10;
+                        addToInventory("Микрочип от устройства");
+                    }
+                }
+            },
+
+            volkov_interview: {
+                image: "РАЗГОВОР С ВОЛКОВЫМ",
+                text: "Волков ведет себя напряженно. Он утверждает, что покидал кабинет всего на 15 минут, чтобы поздравить коллег. В это время кабинет был открыт. Он подозревает, что кто-то воспользовался моментом, но отказывается называть имена, говоря 'все мы здесь семья'.",
+                choices: [
+                    { text: "Спросить о его подозрениях", next: "volkov_suspicions" },
+                    { text: "Уточнить детали его отсутствия", next: "volkov_alibi" },
+                    { text: "Вернуться к осмотру кабинета", next: "office" }
+                ]
+            },
+
+            volkov_suspicions: {
+                image: "ВОЛКОВ РАСКРЫВАЕТ ПОДОЗРЕНИЯ",
+                text: "Волков неохотно признается, что заметил подозрительное поведение у Снегурочки. Она несколько раз отлучалась с вечеринки и, по его словам, 'слишком интересовалась' Новогодним Пакетом. Однако он просит не делать поспешных выводов.",
+                choices: [
+                    { text: "Проверить алиби Снегурочки", next: "snowmaiden_alibi" },
+                    { text: "Рассказать о найденном микрочипе", next: "share_chip" },
+                    { text: "Допросить Снегурочку", next: "snowmaiden_interview" }
+                ]
+            },
+
+            snowmaiden_interview: {
+                image: "ДОПРОС СНЕГУРОЧКИ",
+                text: "Снегурочка ведет себя холодно и отстраненно. Она настаивает, что курьер был в хорошем настроении и выиграл партию в 'Мафию'. Но вы замечаете, что она нервно теребит новогодний брелок в виде снежинки. Кажется, она что-то скрывает.",
+                choices: [
+                    { text: "Надавить на Снегурочку", next: "pressure_snowmaiden" },
+                    { text: "Проверить ее алиби", next: "check_snowmaiden_alibi" },
+                    { text: "Отступить и поискать другие зацепки", next: "witnesses" }
+                ]
+            },
+
+            pressure_snowmaiden: {
+                image: "НАПРЯЖЕННЫЙ ДИАЛОГ",
+                text: "Вы указываете на несоответствия в ее рассказе. Снегурочка сначала защищается, но затем неожиданно соглашается, что 'не все так просто'. Она намекает, что Волков вел себя подозрительно в тот вечер, несколько раз выходил из кабинета с незнакомцем.",
+                choices: [
+                    { text: "Узнать подробности о незнакомце", next: "stranger_details" },
+                    { text: "Сообщить Волкову о подозрениях", next: "tell_volkov" },
+                    { text: "Проверить историю независимо", next: "verify_stranger" }
+                ],
+                onEnter: function() {
+                    gameState.relationships.snowmaiden -= 10;
+                    gameState.relationships.volkov -= 5;
+                }
+            },
+
+            stranger_details: {
+                image: "ДЕТАЛИ О НЕЗНАКОМЦЕ",
+                text: "Снегурочка описывает высокого мужчину в костюме Деда Мороза, который явно не был сотрудником. Она заметила, что у него была характерная шрам на левой руке. Они с Волковым о чем-то оживленно спорили, но разговор оборвался, когда они заметили, что за ними наблюдают.",
+                choices: [
+                    { text: "Проверить записи камер наблюдения", next: "check_cameras" },
+                    { text: "Опросить других свидетелей", next: "ask_about_stranger" },
+                    { text: "Сообщить в службу безопасности", next: "report_stranger" }
+                ]
+            },
+
+            check_cameras: {
+                image: "ПРОСМОТР ЗАПИСЕЙ КАМЕР",
+                text: "К вашему удивлению, записи камер за время вечеринки были отключены 'по протоколу конфиденциальности'. Однако системные логи показывают, что в 00:30 кто-то использовал портативный глушитель на 30 секунд в коридоре у запасного выхода. Это совпадает с временем пропажи курьера.",
+                choices: [
+                    { text: "Исследовать запасной выход", next: "check_exit" },
+                    { text: "Найти источник глушителя", next: "find_jammer" },
+                    { text: "Проанализировать аудиозаписи вечеринки", next: "audio_analysis" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 10;
+                }
+            },
+
+            audio_analysis: {
+                image: "ЛАБОРАТОРИЯ | АНАЛИЗ АУДИО",
+                text: "Вы с Кибер-Гномом анализируете аудиозаписи с вечеринки. Среди шума и веселья он выделяет странный фрагмент: в 00:30 кто-то использовал портативный глушитель на 30 секунд в коридоре у запасного выхода. Также в тосте Шампанского обнаруживаются скрытые данные.",
+                choices: [
+                    { text: "Расшифровать скрытое сообщение", next: "decode_message" },
+                    { text: "Проверить запасной выход", next: "check_exit" },
+                    { text: "Допросить Шампанского о тосте", next: "confront_champagne" }
+                ],
+                onEnter: function() {
+                    if (!gameState.clues.analyzedRecording) {
+                        gameState.clues.analyzedRecording = true;
+                        gameState.progress += 15;
+                    }
+                }
+            },
+
+            decode_message: {
+                image: "РАСШИФРОВКА СООБЩЕНИЯ",
+                text: "После сложной работы с аудиофильтрами вы извлекаете скрытое сообщение: 'Когда часы пробьют двенадцать, король должен пасть. Готовьте сани'. Это явно ссылка на Волкова. Также вы находите фрагмент схемы штаб-квартиры с помеченным вентиляционным ходом.",
+                choices: [
+                    { text: "Исследовать вентиляционную шахту", next: "vent_shaft" },
+                    { text: "Предупредить Волкова об угрозе", next: "warn_volkov" },
+                    { text: "Продолжить расследование тайно", next: "secret_investigation" }
+                ],
+                onEnter: function() {
+                    if (!gameState.clues.decodedMessage) {
+                        gameState.clues.decodedMessage = true;
+                        gameState.progress += 10;
+                        addToInventory("Расшифрованное сообщение");
+                    }
+                }
+            },
+
+            vent_shaft: {
+                image: "ВЕНТИЛЯЦИОННАЯ ШАХТА",
+                text: "Пробираясь через вентиляционные шахты, вы находите хорошо оборудованную мини-лабораторию. Здесь есть устройства для клонирования ключ-карт и манипуляций с данными. На полу лежит блестка от костюма Снегурочки. Кто-то явно использовал это место для шпионажа.",
+                choices: [
+                    { text: "Собрать доказательства против Снегурочки", next: "evidence_snowmaiden" },
+                    { text: "Установить скрытую камеру", next: "set_camera" },
+                    { text: "Ничего не трогать и отступить", next: "leave_vent" }
+                ],
+                onEnter: function() {
+                    if (!gameState.clues.foundLab) {
+                        gameState.clues.foundLab = true;
+                        gameState.progress += 20;
+                        addToInventory("Блестка от костюма");
+                    }
+                }
+            },
+
+            evidence_snowmaiden: {
+                image: "СБОР ДОКАЗАТЕЛЬСТВ",
+                text: "Вы тщательно документируете находку: фотографируете оборудование, собираете блестку в evidence-пакет. Внезапно вы слышите шаги. Кто-то приближается! У вас есть несколько секунд, чтобы решить, что делать.",
+                choices: [
+                    { text: "Спрятаться и наблюдать", next: "hide_observe" },
+                    { text: "Попытаться незаметно уйти", next: "sneak_away" },
+                    { text: "Подготовиться к конфронтации", next: "prepare_confrontation" }
+                ]
+            },
+
+            hide_observe: {
+                image: "ТАЙНОЕ НАБЛЮДЕНИЕ",
+                text: "Вы прячетесь в темном углу шахты. В лабораторию входит Снегурочка! Но она не одна - с ней Кибер-Гном. Они говорят о 'Метелице' и 'плане Б'. Оказывается, Кибер-Гном - крот, внедренный для слежки за Метелицей. Они работают вместе, чтобы раскрыть заговор!",
+                choices: [
+                    { text: "Выйти и предложить помощь", next: "offer_help" },
+                    { text: "Продолжать наблюдать тайно", next: "keep_observing" },
+                    { text: "Сообщить Волкову о двойной игре", next: "report_double_game" }
+                ],
+                onEnter: function() {
+                    if (!gameState.clues.identifiedDouble) {
+                        gameState.clues.identifiedDouble = true;
+                        gameState.progress += 25;
+                    }
+                }
+            },
+
+            offer_help: {
+                image: "СОЮЗНИКИ",
+                text: "Вы выходите из укрытия. Снегурочка и Кибер-Гном в шоке, но быстро понимают, что вы на их стороне. Они раскрывают правду: настоящая Снегурочка была похищена 28 декабря! Ее место заняла двойник - агент Метелицы. Волков подозревал неладное, но не мог никому довериться.",
+                choices: [
+                    { text: "Спасти настоящую Снегурочку", next: "rescue_snowmaiden" },
+                    { text: "Разработать план против Метелицы", next: "plan_against_snowstorm" },
+                    { text: "Вывести двойника на чистую воду", next: "expose_double" }
+                ],
+                onEnter: function() {
+                    gameState.relationships.snowmaiden = 100;
+                    gameState.relationships.gnome = 100;
+                }
+            },
+
+            rescue_snowmaiden: {
+                image: "СПАСАТЕЛЬНАЯ ОПЕРАЦИЯ",
+                text: "Вы находите лабораторию, где держат настоящую Зарецкую. При штурме выясняется шокирующая правда: 'Мандарин' (ветеран-архивариус) - куратор всей операции! Именно он, обиженный на систему, стал идеологическим вдохновителем Метелицы. Начинается погоня по заснеженному городу.",
+                choices: [
+                    { text: "Преследовать Мандарина", next: "chase_mandarin" },
+                    { text: "Остаться и охранять Снегурочку", next: "guard_snowmaiden" },
+                    { text: "Вызвать подкрепление", next: "call_backup" }
+                ],
+                onEnter: function() {
+                    gameState.day = 13;
+                    gameState.time = "21:00";
+                    gameState.progress += 15;
+                }
+            },
+
+            chase_mandarin: {
+                image: "ПОГОНЯ ПО ГОРОДУ",
+                text: "Вы преследуете Мандарина и двойника Снегурочки через ночной город, украшенный новогодними гирляндами. Они пытаются скрыться с последним компонентом для 'Тихого Часа' - операции по взлому всех систем международной безопасности в ночь на Старый Новый год.",
+                choices: [
+                    { text: "Перехватить на мосту", next: "bridge_intercept" },
+                    { text: "Отрезать путь к телеком-центру", next: "block_telecom" },
+                    { text: "Взять в клещи", next: "pincer_move" }
+                ]
+            },
+
+            bridge_intercept: {
+                image: "ФИНАЛЬНАЯ СХВАТКА НА МОСТУ",
+                text: "Вы настигаете Мандарина на мосту с видом на освещенный город. Пожилой архивариус не сопротивляется. Он стоит у перил и произносит: 'Вы охраняете старое, прогнившее мироустройство. Я хочу дать миру шанс начать все с чистого листа. С Новым Годом, агенты'.",
+                choices: [
+                    { text: "Арестовать Мандарина", next: "arrest_mandarin" },
+                    { text: "Попытаться его переубедить", next: "reason_mandarin" },
+                    { text: "Обезвредить устройство", next: "disarm_device" }
+                ]
+            },
+
+            arrest_mandarin: {
+                image: "АРЕСТ",
+                text: "Вы надеваете наручники на Мандарина, пока ваши напарники обезвреживают устройство. Операция 'Тихий Час' предотвращена. Настоящая Снегурочка спасена, заговор раскрыт. Через неделю вас ждет награждение, но доверие внутри организации подорвано. Вы смотрите на салют в ночном небе, но теперь он кажется вам не праздничным, а тревожным.",
+                choices: [
+                    { text: "Завершить операцию", next: "good_ending" }
+                ],
+                onEnter: function() {
+                    gameState.endings.good = true;
+                }
+            },
+
+            good_ending: {
+                image: "КОНЕЦ ОПЕРАЦИИ",
+                text: "ВЫ ПОБЕДИЛИ! Заговор раскрыт, предатели обезврежены. Вы получаете высшие награды, но теперь по-другому смотрите на коллег и праздники. Новый год больше никогда не будет для вас прежним. 'Синдром Елки' — это состояние вечной бдительности, когда за каждым праздником скрывается тень новой угрозы.",
+                choices: [
+                    { text: "Начать заново", next: "restart" }
+                ]
+            },
+
+            // Альтернативные сцены и концовки
+            tell_volkov: {
+                image: "ДОКЛАД ВОЛКОВУ",
+                text: "Вы сообщаете Волкову о подозрениях Снегурочки. К вашему удивлению, он не выражает беспокойства. 'Ольга всегда была слишком подозрительной', - говорит он. - 'Лучше сосредоточьтесь на поиске курьера'. Вы чувствуете, что он что-то скрывает.",
+                choices: [
+                    { text: "Настаивать на расследовании", next: "insist_investigation" },
+                    { text: "Тайно продолжить расследование", next: "secret_investigation" },
+                    { text: "Послушаться Волкова", next: "obey_volkov" }
+                ],
+                onEnter: function() {
+                    gameState.relationships.volkov -= 10;
+                }
+            },
+
+            obey_volkov: {
+                image: "СЛЕПОЕ ДОВЕРИЕ",
+                text: "Вы решаете довериться Волкову и сосредотачиваетесь на поиске курьера. Однако через несколько дней становится ясно, что вы упустили критически важное время. Метелица успевает запустить операцию 'Тихий Час'. Системы международной безопасности пали. Миссия провалена.",
+                choices: [
+                    { text: "Начать заново", next: "restart" }
+                ],
+                onEnter: function() {
+                    gameState.endings.bad = true;
+                }
+            },
+
+            secret_investigation: {
+                image: "ТАЙНОЕ РАССЛЕДОВАНИЕ",
+                text: "Вы решаете работать в обход Волкова. С помощью Кибер-Гнома вы выходите на след настоящей Снегурочки. Оказывается, ее держат в заброшенном складе на окраине города. Волков знал об этом, но ничего не предпринимал!",
+                choices: [
+                    { text: "Немедленно организовать спасательную операцию", next: "rescue_snowmaiden" },
+                    { text: "Собрать команду преданных агентов", next: "gather_team" },
+                    { text: "Подождать и собрать больше доказательств", next: "wait_evidence" }
+                ]
+            },
+
+            // Новые сцены для расширения сюжета
+            witnesses: {
+                image: "ОФИС | ОПРОС СВИДЕТЕЛЕЙ",
+                text: "Вы начинаете опрашивать сотрудников, но никто ничего внятного не помнит. Все были пьяны и веселились. Снегурочка упоминает, что видела курьера за игрой в 'Мафию'. Шампанское говорит, что тот жаловался на головную боль. Кибер-Гном бормочет о 'странных помехах в аудиопотоке' около полуночи.",
+                choices: [
+                    { text: "Допросить Снегурочку подробнее", next: "snowmaiden_detail" },
+                    { text: "Проверить историю Шампанского", next: "champagne_detail" },
+                    { text: "Изучить аудиопоток с вечеринки", next: "audio_analysis" }
+                ]
+            },
+
+            snowmaiden_detail: {
+                image: "РАЗГОВОР СО СНЕГУРОЧКОЙ",
+                text: "Снегурочка ведет себя холодно и отстраненно. Она настаивает, что курьер был в хорошем настроении и выиграл партию в 'Мафию'. Но вы замечаете, что она нервно теребит новогодний брелок в виде снежинки. Кажется, она что-то скрывает.",
+                choices: [
+                    { text: "Надавить на Снегурочку", next: "pressure_snowmaiden" },
+                    { text: "Проверить ее алиби", next: "check_snowmaiden_alibi" },
+                    { text: "Отступить и поискать другие зацепки", next: "witnesses" }
+                ]
+            },
+
+            check_snowmaiden_alibi: {
+                image: "ПРОВЕРКА АЛИБИ СНЕГУРОЧКИ",
+                text: "Вы проверяете, где была Снегурочка в ключевое время. Несколько агентов подтверждают, что она руководила игрой в 'Мафию', но также покидала помещение на 20-30 минут примерно в 00:15. Один из технических сотрудников видел, как она разговаривала с кем-то у серверной.",
+                choices: [
+                    { text: "Проверить серверную", next: "check_server_room" },
+                    { text: "Уточнить детали у технического сотрудника", next: "tech_details" },
+                    { text: "Вернуться к допросу Снегурочки", next: "snowmaiden_interview" }
+                ]
+            },
+
+            check_server_room: {
+                image: "СЕРВЕРНАЯ КОМНАТА",
+                text: "В серверной комнате вы находите следы несанкционированного доступа. Кто-то подключался к главному серверу во время вечеринки. Системные логи показывают, что данные accessed совпадают с временем пропажи курьера. Также вы находите оброненную новогоднюю гирлянду.",
+                choices: [
+                    { text: "Проанализировать логи доступа", next: "analyze_access_logs" },
+                    { text: "Проверить гирлянду на отпечатки", next: "check_garland" },
+                    { text: "Сопоставить с показаниями свидетелей", next: "correlate_evidence" }
+                ],
+                onEnter: function() {
+                    addToInventory("Новогодняя гирлянда");
+                    gameState.progress += 10;
+                }
+            },
+
+            analyze_access_logs: {
+                image: "АНАЛИЗ ЛОГОВ ДОСТУПА",
+                text: "Анализ показывает, что к серверу подключались с учетной записью Кибер-Гнома, но в нехарактерное для него время. Также обнаружены следы взлома системы распознавания 'Подарок'. Кто-то изменял параметры поиска угроз, нацеливая систему на Волкова.",
+                choices: [
+                    { text: "Допросить Кибер-Гнома", next: "confront_gnome" },
+                    { text: "Проверить, кто мог взломать систему", next: "find_hacker" },
+                    { text: "Сообщить Волкову о взломе", next: "report_hack" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 15;
+                }
+            },
+
+            confront_gnome: {
+                image: "ДОПРОС КИБЕР-ГНОМА",
+                text: "Кибер-Гном признается, что его учетная запись была скомпрометирована. Он уже расследовал этот инцидент и обнаружил, что взлом был осуществлен через уязвимость в системе праздничных поздравлений. Кто-то отправил 'зараженное' новогоднее поздравление, содержащее вредоносный код.",
+                choices: [
+                    { text: "Узнать подробности о взломе", next: "hack_details" },
+                    { text: "Проверить историю сообщений", next: "check_messages" },
+                    { text: "Спросить о его подозрениях", next: "ask_gnome_suspicions" }
+                ]
+            },
+
+            ask_gnome_suspicions: {
+                image: "ПОДОЗРЕНИЯ КИБЕР-ГНОМА",
+                text: "Кибер-Гном неохотно признается, что подозревает involvement Мандарина. 'Он единственный, у кого есть доступ ко всем архивам и достаточно знаний о наших системах', - говорит он. - 'Но у меня нет доказательств. И он такой уважаемый...'",
+                choices: [
+                    { text: "Тайно проверить деятельность Мандарина", next: "investigate_mandarin" },
+                    { text: "Открыто допросить Мандарина", next: "confront_mandarin" },
+                    { text: "Искать другие возможности", next: "other_possibilities" }
+                ],
+                onEnter: function() {
+                    gameState.relationships.mandarin -= 20;
+                }
+            },
+
+            investigate_mandarin: {
+                image: "ТАЙНОЕ РАССЛЕДОВАНИЕ МАНДАРИНА",
+                text: "Вы тайно проверяете деятельность Мандарина. В его рабочем компьютере вы находите зашифрованные файлы и следы связи с неизвестными серверами. Также обнаруживается, что он недавно accessed архивы старых операций, связанных с психологическими манипуляциями и внедрением двойников.",
+                choices: [
+                    { text: "Взломать шифрование", next: "break_encryption" },
+                    { text: "Установить слежку за Мандарином", next: "surveillance_mandarin" },
+                    { text: "Арестовать Мандарина на основе подозрений", next: "arrest_mandarin_early" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 10;
+                }
+            },
+
+            break_encryption: {
+                image: "ВЗЛОМ ШИФРОВАНИЯ",
+                text: "С помощью Кибер-Гнома вы взламываете шифрование. Файлы содержат детальные планы операции 'Тихий Час', а также доказательства того, что Мандарин координировал похищение настоящей Снегурочки и внедрение двойника. Становится ясно, что он - главный идеолог Метелицы.",
+                choices: [
+                    { text: "Немедленно арестовать Мандарина", next: "arrest_mandarin" },
+                    { text: "Подождать и выявить всех сообщников", next: "wait_accomplices" },
+                    { text: "Сообщить Волкову о находке", next: "tell_volkov_evidence" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 20;
+                    addToInventory("Доказательства против Мандарина");
+                }
+            },
+
+            arrest_mandarin_early: {
+                image: "ПРЕЖДЕВРЕМЕННЫЙ АРЕСТ",
+                text: "Вы арестовываете Мандарина, но без достаточных доказательств. Он успевает предупредить своих сообщников, и они скрываются вместе с настоящей Снегурочкой. Хотя главный заговорщик пойман, операция 'Тихий Час' продолжается, и спасти Снегурочку не удается.",
+                choices: [
+                    { text: "Продолжить поиски", next: "continue_search" }
+                ],
+                onEnter: function() {
+                    gameState.endings.neutral = true;
+                }
+            },
+
+            continue_search: {
+                image: "ПРОДОЛЖЕНИЕ ПОИСКОВ",
+                text: "Вы продолжаете поиски настоящей Снегурочки и оставшихся членов Метелицы. Хотя главная угроза предотвращена, операция считается лишь частично успешной. Доверие внутри организации серьезно подорвано, и вам предстоит долгая работа по восстановлению контроля.",
+                choices: [
+                    { text: "Завершить операцию", next: "neutral_ending" }
+                ]
+            },
+
+            neutral_ending: {
+                image: "ЧАСТИЧНАЯ ПОБЕДА",
+                text: "Мандарин арестован, но настоящая Снегурочка все еще в руках Метелицы, а некоторые члены организации скрылись. Вы предотвратили худший сценарий, но цена оказалась высокой. Организации потребуются месяцы, чтобы восстановиться после этого удара. Новый год встречается в атмосфере тревоги и неопределенности.",
+                choices: [
+                    { text: "Начать заново", next: "restart" }
+                ]
+            },
+
+            // Дополнительные сцены для завершения всех веток
+            logs: {
+                image: "СИСТЕМНЫЕ ЛОГИ",
+                text: "Вы проверяете системные логи и обнаруживаете, что в 00:30 кто-то использовал портативный глушитель на 30 секунд в коридоре у запасного выхода. Это совпадает с временем пропажи курьера. Также вы находите следы несанкционированного доступа к серверу.",
+                choices: [
+                    { text: "Исследовать запасной выход", next: "check_exit" },
+                    { text: "Проверить серверную комнату", next: "check_server_room" },
+                    { text: "Проанализировать аудиозаписи вечеринки", next: "audio_analysis" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 10;
+                }
+            },
+
+            check_exit: {
+                image: "ЗАПАСНОЙ ВЫХОД",
+                text: "У запасного выхода вы находите следы борьбы и оброненный брелок в виде снежинки, похожий на тот, что был у Снегурочки. Также вы замечаете следы от шин - кто-то уехал на машине вскоре после полуночи.",
+                choices: [
+                    { text: "Проверить камеры парковки", next: "check_parking_cameras" },
+                    { text: "Допросить охрану", next: "interview_guards" },
+                    { text: "Проверить, кому принадлежит брелок", next: "check_charm" }
+                ],
+                onEnter: function() {
+                    addToInventory("Брелок-снежинка");
+                    gameState.progress += 10;
+                }
+            },
+
+            snowmaiden_chip: {
+                image: "РАЗГОВОР СО СНЕГУРОЧКОЙ О МИКРОЧИПЕ",
+                text: "Снегурочка внимательно изучает микрочип и признается, что видела подобные устройства в лаборатории Кибер-Гнома. Она предлагает проверить, не связан ли он с инцидентом, но просит действовать осторожно, чтобы не спугнуть возможного предателя.",
+                choices: [
+                    { text: "Проверить лабораторию Кибер-Гнома", next: "check_gnome_lab" },
+                    { text: "Рассказать Волкову о находке", next: "tell_volkov_chip" },
+                    { text: "Действовать самостоятельно", next: "act_alone" }
+                ],
+                onEnter: function() {
+                    gameState.relationships.snowmaiden += 10;
+                }
+            },
+
+            check_gnome_lab: {
+                image: "ЛАБОРАТОРИЯ КИБЕР-ГНОМА",
+                text: "В лаборатории Кибер-Гнома вы находите оборудование для создания подобных микрочипов, но также обнаруживаете записи, свидетельствующие о том, что он следил за Снегурочкой. Кажется, он подозревал ее в чем-то, но боялся говорить открыто.",
+                choices: [
+                    { text: "Допросить Кибер-Гнома", next: "confront_gnome" },
+                    { text: "Поделиться находкой со Снегурочкой", next: "tell_snowmaiden_findings" },
+                    { text: "Сообщить Волкову о подозрениях", next: "tell_volkov_suspicions" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 15;
+                }
+            },
+
+            restart: {
+                image: "НОВАЯ ПОПЫТКА",
+                text: "Вы готовы начать расследование заново. На этот раз вы будете действовать иначе, используя знания, полученные в предыдущей попытке. Помните: каждое решение имеет последствия.",
+                choices: [
+                    { text: "Начать новую операцию", next: "start" }
+                ],
+                onEnter: function() {
+                    resetGame();
+                }
+            },
+
+            // Заглушки для отсутствующих сцен
+            volkov_alibi: {
+                image: "ПРОВЕРКА АЛИБИ ВОЛКОВА",
+                text: "Вы проверяете алиби Волкова. Несколько сотрудников подтверждают, что он действительно покидал кабинет примерно на 15 минут, чтобы поздравить коллег. Однако один из технических специалистов упоминает, что видел, как Волков разговаривал с незнакомцем у запасного выхода.",
+                choices: [
+                    { text: "Расспросить о незнакомце", next: "stranger_details" },
+                    { text: "Вернуться к осмотру кабинета", next: "office" },
+                    { text: "Проверить запасной выход", next: "check_exit" }
+                ]
+            },
+
+            share_chip: {
+                image: "СОВМЕСТНОЕ РАССЛЕДОВАНИЕ",
+                text: "Вы показываете микрочип Волкову. Он внимательно его изучает и признается, что подобные устройства используются в отделе Кибер-Гнома для слежки. Он предлагает провести совместную операцию по выявлению предателя.",
+                choices: [
+                    { text: "Согласиться на совместную операцию", next: "joint_operation" },
+                    { text: "Действовать самостоятельно", next: "act_alone" },
+                    { text: "Проверить отдел Кибер-Гнома", next: "check_gnome_lab" }
+                ]
+            },
+
+            search_more: {
+                image: "ПОИСК ДОПОЛНИТЕЛЬНЫХ УЛИК",
+                text: "Вы продолжаете поиск в кабинете Волкова и находите скрытую камеру, направленную на сейф с 'Новогодним Пакетом'. Запись показывает, как неизвестный в костюме Деда Мороза вскрывает сейф и забирает устройство.",
+                choices: [
+                    { text: "Показать запись Волкову", next: "show_recording_volkov" },
+                    { text: "Проанализировать запись детально", next: "analyze_recording" },
+                    { text: "Найти костюм Деда Мороза", next: "find_santa_suit" }
+                ],
+                onEnter: function() {
+                    gameState.progress += 15;
+                    addToInventory("Запись с камеры наблюдения");
+                }
+            },
+
+            // Завершающие сцены для всех веток
+            joint_operation: {
+                image: "СОВМЕСТНАЯ ОПЕРАЦИЯ",
+                text: "Вы и Волков организуете операцию по поимке предателя. В результате вы выходите на след Мандарина и раскрываете весь заговор. Операция 'Тихий Час' предотвращена, а настоящая Снегурочка спасена.",
+                choices: [
+                    { text: "Завершить операцию", next: "good_ending" }
+                ],
+                onEnter: function() {
+                    gameState.endings.good = true;
+                }
+            },
+
+            act_alone: {
+                image: "САМОСТОЯТЕЛЬНЫЕ ДЕЙСТВИЯ",
+                text: "Вы решаете действовать в одиночку и вскоре выходите на след Метелицы. Однако без поддержки организации вам не удается предотвратить операцию 'Тихий Час' полностью. Хотя главные заговорщики пойманы, некоторые последствия оказались необратимыми.",
+                choices: [
+                    { text: "Завершить операцию", next: "neutral_ending" }
+                ],
+                onEnter: function() {
+                    gameState.endings.neutral = true;
+                }
+            }
+        };
+
+        // Элементы DOM
+        const storyImage = document.getElementById('storyImage');
+        const storyText = document.getElementById('storyText');
+        const choicesList = document.getElementById('choicesList');
+        const inventoryItems = document.getElementById('inventoryItems');
+        const relationshipsList = document.getElementById('relationshipsList');
+        const relationshipsContainer = document.getElementById('relationshipsContainer');
+        const trustValue = document.getElementById('trustValue');
+        const progressValue = document.getElementById('progressValue');
+        const timeValue = document.getElementById('timeValue');
+        const startDialog = document.getElementById('startDialog');
+        const startBtn = document.getElementById('startBtn');
+        const endDialog = document.getElementById('endDialog');
+        const endTitle = document.getElementById('endTitle');
+        const endText = document.getElementById('endText');
+        const endStats = document.getElementById('endStats');
+        const restartBtn = document.getElementById('restartBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+
+        // Инициализация игры
+        function initGame() {
+            startDialog.classList.remove('hidden');
+            
+            startBtn.addEventListener('click', function() {
+                startDialog.classList.add('hidden');
+                loadScene('start');
+            });
+            
+            restartBtn.addEventListener('click', function() {
+                endDialog.classList.add('hidden');
+                resetGame();
+                loadScene('start');
+            });
+
+            // Обработчики для кнопок сохранения/загрузки
+            saveBtn.addEventListener('click', saveGame);
+            loadBtn.addEventListener('click', loadGame);
+            restartGameBtn.addEventListener('click', function() {
+                if (confirm("Вы уверены, что хотите начать заново? Текущий прогресс будет потерян.")) {
+                    resetGame();
+                    loadScene('start');
+                }
+            });
+
+            // Проверяем, есть ли сохраненная игра
+            checkForSavedGame();
+        }
+
+        // Загрузка сцены
+        function loadScene(sceneId) {
+            const scene = scenes[sceneId];
+            
+            if (!scene) {
+                console.error('Сцена не найдена:', sceneId);
+                return;
+            }
+            
+            gameState.currentScene = sceneId;
+            
+            // Обновляем изображение и текст
+            storyImage.textContent = scene.image;
+            storyText.textContent = scene.text;
+            
+            // Выполняем специальные действия при входе в сцену
+            if (scene.onEnter) {
+                scene.onEnter();
+            }
+            
+            // Очищаем и добавляем варианты выбора
+            choicesList.innerHTML = '';
+            scene.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.textContent = choice.text;
+                button.addEventListener('click', () => {
+                    loadScene(choice.next);
+                });
+                choicesList.appendChild(button);
+            });
+            
+            // Обновляем статистику и отношения
+            updateStats();
+            updateRelationships();
+            
+            // Проверяем условия окончания игры
+            checkEndConditions();
+        }
+
+        // Добавление предмета в инвентарь
+        function addToInventory(item) {
+            if (!gameState.inventory.includes(item)) {
+                gameState.inventory.push(item);
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'inventory-item';
+                itemElement.textContent = item;
+                inventoryItems.appendChild(itemElement);
+            }
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            trustValue.textContent = `${gameState.trust}%`;
+            progressValue.textContent = `${gameState.progress}%`;
+            timeValue.textContent = `${gameState.day} января, ${gameState.time}`;
+        }
+
+        // Обновление баров отношений
+        function updateRelationships() {
+            relationshipsList.innerHTML = '';
+            
+            for (const [character, value] of Object.entries(gameState.relationships)) {
+                const relationshipItem = document.createElement('div');
+                relationshipItem.style.marginBottom = '10px';
+                
+                const nameMap = {
+                    volkov: 'Волков',
+                    snowmaiden: 'Снегурочка',
+                    champagne: 'Шампанское',
+                    gnome: 'Кибер-Гном',
+                    mandarin: 'Мандарин'
+                };
+                
+                relationshipItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${nameMap[character]}:</span>
+                        <span>${value}%</span>
+                    </div>
+                    <div class="relationship-bar">
+                        <div class="relationship-fill" style="width: ${value}%"></div>
+                    </div>
+                `;
+                
+                relationshipsList.appendChild(relationshipItem);
+            }
+        }
+
+        // Проверка условий окончания игры
+        function checkEndConditions() {
+            if (gameState.endings.good || gameState.endings.bad || gameState.endings.neutral) {
+                showEnding();
+            }
+        }
+
+        // Показ концовки
+        function showEnding() {
+            let title, text, stats;
+            
+            if (gameState.endings.good) {
+                title = "ОПЕРАЦИЯ УСПЕШНА";
+                text = "Вы раскрыли заговор, обезвредили Метелицу и спасли настоящую Снегурочку. Мировая безопасность сохранена. Ваша команда получает высшие награды, но вы понимаете, что доверие внутри организации никогда уже не будет прежним.";
+                stats = `
+                    <p>Прогресс расследования: ${gameState.progress}%</p>
+                    <p>Итоговый уровень доверия: ${gameState.trust}%</p>
+                    <p>Найдено улик: ${gameState.inventory.length}</p>
+                `;
+            } else if (gameState.endings.bad) {
+                title = "МИССИЯ ПРОВАЛЕНА";
+                text = "Метелица добилась своего. Операция 'Тихий Час' выполнена, системы международной безопасности скомпрометированы. Ваши ошибки привели к катастрофе глобального масштаба.";
+                stats = `
+                    <p>Прогресс расследования: ${gameState.progress}%</p>
+                    <p>Итоговый уровень доверия: ${gameState.trust}%</p>
+                    <p>Найдено улик: ${gameState.inventory.length}</p>
+                `;
+            } else if (gameState.endings.neutral) {
+                title = "ЧАСТИЧНЫЙ УСПЕХ";
+                text = "Главный заговорщик пойман, но некоторые члены Метелицы скрылись вместе с заложниками. Угроза сохраняется, и организации предстоит долгий процесс восстановления.";
+                stats = `
+                    <p>Прогресс расследования: ${gameState.progress}%</p>
+                    <p>Итоговый уровень доверия: ${gameState.trust}%</p>
+                    <p>Найдено улик: ${gameState.inventory.length}</p>
+                `;
+            }
+            
+            endTitle.textContent = title;
+            endText.textContent = text;
+            endStats.innerHTML = stats;
+            endDialog.classList.remove('hidden');
+        }
+
+        // Сброс игры
+        function resetGame() {
+            gameState = {
+                currentScene: 'start',
+                trust: 50,
+                progress: 0,
+                day: 1,
+                time: '10:00',
+                inventory: [],
+                clues: {
+                    foundMicrochip: false,
+                    analyzedRecording: false,
+                    foundSnowGlobe: false,
+                    identifiedDouble: false,
+                    foundLab: false,
+                    decodedMessage: false
+                },
+                relationships: {
+                    volkov: 50,
+                    snowmaiden: 50,
+                    champagne: 50,
+                    gnome: 50,
+                    mandarin: 50
+                },
+                endings: {
+                    good: false,
+                    bad: false,
+                    neutral: false
+                }
+            };
+            
+            inventoryItems.innerHTML = '';
+        }
+
+        // Сохранение игры
+        function saveGame() {
+            const saveData = JSON.stringify(gameState);
+            localStorage.setItem('snowstormOperationSave', saveData);
+            
+            // Создаем файл для скачивания
+            const blob = new Blob([saveData], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'snowstorm_operation_save.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Игра сохранена! Файл скачивается на ваш компьютер.');
+        }
+
+        // Загрузка игры
+        function loadGame() {
+            const saveData = localStorage.getItem('snowstormOperationSave');
+            
+            if (saveData) {
+                try {
+                    const loadedState = JSON.parse(saveData);
+                    gameState = loadedState;
+                    
+                    // Обновляем интерфейс
+                    inventoryItems.innerHTML = '';
+                    gameState.inventory.forEach(item => {
+                        addToInventory(item);
+                    });
+                    
+                    loadScene(gameState.currentScene);
+                    alert('Игра загружена!');
+                } catch (e) {
+                    alert('Ошибка загрузки сохранения: ' + e.message);
+                }
+            } else {
+                // Если сохранения в localStorage нет, предлагаем загрузить из файла
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const loadedState = JSON.parse(e.target.result);
+                                gameState = loadedState;
+                                
+                                // Обновляем интерфейс
+                                inventoryItems.innerHTML = '';
+                                gameState.inventory.forEach(item => {
+                                    addToInventory(item);
+                                });
+                                
+                                loadScene(gameState.currentScene);
+                                alert('Игра загружена из файла!');
+                            } catch (err) {
+                                alert('Ошибка загрузки файла: ' + err.message);
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            }
+        }
+
+        // Проверка наличия сохраненной игры
+        function checkForSavedGame() {
+            const saveData = localStorage.getItem('snowstormOperationSave');
+            if (saveData) {
+                if (confirm('Обнаружено сохранение игры. Хотите загрузить его?')) {
+                    loadGame();
+                }
+            }
+        }
+
+        // Запуск игры при загрузке страницы
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

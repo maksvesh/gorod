@@ -357,44 +357,6 @@
         .greeting:hover {
             transform: rotateX(5deg) translateY(-5px);
         }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2.5rem;
-            }
-
-            .games-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .navigation-buttons {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-
-            .nav-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-                min-width: 200px;
-                justify-content: center;
-            }
-
-            .game-card {
-                padding: 20px;
-                max-width: 100%;
-            }
-
-            .game-icon {
-                font-size: 4rem;
-            }
-
-            .game-title {
-                font-size: 1.5rem;
-            }
-        }
     </style>
 </head>
 
@@ -427,17 +389,17 @@
             </a>
         </div>
         <div class="games-grid">
-            <!-- Только змейка -->
-            <div class="game-card">
-                <div class="game-icon">🐍</div>
-                <h3 class="game-title">Операция "Змея"</h3>
-                <p class="game-description">
-                    Секретная миссия по сбору разведданных. Управляйте змейкой-агентом,
-                    собирайте ценные данные и избегайте столкновений. Каждый собранный файл
-                    увеличивает вашу базу знаний и счет операции.
-                </p>
-                <a href="zmeika.html" class="play-btn">Начать миссию</a>
-            </div>
+<!-- Только змейка -->
+<div class="game-card">
+    <div class="game-icon">🐍</div>
+    <h3 class="game-title">Операция "Змея"</h3>
+    <p class="game-description">
+        Секретная миссия по сбору разведданных. Управляйте змейкой-агентом,
+        собирайте ценные данные и избегайте столкновений. Каждый собранный файл
+        увеличивает вашу базу знаний и счет операции.
+    </p>
+    <a href="zmeika.html" class="play-btn">Начать миссию</a>
+</div>
             <!-- тетрис -->
             <div class="game-card">
                 <div class="game-icon">🧱</div>
@@ -463,19 +425,12 @@
             <a href="pet.html" class="play-btn">Начать миссию</a>
         </div>
     
-            <!-- Детектив -->
-            <div class="game-card">
-                <div class="game-icon">🧩</div>
-                <h3 class="game-title">Операция "Детектив"</h3>
-                <p class="game-description">
-                    Описание отсуствует
-                </p>
-                <a href="detectiv+2.html" class="play-btn">Начать миссию</a>
-            </div>
+  
         </div>
 
     <div class="greeting">
         <h3 style="color: #00ffff; margin-bottom: 15px;">⚠️ ВНИМАНИЕ АГЕНТАМ</h3>
+        <p>Все тренировочные миссии записываются в ваше досье. Покажите лучший результат в операции "Змея"!</p>
         <p style="margin-top: 10px; color: #80ffff; font-size: 0.9rem;">
             Управление: стрелки клавиатуры или свайпы на мобильных устройствах
         </p>
@@ -528,10 +483,9 @@
 
             document.querySelector('.bg-animation').style.transform = `translateY(${rate}px)`;
         });
+
+
     </script>
 </body>
 
 </html>
-
-
-
