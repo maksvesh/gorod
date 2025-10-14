@@ -372,7 +372,7 @@
             transform: rotateX(5deg) translateY(-5px);
         }
 
-        /* Медиа-запросы для мобильных устройств */
+        /* МЕДИА-ЗАПРОСЫ ДЛЯ ТЕЛЕФОНА - ОБНОВЛЕННЫЕ КАК ВО ВТОРОМ КОДЕ */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -384,31 +384,25 @@
             
             .title {
                 font-size: 2.5rem;
-                letter-spacing: 2px;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-                padding: 0 10px;
-            }
-            
-            .navigation-buttons {
-                gap: 10px;
-                margin: 20px 0;
-            }
-            
-            .nav-btn {
-                padding: 12px 20px;
-                font-size: 1rem;
-                flex: 1 1 calc(50% - 10px);
-                min-width: 140px;
-                justify-content: center;
             }
             
             .games-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
-                margin: 30px 0;
+            }
+            
+            /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ НАВИГАЦИОННЫХ КНОПОК */
+            .navigation-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                min-width: 200px;
+                justify-content: center;
             }
             
             .game-card {
@@ -418,16 +412,10 @@
             
             .game-icon {
                 font-size: 4rem;
-                margin-bottom: 15px;
             }
             
             .game-title {
                 font-size: 1.5rem;
-            }
-            
-            .game-description {
-                font-size: 1rem;
-                line-height: 1.5;
             }
             
             .play-btn {
@@ -444,40 +432,6 @@
             .agent-effect {
                 width: 60px;
                 height: 60px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .nav-btn {
-                flex: 1 1 100%;
-                min-width: auto;
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .game-card {
-                padding: 15px;
-            }
-            
-            .game-icon {
-                font-size: 3.5rem;
-            }
-            
-            .game-title {
-                font-size: 1.3rem;
-            }
-            
-            .game-description {
-                font-size: 0.9rem;
-            }
-            
-            .play-btn {
-                padding: 10px 25px;
-                font-size: 0.9rem;
             }
         }
     </style>
