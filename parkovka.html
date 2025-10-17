@@ -125,8 +125,7 @@
             left: 0;
             right: 0;
             height: 30vh;
-            min-height: 180px;
-            max-height: 250px;
+            min-height: 200px;
             background: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: space-between;
@@ -138,66 +137,49 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .steering-container {
+        .steering-buttons {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex: 1;
         }
         
-        .steering-wheel {
-            width: clamp(100px, 25vw, 140px);
-            height: clamp(100px, 25vw, 140px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 3px solid rgba(255, 255, 255, 0.8);
+        .steering-row {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .steering-button {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 3px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            touch-action: none;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            transition: transform 0.15s ease-out;
-        }
-        
-        .wheel-center {
-            width: 24px;
-            height: 24px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .wheel-handle {
-            position: absolute;
-            width: 50px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 4px;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .steering-indicator {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary-color);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            color: var(--light-text);
+            font-size: 28px;
             font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s;
+            touch-action: none;
+            user-select: none;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
-        .steering-indicator.show {
-            opacity: 1;
+        .steering-button:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .steering-button.large {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
         }
         
         .pedals-container {
@@ -205,11 +187,12 @@
             flex-direction: column;
             gap: 16px;
             align-items: center;
+            flex: 1;
         }
         
         .pedal {
-            width: clamp(70px, 20vw, 100px);
-            height: clamp(35px, 8vh, 50px);
+            width: 100px;
+            height: 50px;
             background: linear-gradient(145deg, #ff4444, #cc0000);
             border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 12px;
@@ -218,7 +201,7 @@
             justify-content: center;
             color: var(--light-text);
             font-weight: bold;
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 14px;
             touch-action: none;
             user-select: none;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -256,7 +239,7 @@
         
         .stats {
             display: flex;
-            gap: clamp(16px, 4vw, 24px);
+            gap: 20px;
         }
         
         .stat {
@@ -267,12 +250,12 @@
         }
         
         .stat-label {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 14px;
             opacity: 0.8;
         }
         
         .stat-value {
-            font-size: clamp(20px, 6vw, 28px);
+            font-size: 24px;
             font-weight: bold;
             color: var(--primary-color);
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -294,7 +277,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: clamp(14px, 4vw, 16px);
+            font-size: 16px;
             max-width: 90%;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
@@ -329,48 +312,6 @@
             100% { opacity: 0; transform: scale(1.5); }
         }
         
-        .orientation-hint {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--dark-bg);
-            color: var(--light-text);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 20px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        
-        .orientation-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            animation: rotateHint 2s ease-in-out infinite;
-        }
-        
-        @keyframes rotateHint {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(90deg); }
-        }
-        
-        .orientation-text {
-            font-size: clamp(18px, 5vw, 24px);
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-        
-        .orientation-subtext {
-            font-size: clamp(14px, 4vw, 16px);
-            opacity: 0.8;
-            max-width: 300px;
-        }
-        
         .control-hints {
             position: absolute;
             bottom: 10px;
@@ -389,6 +330,7 @@
             z-index: 10;
         }
         
+        /* Мобильные стили */
         @media (max-width: 768px) {
             .game-container {
                 padding: 0;
@@ -417,6 +359,24 @@
                 min-width: 100px;
                 padding: 8px 16px;
             }
+            
+            .steering-button {
+                width: 65px;
+                height: 65px;
+                font-size: 24px;
+            }
+            
+            .steering-button.large {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            
+            .pedal {
+                width: 80px;
+                height: 40px;
+                font-size: 13px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -433,27 +393,34 @@
                 height: 28vh;
             }
             
-            .steering-wheel {
-                width: 90px;
-                height: 90px;
+            .steering-button {
+                width: 60px;
+                height: 60px;
+                font-size: 22px;
+            }
+            
+            .steering-button.large {
+                width: 65px;
+                height: 65px;
+                font-size: 26px;
             }
             
             .pedal {
-                width: 65px;
-                height: 32px;
+                width: 70px;
+                height: 35px;
                 font-size: 12px;
             }
             
             .stats {
-                gap: 12px;
+                gap: 15px;
             }
             
             .stat-value {
-                font-size: 18px;
+                font-size: 20px;
             }
             
             .stat-label {
-                font-size: 11px;
+                font-size: 12px;
             }
         }
         
@@ -462,120 +429,27 @@
                 padding: 12px;
             }
             
-            .steering-wheel {
-                width: 80px;
-                height: 80px;
+            .steering-button {
+                width: 55px;
+                height: 55px;
+                font-size: 20px;
+            }
+            
+            .steering-button.large {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
             }
             
             .pedal {
-                width: 60px;
-                height: 30px;
+                width: 65px;
+                height: 32px;
             }
             
             button {
                 min-width: 90px;
                 padding: 6px 12px;
                 font-size: 12px;
-            }
-        }
-        
-        @media (max-width: 768px) and (orientation: landscape) {
-            .game-container {
-                flex-direction: row;
-            }
-            
-            .game-area {
-                flex: 1;
-                justify-content: center;
-            }
-            
-            #gameCanvas {
-                max-height: 85vh;
-                height: 85vh;
-            }
-            
-            .game-ui {
-                position: absolute;
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 95%;
-                z-index: 100;
-            }
-            
-            .mobile-controls {
-                height: 20vh;
-                min-height: 120px;
-            }
-            
-            .orientation-hint {
-                display: none !important;
-            }
-        }
-        
-        @media (max-width: 768px) and (orientation: portrait) and (max-height: 700px) {
-            .mobile-controls {
-                height: 25vh;
-                min-height: 150px;
-            }
-            
-            #gameCanvas {
-                max-height: 50vh;
-            }
-        }
-        
-        @media (max-width: 768px) and (orientation: portrait) and (max-height: 600px) {
-            .header {
-                padding: 8px 10px;
-            }
-            
-            .header h1 {
-                font-size: 16px;
-            }
-            
-            .game-ui {
-                padding: 6px 10px;
-            }
-            
-            .mobile-controls {
-                height: 22vh;
-                min-height: 130px;
-                padding: 12px;
-            }
-            
-            #gameCanvas {
-                max-height: 45vh;
-            }
-            
-            .stat-value {
-                font-size: 16px;
-            }
-        }
-        
-        @media (max-width: 768px) and (orientation: portrait) {
-            .orientation-hint {
-                display: flex;
-            }
-        }
-        
-        @media (min-width: 410px) and (max-width: 768px) and (orientation: portrait) {
-            .mobile-controls {
-                height: 25vh;
-            }
-            
-            #gameCanvas {
-                max-height: 55vh;
-            }
-        }
-        
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .mobile-controls {
-                height: 25vh;
-                max-height: 220px;
-            }
-            
-            #gameCanvas {
-                max-height: 65vh;
             }
         }
     </style>
@@ -607,7 +481,7 @@
             <div class="success-effect" id="successEffect"></div>
             
             <div class="control-hints">
-                Используйте руль и педали для управления
+                Используйте кнопки для управления
             </div>
         </div>
     </div>
@@ -616,13 +490,18 @@
     
     <!-- Мобильное управление -->
     <div class="mobile-controls" id="mobileControls">
-        <div class="steering-container">
-            <div class="steering-indicator" id="steeringIndicator">0°</div>
-            <div class="steering-wheel" id="steeringWheel">
-                <div class="wheel-center"></div>
-                <div class="wheel-handle"></div>
+        <div class="steering-buttons">
+            <div class="steering-row">
+                <div class="steering-button" id="leftButton">←</div>
             </div>
-            <div class="pedal-label">РУЛЬ</div>
+            <div class="steering-row">
+                <div class="steering-button" id="upButton">↑</div>
+                <div class="steering-button large" id="centerButton">○</div>
+                <div class="steering-button" id="downButton">↓</div>
+            </div>
+            <div class="steering-row">
+                <div class="steering-button" id="rightButton">→</div>
+            </div>
         </div>
         
         <div class="pedals-container">
@@ -635,13 +514,6 @@
                 <div class="pedal-label">Нажмите</div>
             </div>
         </div>
-    </div>
-    
-    <!-- Подсказка об ориентации -->
-    <div class="orientation-hint" id="orientationHint">
-        <div class="orientation-icon">📱</div>
-        <div class="orientation-text">Поверните телефон</div>
-        <div class="orientation-subtext">Для лучшего игрового опыта поверните устройство в горизонтальное положение</div>
     </div>
 
     <!-- Three.js библиотека -->
@@ -656,11 +528,15 @@
         const notification = document.getElementById('notification');
         const successEffect = document.getElementById('successEffect');
         const mobileControls = document.getElementById('mobileControls');
-        const steeringWheel = document.getElementById('steeringWheel');
         const gasPedal = document.getElementById('gasPedal');
         const brakePedal = document.getElementById('brakePedal');
-        const orientationHint = document.getElementById('orientationHint');
-        const steeringIndicator = document.getElementById('steeringIndicator');
+
+        // Кнопки управления
+        const upButton = document.getElementById('upButton');
+        const downButton = document.getElementById('downButton');
+        const leftButton = document.getElementById('leftButton');
+        const rightButton = document.getElementById('rightButton');
+        const centerButton = document.getElementById('centerButton');
 
         // Переменные игры
         let score = 0;
@@ -674,24 +550,9 @@
         let obstacles = [];
         let parkingSpots = [];
         
-        // Адаптивные размеры игрового поля для мобильных устройств
-        const getFieldSize = () => {
-            const isMobile = window.innerWidth <= 768;
-            if (isMobile) {
-                return {
-                    width: 25,
-                    height: 18
-                };
-            } else {
-                return {
-                    width: 40,
-                    height: 30
-                };
-            }
-        };
-        
-        let FIELD_WIDTH = getFieldSize().width;
-        let FIELD_HEIGHT = getFieldSize().height;
+        // Размеры игрового поля
+        const FIELD_WIDTH = 25;
+        const FIELD_HEIGHT = 18;
         
         // Размеры машины
         const CAR_WIDTH = 1.5;
@@ -735,33 +596,12 @@
             brake: false
         };
 
-        // Переменные для руля
-        let isSteering = false;
-        let wheelStartAngle = 0;
-        let currentWheelAngle = 0;
-
-        // Проверка ориентации и размера экрана
-        function checkOrientation() {
-            const isPortrait = window.innerHeight > window.innerWidth;
-            const isSmallScreen = window.innerHeight < 500;
-            
-            if (isPortrait && isSmallScreen) {
-                orientationHint.style.display = 'flex';
-            } else {
-                orientationHint.style.display = 'none';
-            }
-            
-            adaptControlsToScreen();
-        }
+        // Переменные для кнопок управления
+        let activeSteering = 0;
 
         // Адаптация управления под размер экрана
         function adaptControlsToScreen() {
             const screenWidth = window.innerWidth;
-            const isMobile = screenWidth <= 768;
-            
-            const fieldSize = getFieldSize();
-            FIELD_WIDTH = fieldSize.width;
-            FIELD_HEIGHT = fieldSize.height;
             
             if (screenWidth < 400) {
                 carPhysics.steering = 0.025;
@@ -804,126 +644,88 @@
             }, 2000);
         }
 
-        // Новая система управления рулем
+        // Настройка кнопочного управления
         function setupMobileControls() {
-            // Функция для вычисления угла касания относительно центра руля
-            function getTouchAngle(clientX, clientY) {
-                const rect = steeringWheel.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const deltaX = clientX - centerX;
-                const deltaY = clientY - centerY;
-                return Math.atan2(deltaY, deltaX);
-            }
-
-            // Функция обновления визуального отображения руля
-            function updateWheelVisual(angle) {
-                const rotation = angle * 2;
-                steeringWheel.style.transform = `rotate(${rotation}rad)`;
-                
-                const degrees = Math.round(angle * 180 / Math.PI);
-                steeringIndicator.textContent = `${degrees}°`;
-                
-                if (Math.abs(angle) > 0.1) {
-                    steeringIndicator.classList.add('show');
-                } else {
-                    steeringIndicator.classList.remove('show');
+            // Функции для обработки нажатий кнопок
+            const handleButtonPress = (direction) => {
+                switch (direction) {
+                    case 'left':
+                        activeSteering = 1;
+                        break;
+                    case 'right':
+                        activeSteering = -1;
+                        break;
+                    case 'up':
+                        mobileInput.gas = true;
+                        break;
+                    case 'down':
+                        mobileInput.brake = true;
+                        break;
+                    case 'center':
+                        // Сброс управления
+                        activeSteering = 0;
+                        mobileInput.gas = false;
+                        mobileInput.brake = false;
+                        break;
                 }
-            }
+            };
 
-            // Функция обновления управления
-            function updateSteering(angle) {
-                const maxAngle = Math.PI / 2;
-                currentWheelAngle = Math.max(-maxAngle, Math.min(maxAngle, angle));
-                mobileInput.steering = currentWheelAngle / maxAngle;
-                updateWheelVisual(currentWheelAngle);
-            }
-
-            // Обработчики для касаний
-            steeringWheel.addEventListener('touchstart', (e) => {
-                const touch = e.touches[0];
-                wheelStartAngle = getTouchAngle(touch.clientX, touch.clientY) - currentWheelAngle;
-                isSteering = true;
-                e.preventDefault();
-            });
-
-            steeringWheel.addEventListener('touchmove', (e) => {
-                if (!isSteering) return;
-                
-                const touch = e.touches[0];
-                const currentAngle = getTouchAngle(touch.clientX, touch.clientY);
-                const newWheelAngle = currentAngle - wheelStartAngle;
-                
-                updateSteering(newWheelAngle);
-                e.preventDefault();
-            });
-
-            steeringWheel.addEventListener('touchend', (e) => {
-                if (isSteering) {
-                    resetWheelToCenter();
+            const handleButtonRelease = (direction) => {
+                switch (direction) {
+                    case 'left':
+                    case 'right':
+                        activeSteering = 0;
+                        break;
+                    case 'up':
+                        mobileInput.gas = false;
+                        break;
+                    case 'down':
+                        mobileInput.brake = false;
+                        break;
                 }
-                e.preventDefault();
-            });
+            };
 
-            steeringWheel.addEventListener('touchcancel', (e) => {
-                if (isSteering) {
-                    resetWheelToCenter();
-                }
-                e.preventDefault();
-            });
+            // Обработчики для кнопок (касания)
+            const setupButton = (button, direction) => {
+                // Касания
+                button.addEventListener('touchstart', (e) => {
+                    handleButtonPress(direction);
+                    e.preventDefault();
+                });
 
-            // Обработчики для мыши
-            steeringWheel.addEventListener('mousedown', (e) => {
-                wheelStartAngle = getTouchAngle(e.clientX, e.clientY) - currentWheelAngle;
-                isSteering = true;
-                e.preventDefault();
-            });
+                button.addEventListener('touchend', (e) => {
+                    handleButtonRelease(direction);
+                    e.preventDefault();
+                });
 
-            document.addEventListener('mousemove', (e) => {
-                if (!isSteering) return;
-                
-                const currentAngle = getTouchAngle(e.clientX, e.clientY);
-                const newWheelAngle = currentAngle - wheelStartAngle;
-                
-                updateSteering(newWheelAngle);
-                e.preventDefault();
-            });
+                button.addEventListener('touchcancel', (e) => {
+                    handleButtonRelease(direction);
+                    e.preventDefault();
+                });
 
-            document.addEventListener('mouseup', (e) => {
-                if (isSteering) {
-                    resetWheelToCenter();
-                }
-            });
+                // Мышь (для тестирования)
+                button.addEventListener('mousedown', (e) => {
+                    handleButtonPress(direction);
+                    e.preventDefault();
+                });
 
-            // Функция плавного возврата руля в центр
-            function resetWheelToCenter() {
-                isSteering = false;
-                const startAngle = currentWheelAngle;
-                const startTime = Date.now();
-                const duration = 300;
-                
-                function animateReset() {
-                    const elapsed = Date.now() - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    
-                    const easeProgress = 1 - Math.pow(1 - progress, 3);
-                    currentWheelAngle = startAngle * (1 - easeProgress);
-                    mobileInput.steering = currentWheelAngle / (Math.PI / 2);
-                    
-                    updateWheelVisual(currentWheelAngle);
-                    
-                    if (progress < 1) {
-                        requestAnimationFrame(animateReset);
-                    } else {
-                        currentWheelAngle = 0;
-                        mobileInput.steering = 0;
-                        updateWheelVisual(0);
-                        steeringIndicator.classList.remove('show');
-                    }
-                }
-                
-                animateReset();
-            }
+                button.addEventListener('mouseup', (e) => {
+                    handleButtonRelease(direction);
+                    e.preventDefault();
+                });
+
+                button.addEventListener('mouseleave', (e) => {
+                    handleButtonRelease(direction);
+                    e.preventDefault();
+                });
+            };
+
+            // Настройка всех кнопок
+            setupButton(leftButton, 'left');
+            setupButton(rightButton, 'right');
+            setupButton(upButton, 'up');
+            setupButton(downButton, 'down');
+            setupButton(centerButton, 'center');
 
             // Педаль газа
             const handleGasStart = () => {
@@ -985,19 +787,14 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87CEEB);
             
-            const isMobile = window.innerWidth <= 768;
             camera = new THREE.PerspectiveCamera(
-                isMobile ? 80 : 75,
+                75,
                 gameCanvas.clientWidth / gameCanvas.clientHeight, 
                 0.1, 
                 1000
             );
             
-            if (isMobile) {
-                camera.position.set(0, 12, 12);
-            } else {
-                camera.position.set(0, 15, 15);
-            }
+            camera.position.set(0, 12, 12);
             camera.lookAt(0, 0, 0);
             
             renderer = new THREE.WebGLRenderer({ 
@@ -1332,6 +1129,7 @@
             let acceleration = 0;
             let steering = 0;
             
+            // Управление с кнопок
             if (keys.ArrowUp || keys.KeyW || mobileInput.gas) {
                 acceleration = carPhysics.acceleration;
             } else if (keys.ArrowDown || keys.KeyS) {
@@ -1342,12 +1140,14 @@
                 carPhysics.speed *= (1 - carPhysics.deceleration);
             }
             
+            // Управление поворотом с кнопок
             if (keys.ArrowLeft || keys.KeyA) {
                 steering = carPhysics.steering;
             } else if (keys.ArrowRight || keys.KeyD) {
                 steering = -carPhysics.steering;
             } else {
-                steering = -mobileInput.steering * carPhysics.steering * 1.5;
+                // Используем активное управление с кнопок
+                steering = activeSteering * carPhysics.steering;
             }
             
             carPhysics.speed += acceleration;
@@ -1386,7 +1186,7 @@
                 const carZ = carPhysics.position.z;
                 
                 camera.position.x = carX;
-                camera.position.z = carZ + (window.innerWidth <= 768 ? 10 : 15);
+                camera.position.z = carZ + 12;
                 camera.lookAt(carX, 0, carZ);
             }
             
@@ -1410,13 +1210,10 @@
             }
         });
 
-        // Обработчик изменения размера окна и ориентации
+        // Обработчик изменения размера окна
         function handleResize() {
-            checkOrientation();
             if (camera && renderer && gameCanvas) {
-                const isMobile = window.innerWidth <= 768;
                 camera.aspect = gameCanvas.clientWidth / gameCanvas.clientHeight;
-                camera.fov = isMobile ? 80 : 75;
                 camera.updateProjectionMatrix();
                 renderer.setSize(gameCanvas.clientWidth, gameCanvas.clientHeight);
                 
@@ -1427,7 +1224,6 @@
         }
 
         window.addEventListener('resize', handleResize);
-        window.addEventListener('orientationchange', checkOrientation);
 
         startButton.addEventListener('click', () => {
             if (!gameActive) {
@@ -1456,10 +1252,11 @@
         window.addEventListener('load', () => {
             initScene();
             setupMobileControls();
-            checkOrientation();
+            adaptControlsToScreen();
             handleResize();
             showNotification('Добро пожаловать в 3D Парковку! 🚗 Найдите желтое парковочное место', 'info');
             
+            // Автозапуск на мобильных устройствах
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
                 setTimeout(() => {
                     if (!gameActive) {
