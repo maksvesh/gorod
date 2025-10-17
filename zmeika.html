@@ -172,11 +172,11 @@
     <div class="info">
         <div class="apple-info">
             <div class="apple-color green"></div>
-            <span>+1 длина</span>
+            <span>+1 очко, +1 длина</span>
         </div>
         <div class="apple-info">
             <div class="apple-color red"></div>
-            <span>-1 длина</span>
+            <span>-1 очко, -1 длина</span>
         </div>
     </div>
     
@@ -279,19 +279,26 @@
                 snake.maxCells++;
                 score++;
                 updateScore();
-                showMessage('+1!');
+                showMessage('+1 очко, +1 длина!');
                 placeApples();
             }
 
             if (snake.cells[0].x === redApple.x && snake.cells[0].y === redApple.y) {
+                // Отнимаем очко и длину при съедании красного яблока
                 if (snake.maxCells > 1) {
                     snake.maxCells--;
+                    score--;
+                    updateScore();
+                    // Удаляем последний сегмент змейки
                     if (snake.cells.length > snake.maxCells) {
                         snake.cells.splice(snake.maxCells);
                     }
-                    showMessage('-1!');
+                    showMessage('-1 очко, -1 длина!');
                 } else {
-                    showMessage('Мин. длина!');
+                    // Если длина минимальная, только отнимаем очко
+                    score--;
+                    updateScore();
+                    showMessage('-1 очко! Мин. длина!');
                 }
                 placeApples();
             }
