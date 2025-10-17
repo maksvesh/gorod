@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             -ms-user-select: none;
             user-select: none;
         }
+
         body {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             padding: 15px;
@@ -26,6 +28,7 @@
             color: #333;
             overflow-x: hidden;
         }
+
         .container {
             width: 100%;
             max-width: 500px;
@@ -35,6 +38,7 @@
             padding: 20px;
             margin-top: 10px;
         }
+
         .back-button {
             display: inline-block;
             margin-bottom: 15px;
@@ -47,10 +51,12 @@
             transition: all 0.3s;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .back-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
+
         h1 {
             color: #2c3e50;
             text-align: center;
@@ -58,6 +64,7 @@
             font-size: 1.8rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .game-info {
             display: flex;
             justify-content: space-between;
@@ -69,6 +76,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             font-size: 0.9rem;
         }
+
         .word-list {
             display: flex;
             flex-wrap: wrap;
@@ -79,6 +87,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .word {
             padding: 6px 12px;
             background-color: #4caf50;
@@ -89,18 +98,21 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             font-size: 0.9rem;
         }
+
         .word.found {
             background-color: #2e7d32;
             text-decoration: line-through;
             transform: scale(0.95);
             opacity: 0.8;
         }
+
         .grid-container {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
             touch-action: none;
         }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
@@ -113,6 +125,7 @@
             background-color: #2c3e50;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
+
         .cell {
             width: 100%;
             aspect-ratio: 1;
@@ -125,19 +138,23 @@
             border-radius: 3px;
             font-size: 1.1rem;
         }
+
         .cell.selected {
             background-color: #3498db;
             color: white;
             transform: scale(1.05);
         }
+
         .cell.found {
             background-color: #2ecc71;
             color: white;
         }
+
         .cell.highlight {
             background-color: #f39c12;
             color: white;
         }
+
         .controls {
             display: flex;
             justify-content: center;
@@ -145,6 +162,7 @@
             margin-top: 15px;
             flex-wrap: wrap;
         }
+
         button {
             padding: 10px 18px;
             background: linear-gradient(to right, #3498db, #2980b9);
@@ -158,16 +176,20 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             min-width: 120px;
         }
+
         button:active {
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
+
         button#reset {
             background: linear-gradient(to right, #e74c3c, #c0392b);
         }
+
         button#hint {
             background: linear-gradient(to right, #f39c12, #e67e22);
         }
+
         .message {
             text-align: center;
             margin-top: 15px;
@@ -178,16 +200,19 @@
             transition: all 0.3s;
             font-size: 0.9rem;
         }
+
         .message.success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+
         .message.error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
         .instructions {
             margin-top: 20px;
             padding: 15px;
@@ -197,25 +222,31 @@
             line-height: 1.5;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .instructions h3 {
             margin-top: 0;
             color: #e65100;
             font-size: 1rem;
         }
+
         @media (max-width: 350px) {
             .container {
                 padding: 15px;
             }
+
             .grid {
                 grid-template-columns: repeat(10, 1fr);
                 max-width: 320px;
             }
+
             .cell {
                 font-size: 1rem;
             }
+
             h1 {
                 font-size: 1.5rem;
             }
+
             button {
                 min-width: 100px;
                 padding: 8px 15px;
@@ -224,44 +255,46 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <a href="games.html" class="back-button">← Назад к играм</a>
         <h1>Найди слова</h1>
-        
+
         <div class="game-info">
             <div>Найдено: <span id="found-count">0</span>/<span id="total-count">8</span></div>
             <div>Время: <span id="timer">0</span> сек</div>
             <div>Подсказки: <span id="hint-count">3</span></div>
         </div>
-        
+
         <div class="word-list" id="word-list">
             <!-- Слова будут добавлены через JavaScript -->
         </div>
-        
+
         <div class="grid-container">
             <div class="grid" id="grid">
                 <!-- Сетка будет создана через JavaScript -->
             </div>
         </div>
-        
+
         <div class="controls">
             <button id="check">Проверить</button>
             <button id="hint">Подсказка</button>
             <button id="reset">Новая игра</button>
         </div>
-        
+
         <div class="message" id="message"></div>
-        
+
         <div class="instructions">
             <h3>Как играть:</h3>
             <p>Найдите все слова из списка в сетке. Слова могут располагаться только по горизонтали и вертикали.</p>
-            <p>Нажмите на первую букву и проведите пальцем до последней буквы слова. Нажмите "Проверить", чтобы проверить слово.</p>
+            <p>Нажмите на первую букву и проведите пальцем до последней буквы слова. Нажмите "Проверить", чтобы
+                проверить слово.</p>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Элементы DOM
             const gridElement = document.getElementById('grid');
             const wordListElement = document.getElementById('word-list');
@@ -273,7 +306,7 @@
             const resetButton = document.getElementById('reset');
             const hintButton = document.getElementById('hint');
             const messageElement = document.getElementById('message');
-            
+
             // Переменные игры
             let grid = [];
             let words = [];
@@ -283,7 +316,7 @@
             let startTime;
             let timerInterval;
             let hints = 3;
-            
+
             // Большой список слов для поиска (слова меняются при каждой игре)
             const wordPool = [
                 'КОМПЬЮТЕР', 'ПРОГРАММА', 'АЛГОРИТМ', 'ФУНКЦИЯ', 'МАССИВ', 'ОБЪЕКТ', 'КЛАСС', 'ЦИКЛ',
@@ -295,11 +328,55 @@
                 'ИНТЕРПРЕТАТОР', 'КОМПИЛЯТОР', 'ОПТИМИЗАЦИЯ', 'ДЕБАГГИНГ', 'ТЕСТИРОВАНИЕ', 'ОШИБКА', 'ОТЛАДКА', 'СБОРКА',
                 'БИБЛИОТЕКА', 'ФРЕЙМВОРК', 'ПЛАТФОРМА', 'ОПЕРАЦИОНКА', 'ДРАЙВЕР', 'ПРОТОКОЛ', 'ФОРМАТ', 'СТАНДАРТ',
                 'HTML', 'CSS', 'JAVASCRIPT', 'PYTHON', 'JAVA', 'PHP', 'RUBY', 'SQL',
-                'БАЗЫДАННЫХ', 'ЗАПРОС', 'ТАБЛИЦА', 'ЗАПИСЬ', 'ПОЛЕ', 'ИНДЕКС', 'СВЯЗЬ', 'ТРАНЗАКЦИЯ',
+                'ЗАПРОС', 'ТАБЛИЦА', 'ЗАПИСЬ', 'ПОЛЕ', 'ИНДЕКС', 'СВЯЗЬ', 'ТРАНЗАКЦИЯ',
                 'ВЕБ', 'САЙТ', 'СТРАНИЦА', 'ССЫЛКА', 'ИЗОБРАЖЕНИЕ', 'ВИДЕО', 'АУДИО', 'МУЛЬТИМЕДИА',
-                'АНИМАЦИЯ', 'ГРАФИКА', 'РИСОВАНИЕ', 'ДИЗАЙН', 'ИНТЕРФЕЙС', 'НАВИГАЦИЯ', 'МЕНЮ', 'КНОПКА'
-            ];
-            
+                'АНИМАЦИЯ', 'ГРАФИКА', 'РИСОВАНИЕ', 'ДИЗАЙН', 'ИНТЕРФЕЙС', 'НАВИГАЦИЯ', 'МЕНЮ', 'КНОПКА',
+              // Новые слова - программирование
+                'ПЕРЕЧИСЛЕНИЕ', 'СТРУКТУРА', 'ШАБЛОН', 'МОДУЛЬ', 'ПАКЕТ', 'ИМПОРТ', 'ЭКСПОРТ', 'НАСЛЕДОВАНИЕ',
+                'ПОЛИМОРФИЗМ', 'ИНКАПСУЛЯЦИЯ', 'АБСТРАКЦИЯ', 'ИНТЕРФЕЙС', 'РЕАЛИЗАЦИЯ', 'ДЕКОРАТОР', 'ИТЕРАТОР', 'ГЕНЕРАТОР',
+                'РЕКУРСИЯ', 'ХЭШТАБЛИЦА', 'ОЧЕРЕДЬ', 'СТЕК', 'ГРАФ', 'ДЕРЕВО', 'СПИСОК', 'МНОЖЕСТВО',
+                'СЛОВАРЬ', 'КОРТЕЖ', 'ПЕРЕЧИСЛЕНИЕ', 'ДИНАМИЧЕСКИЙ', 'СТАТИЧЕСКИЙ', 'ГЛОБАЛЬНЫЙ', 'ЛОКАЛЬНЫЙ', 'АРГУМЕНТ',
+                'ПАРАМЕТР', 'ВОЗВРАТ', 'РЕЗУЛЬТАТ', 'УСЛОВИЕ', 'ВЕТВЛЕНИЕ', 'ВЫБОР', 'СЛУЧАЙ', 'ПОВТОРЕНИЕ',
+
+                // Новые слова - технологии
+                'ИСКУССТВЕННЫЙ', 'ИНТЕЛЛЕКТ', 'МАШИННОЕ', 'ОБУЧЕНИЕ', 'НЕЙРОННАЯ', 'СЕТЬ', 'БОЛЬШИЕ', 'ДАННЫЕ',
+                'ОБЛАКО', 'ВИРТУАЛИЗАЦИЯ', 'КОНТЕЙНЕРИЗАЦИЯ', 'МИКРОСЕРВИС', 'API', 'REST', 'GRAPHQL', 'WEBSOCKET',
+                'РЕАКТИВНЫЙ','ЗАМЫКАНИЕ', 'ОБЛАСТЬ',
+                'ПРОСТРАНСТВО', 'ИМЕН',
+
+                // Новые слова - аппаратное обеспечение
+                'ПЛАТА', 'ПРОЦЕССОР', 'ОПЕРАТИВНАЯ', 'ПОСТОЯННАЯ', 'ВИДЕОКАРТА', 'СЕТЕВАЯ', 'ЗВУКОВАЯ',
+                'БЛОКПИТАНИЯ', 'ОХЛАЖДЕНИЕ', 'РАДИАТОР', 'КУЛЕР', 'ЖЕСТКИЙ', 'SSD', 'USB', 'HDMI',
+                'ETHERNET', 'WI-FI', 'BLUETOOTH', 'BIOS',
+                // Новые слова - разработка
+                'РЕПОЗИТОРИЙ', 'КОММИТ', 'ВЕТКА', 'СЛИЯНИЕ', 'КОНФЛИКТ',
+                'ДОКУМЕНТАЦИЯ', 'КОММЕНТАРИЙ','ХОСТИНГ',
+                'ДОМЕН',
+
+                // Новые слова - общие IT термины
+                'АВТОМАТИЗАЦИЯ', 'СКРИПТ', 'ПЛАГИН', 'РАСШИРЕНИЕ', 'НАСТРОЙКА', 'КОНФИГУРАЦИЯ', 'ПАРАМЕТР', 'НАСТРОЙКА',
+                'ОБНОВЛЕНИЕ', 'ПАТЧ', 'РЕЛИЗ', 'ВЕРСИЯ', 'СБОРКА', 'АРТЕФАКТ', 'ЗАВИСИМОСТЬ', 'ПАКЕТ',
+                'УТИЛИТА', 'ИНСТРУМЕНТ', 'СРЕДА', 'РАЗРАБОТКИ', 'РЕДАКТОР', 
+ // Новые слова - повседневные вещи
+ 'ТЕЛЕФОН', 'СМАРТФОН', 'ПЛАНШЕТ', 'НОУТБУК', 'НАУШНИКИ', 'КОЛОНКИ', 'ЗАРЯДКА', 'АККУМУЛЯТОР',
+    'КАМЕРА', 'ФОТОАППАРАТ', 'ВИДЕОКАМЕРА', 'МИКРОФОН', 'ДИНАМИК', 'СЕНСОР', 'СКАНЕР', 'ПРИНТЕР',
+    'СКАНЕР', 'КОПИР', 'ФАКС', 'ТЕЛЕВИЗОР', 'ПУЛЬТ', 'ПРОЕКТОР', 'ЭКРАН', 'РОУТЕР',
+    'МОДЕМ', 'РЕПИТЕР', 'ТРИФИДЕР', 'ФЛЕШКА', 'ДИСК', 'КАРТАПАМЯТИ', 'ВНЕШНИЙ', 'ЖЕСТКИЙ',
+    'КОФЕМАШИНА', 'ЧАЙНИК', 'ХОЛОДИЛЬНИК', 'МИКРОВОЛНОВКА', 'ДУХОВКА', 'ПЛИТА', 'ПЫЛЕСОС', 'СТИРАЛЬНАЯ',
+    'ПОСУДОМОЙКА', 'КОНДИЦИОНЕР', 'ОБОГРЕВАТЕЛЬ', 'ВЕНТИЛЯТОР', 'УВЛАЖНИТЕЛЬ', 'ОЧИСТИТЕЛЬ', 'ВОЗДУХА', 'ТЕРМОСТАТ',
+    'УМНЫЙ', 'ДОМ', 'ЛАМПОЧКА', 'ВЫКЛЮЧАТЕЛЬ', 'РОЗЕТКА', 'ТЕРМОПОТ', 'МУЛЬТИВАРКА', 'БЛЕНДЕР',
+    'МИКСЕР', 'КОМБАЙН', 'СОКОВЫЖИМАЛКА', 'ТОСТЕР', 'БУТЕРБРОДНИЦА', 'ЭЛЕКТРОГРИЛЬ', 'АЭРОГРИЛЬ', 'ФРИТЮРНИЦА',
+    'ФЕН', 'ПЛОЙКА', 'СТРАЙПЕР', 'ЭПИЛЯТОР', 'БРИТВА', 'МАШИНКА', 'СТРИЖКИ', 'ЗУБНАЯ',
+    'ЩЕТКА', 'ЭЛЕКТРИЧЕСКАЯ', 'ШАГОМЕР', 'ФИТНЕСБРАСЛЕТ', 'СМАРТЧАСЫ', 'МОНИТОР', 'СНА', 'ВЕСЫ',
+    'ТЕРМОМЕТР', 'ТОНОМЕТР', 'ГЛЮКОМЕТР', 'ИНГАЛЯТОР', 'МАССАЖЕР', 'СОЛЯРИЙ',
+    'ДОМАШНИЙ', 'КИНОТЕАТР', 'МУЗЫКАЛЬНЫЙ', 'ЦЕНТР', 'ИГРОВАЯ', 'ПРИСТАВКА', 'ДЖОЙСТИК', 'РУЛЬ',
+    'АВТОМОБИЛЬ', 'НАВИГАТОР', 'РАДАР', 'ВИДЕОРЕГИСТРАТОР', 'АВТОМАГНИТОЛА', 'САБВУФЕР', 'УСИЛИТЕЛЬ', 'ШУМОИЗОЛЯЦИЯ',
+    'ВЕЛОСИПЕД', 'САМОКАТ', 'ЭЛЕКТРОСАМОКАТ', 'ГИРОСКУТЕР', 'МОНОКОЛЕСО', 'СКЕЙТБОРД', 'РОЛИКИ', 'ЛЫЖИ',
+    'СНОУБОРД', 'СПОРТИВНЫЙ', 'ИНВЕНТАРЬ', 'ТРЕНАЖЕР', 'БЕГОВАЯ', 'ДОРОЖКА', 'ОРБИТРЕК', 'ЭЛЛИПС',
+    'ГАНТЕЛИ', 'ШТАНГА', 'ГИРЯ', 'ЭСПАНДЕР', 'ПЕТЛИ'
+];
+
+                
             // Инициализация игры
             function initGame() {
                 // Очистка предыдущего состояния
@@ -310,43 +387,43 @@
                 clearInterval(timerInterval);
                 hints = 3;
                 hintCountElement.textContent = hints;
-                
+
                 // Выбор случайных слов
                 words = selectRandomWords(wordPool, 8);
                 totalCountElement.textContent = words.length;
                 foundCountElement.textContent = '0';
                 messageElement.textContent = '';
                 messageElement.className = 'message';
-                
+
                 // Создание сетки (10x10)
                 grid = createGrid(10, 10);
-                
+
                 // Размещаем слова в сетке
                 let success = placeAllWordsGuaranteed(grid, words);
-                
+
                 if (!success) {
                     // Если не удалось разместить все слова, пробуем еще раз
                     initGame();
                     return;
                 }
-                
+
                 fillEmptyCells(grid);
-                
+
                 // Отрисовка сетки и списка слов
                 renderGrid(grid);
                 renderWordList(words);
-                
+
                 // Запуск таймера
                 startTime = Date.now();
                 timerInterval = setInterval(updateTimer, 1000);
             }
-            
+
             // Выбор случайных слов
             function selectRandomWords(wordPool, count) {
                 const shuffled = [...wordPool].sort(() => 0.5 - Math.random());
                 return shuffled.slice(0, count);
             }
-            
+
             // Создание пустой сетки
             function createGrid(rows, cols) {
                 const grid = [];
@@ -355,7 +432,7 @@
                 }
                 return grid;
             }
-            
+
             // Гарантированное размещение всех слов в сетке (только горизонтально и вертикально)
             function placeAllWordsGuaranteed(grid, words) {
                 // Только горизонтальные и вертикальные направления
@@ -365,25 +442,25 @@
                     { dr: 0, dc: -1 },  // горизонтально влево
                     { dr: -1, dc: 0 }   // вертикально вверх
                 ];
-                
+
                 // Сортируем слова по длине (от самых длинных к самым коротким)
                 const sortedWords = [...words].sort((a, b) => b.length - a.length);
-                
+
                 for (const word of sortedWords) {
                     let placed = false;
                     let attempts = 0;
-                    
+
                     // Сначала попробуем разместить слово в случайных позициях
                     while (!placed && attempts < 200) {
                         attempts++;
-                        
+
                         // Случайное направление
                         const direction = directions[Math.floor(Math.random() * directions.length)];
-                        
+
                         // Случайная начальная позиция
                         const startRow = Math.floor(Math.random() * grid.length);
                         const startCol = Math.floor(Math.random() * grid[0].length);
-                        
+
                         // Проверка возможности размещения слова
                         if (canPlaceWord(grid, word, startRow, startCol, direction)) {
                             // Размещение слова
@@ -391,7 +468,7 @@
                             placed = true;
                         }
                     }
-                    
+
                     // Если не удалось разместить случайно, пробуем систематически
                     if (!placed) {
                         for (let row = 0; row < grid.length && !placed; row++) {
@@ -406,28 +483,28 @@
                             }
                         }
                     }
-                    
+
                     // Если все еще не удалось разместить, возвращаем false
                     if (!placed) {
                         console.log("Не удалось разместить слово:", word);
                         return false;
                     }
                 }
-                
+
                 return true;
             }
-            
+
             // Проверка возможности размещения слова
             function canPlaceWord(grid, word, row, col, direction) {
                 for (let i = 0; i < word.length; i++) {
                     const r = row + i * direction.dr;
                     const c = col + i * direction.dc;
-                    
+
                     // Проверка границ
                     if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length) {
                         return false;
                     }
-                    
+
                     // Проверка конфликта с другими словами
                     if (grid[r][c] !== '' && grid[r][c] !== word[i]) {
                         return false;
@@ -435,7 +512,7 @@
                 }
                 return true;
             }
-            
+
             // Размещение слова в сетке
             function placeWord(grid, word, row, col, direction) {
                 for (let i = 0; i < word.length; i++) {
@@ -444,7 +521,7 @@
                     grid[r][c] = word[i];
                 }
             }
-            
+
             // Заполнение пустых ячеек случайными буквами
             function fillEmptyCells(grid) {
                 const letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
@@ -456,11 +533,11 @@
                     }
                 }
             }
-            
+
             // Отрисовка сетки
             function renderGrid(grid) {
                 gridElement.innerHTML = '';
-                
+
                 for (let i = 0; i < grid.length; i++) {
                     for (let j = 0; j < grid[i].length; j++) {
                         const cell = document.createElement('div');
@@ -468,38 +545,38 @@
                         cell.textContent = grid[i][j];
                         cell.dataset.row = i;
                         cell.dataset.col = j;
-                        
+
                         // Обработчики событий для сенсорных устройств
                         cell.addEventListener('touchstart', handleTouchStart, { passive: false });
                         cell.addEventListener('touchmove', handleTouchMove, { passive: false });
                         cell.addEventListener('touchend', handleTouchEnd);
-                        
+
                         gridElement.appendChild(cell);
                     }
                 }
             }
-            
+
             // Обработчик начала касания
             function handleTouchStart(e) {
                 e.preventDefault();
                 isSelecting = true;
                 const touch = e.touches[0];
                 const cell = document.elementFromPoint(touch.clientX, touch.clientY);
-                
+
                 if (cell && cell.classList.contains('cell')) {
                     clearSelection();
                     selectCell(cell);
                 }
             }
-            
+
             // Обработчик перемещения касания
             function handleTouchMove(e) {
                 if (!isSelecting) return;
                 e.preventDefault();
-                
+
                 const touch = e.touches[0];
                 const cell = document.elementFromPoint(touch.clientX, touch.clientY);
-                
+
                 if (cell && cell.classList.contains('cell') && !selectedCells.includes(cell)) {
                     // Проверяем, что ячейка соседняя с последней выделенной
                     if (selectedCells.length > 0) {
@@ -508,11 +585,11 @@
                         const lastCol = parseInt(lastCell.dataset.col);
                         const currentRow = parseInt(cell.dataset.row);
                         const currentCol = parseInt(cell.dataset.col);
-                        
+
                         // Проверяем, что ячейка находится рядом по горизонтали, вертикали или диагонали
                         const rowDiff = Math.abs(lastRow - currentRow);
                         const colDiff = Math.abs(lastCol - currentCol);
-                        
+
                         if (rowDiff <= 1 && colDiff <= 1) {
                             selectCell(cell);
                         }
@@ -521,13 +598,13 @@
                     }
                 }
             }
-            
+
             // Обработчик окончания касания
             function handleTouchEnd(e) {
                 e.preventDefault();
                 isSelecting = false;
             }
-            
+
             // Выделение ячейки
             function selectCell(cell) {
                 if (!cell.classList.contains('found')) {
@@ -537,7 +614,7 @@
                     }
                 }
             }
-            
+
             // Сброс выделения
             function clearSelection() {
                 selectedCells.forEach(cell => {
@@ -547,11 +624,11 @@
                 });
                 selectedCells = [];
             }
-            
+
             // Отрисовка списка слов
             function renderWordList(words) {
                 wordListElement.innerHTML = '';
-                
+
                 words.forEach(word => {
                     const wordElement = document.createElement('div');
                     wordElement.className = 'word';
@@ -560,22 +637,22 @@
                     wordListElement.appendChild(wordElement);
                 });
             }
-            
+
             // Проверка выделенного слова
             function checkSelectedWord() {
                 if (selectedCells.length < 2) {
                     showMessage('Выделите хотя бы две буквы!', 'error');
                     return;
                 }
-                
+
                 // Получение слова из выделенных ячеек
                 const selectedWord = selectedCells.map(cell => cell.textContent).join('');
-                
+
                 // Проверка в прямом и обратном направлении
                 const reversedWord = selectedWord.split('').reverse().join('');
-                
+
                 let foundWord = null;
-                
+
                 for (const word of words) {
                     if (word === selectedWord) {
                         foundWord = word;
@@ -585,17 +662,17 @@
                         break;
                     }
                 }
-                
+
                 if (foundWord && !foundWords.includes(foundWord)) {
                     // Найдено правильное слово
                     foundWords.push(foundWord);
-                    
+
                     // Помечаем ячейки как найденные
                     selectedCells.forEach(cell => {
                         cell.classList.remove('selected');
                         cell.classList.add('found');
                     });
-                    
+
                     // Помечаем слово в списке как найденное
                     const wordElements = document.querySelectorAll('.word');
                     wordElements.forEach(el => {
@@ -603,12 +680,12 @@
                             el.classList.add('found');
                         }
                     });
-                    
+
                     // Обновляем счетчик
                     foundCountElement.textContent = foundWords.length;
-                    
+
                     showMessage(`Правильно! Найдено слово "${foundWord}"`, 'success');
-                    
+
                     // Проверка завершения игры
                     if (foundWords.length === words.length) {
                         clearInterval(timerInterval);
@@ -620,49 +697,49 @@
                 } else {
                     showMessage('Слово не найдено. Попробуйте еще раз!', 'error');
                 }
-                
+
                 // Сброс выделения только после проверки
                 clearSelection();
             }
-            
+
             // Использование подсказки
             function useHint() {
                 if (hints <= 0) {
                     showMessage('У вас больше нет подсказок!', 'error');
                     return;
                 }
-                
+
                 // Находим случайное ненайденное слово
                 const notFoundWords = words.filter(word => !foundWords.includes(word));
                 if (notFoundWords.length === 0) {
                     showMessage('Все слова уже найдены!', 'success');
                     return;
                 }
-                
+
                 const hintWord = notFoundWords[Math.floor(Math.random() * notFoundWords.length)];
-                
+
                 // Находим ячейки с этим словом в сетке
                 const wordCells = findWordInGrid(hintWord);
-                
+
                 if (wordCells.length > 0) {
                     // Подсвечиваем ячейки на 2 секунды
                     wordCells.forEach(cell => {
                         cell.classList.add('highlight');
                     });
-                    
+
                     setTimeout(() => {
                         wordCells.forEach(cell => {
                             cell.classList.remove('highlight');
                         });
                     }, 2000);
-                    
+
                     hints--;
                     hintCountElement.textContent = hints;
-                    
+
                     showMessage(`Подсказка: слово "${hintWord}"`, 'success');
                 }
             }
-            
+
             // Поиск слова в сетке
             function findWordInGrid(word) {
                 const cells = [];
@@ -673,7 +750,7 @@
                     { dr: 0, dc: -1 },  // горизонтально влево
                     { dr: -1, dc: 0 }   // вертикально вверх
                 ];
-                
+
                 // Ищем слово в сетке
                 for (let i = 0; i < grid.length; i++) {
                     for (let j = 0; j < grid[i].length; j++) {
@@ -690,7 +767,7 @@
                                 }
                                 return cells;
                             }
-                            
+
                             // Проверяем обратное направление
                             if (checkDirection(word.split('').reverse().join(''), i, j, direction)) {
                                 for (let k = 0; k < word.length; k++) {
@@ -706,27 +783,27 @@
                         }
                     }
                 }
-                
+
                 return cells;
             }
-            
+
             // Проверка направления
             function checkDirection(word, row, col, direction) {
                 for (let i = 0; i < word.length; i++) {
                     const r = row + i * direction.dr;
                     const c = col + i * direction.dc;
-                    
+
                     if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length) {
                         return false;
                     }
-                    
+
                     if (grid[r][c] !== word[i]) {
                         return false;
                     }
                 }
                 return true;
             }
-            
+
             // Показать сообщение
             function showMessage(text, type) {
                 messageElement.textContent = text;
@@ -735,24 +812,25 @@
                     messageElement.classList.add(type);
                 }
             }
-            
+
             // Обновление таймера
             function updateTimer() {
                 const elapsed = Math.floor((Date.now() - startTime) / 1000);
                 timerElement.textContent = elapsed;
             }
-            
+
             // Обработчики событий
             checkButton.addEventListener('click', checkSelectedWord);
             resetButton.addEventListener('click', initGame);
             hintButton.addEventListener('click', useHint);
-            
+
             // Предотвращение контекстного меню на мобильных устройствах
             document.addEventListener('contextmenu', e => e.preventDefault());
-            
+
             // Инициализация игры при загрузке
             initGame();
         });
     </script>
 </body>
+
 </html>
