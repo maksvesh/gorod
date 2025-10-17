@@ -124,11 +124,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 30vh;
-            min-height: 200px;
+            height: 25vh;
+            min-height: 150px;
             background: rgba(0, 0, 0, 0.85);
             display: none;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             padding: 20px;
             z-index: 1000;
@@ -139,22 +139,13 @@
         
         .steering-buttons {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-        
-        .steering-row {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            width: 100%;
+            gap: 30px;
         }
         
         .steering-button {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             background: rgba(255, 255, 255, 0.15);
             border: 3px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
@@ -162,7 +153,7 @@
             align-items: center;
             justify-content: center;
             color: var(--light-text);
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
             touch-action: none;
             user-select: none;
@@ -176,65 +167,13 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
         
-        .steering-button.large {
-            width: 80px;
-            height: 80px;
-            font-size: 32px;
+        .gas-button {
+            background: rgba(76, 175, 80, 0.7);
+            border: 3px solid rgba(76, 175, 80, 0.9);
         }
         
-        .pedals-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            align-items: center;
-            flex: 1;
-        }
-        
-        .pedal {
-            width: 100px;
-            height: 50px;
-            background: linear-gradient(145deg, #ff4444, #cc0000);
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--light-text);
-            font-weight: bold;
-            font-size: 14px;
-            touch-action: none;
-            user-select: none;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.1s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .pedal:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .pedal::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 30%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
-            border-radius: 12px 12px 0 0;
-        }
-        
-        .gas-pedal {
-            background: linear-gradient(145deg, #4CAF50, #2E7D32);
-        }
-        
-        .pedal-label {
-            position: absolute;
-            bottom: 4px;
-            font-size: 10px;
-            opacity: 0.8;
+        .gas-button:active {
+            background: rgba(76, 175, 80, 0.9);
         }
         
         .stats {
@@ -361,21 +300,9 @@
             }
             
             .steering-button {
-                width: 65px;
-                height: 65px;
-                font-size: 24px;
-            }
-            
-            .steering-button.large {
                 width: 70px;
                 height: 70px;
                 font-size: 28px;
-            }
-            
-            .pedal {
-                width: 80px;
-                height: 40px;
-                font-size: 13px;
             }
         }
         
@@ -390,25 +317,17 @@
             
             .mobile-controls {
                 padding: 16px;
-                height: 28vh;
+                height: 22vh;
             }
             
             .steering-button {
-                width: 60px;
-                height: 60px;
-                font-size: 22px;
-            }
-            
-            .steering-button.large {
                 width: 65px;
                 height: 65px;
                 font-size: 26px;
             }
             
-            .pedal {
-                width: 70px;
-                height: 35px;
-                font-size: 12px;
+            .steering-buttons {
+                gap: 25px;
             }
             
             .stats {
@@ -430,20 +349,13 @@
             }
             
             .steering-button {
-                width: 55px;
-                height: 55px;
-                font-size: 20px;
-            }
-            
-            .steering-button.large {
                 width: 60px;
                 height: 60px;
                 font-size: 24px;
             }
             
-            .pedal {
-                width: 65px;
-                height: 32px;
+            .steering-buttons {
+                gap: 20px;
             }
             
             button {
@@ -481,7 +393,7 @@
             <div class="success-effect" id="successEffect"></div>
             
             <div class="control-hints">
-                Используйте кнопки для управления
+                Используйте кнопки для управления машиной
             </div>
         </div>
     </div>
@@ -491,28 +403,9 @@
     <!-- Мобильное управление -->
     <div class="mobile-controls" id="mobileControls">
         <div class="steering-buttons">
-            <div class="steering-row">
-                <div class="steering-button" id="leftButton">←</div>
-            </div>
-            <div class="steering-row">
-                <div class="steering-button" id="upButton">↑</div>
-                <div class="steering-button large" id="centerButton">○</div>
-                <div class="steering-button" id="downButton">↓</div>
-            </div>
-            <div class="steering-row">
-                <div class="steering-button" id="rightButton">→</div>
-            </div>
-        </div>
-        
-        <div class="pedals-container">
-            <div class="pedal gas-pedal" id="gasPedal">
-                ГАЗ
-                <div class="pedal-label">Нажмите</div>
-            </div>
-            <div class="pedal" id="brakePedal">
-                ТОРМОЗ
-                <div class="pedal-label">Нажмите</div>
-            </div>
+            <div class="steering-button" id="leftButton">←</div>
+            <div class="steering-button gas-button" id="gasButton">⛽</div>
+            <div class="steering-button" id="rightButton">→</div>
         </div>
     </div>
 
@@ -528,15 +421,11 @@
         const notification = document.getElementById('notification');
         const successEffect = document.getElementById('successEffect');
         const mobileControls = document.getElementById('mobileControls');
-        const gasPedal = document.getElementById('gasPedal');
-        const brakePedal = document.getElementById('brakePedal');
 
         // Кнопки управления
-        const upButton = document.getElementById('upButton');
-        const downButton = document.getElementById('downButton');
         const leftButton = document.getElementById('leftButton');
         const rightButton = document.getElementById('rightButton');
-        const centerButton = document.getElementById('centerButton');
+        const gasButton = document.getElementById('gasButton');
 
         // Переменные игры
         let score = 0;
@@ -568,36 +457,32 @@
             position: { x: 0, z: 0 },
             velocity: { x: 0, z: 0 },
             rotation: 0,
-            speed: 0,
-            maxSpeed: 0.25,
-            acceleration: 0.015,
-            deceleration: 0.05,
+            speed: 0.05, // Базовая скорость
+            maxSpeed: 0.15,
             steering: 0.03,
-            braking: 0.1
+            braking: 0.1,
+            gasPressed: false
         };
 
         // Клавиши управления
         const keys = {
-            ArrowUp: false,
-            ArrowDown: false,
             ArrowLeft: false,
             ArrowRight: false,
-            KeyW: false,
-            KeyS: false,
+            ArrowUp: false,
             KeyA: false,
             KeyD: false,
-            Space: false
+            KeyW: false
         };
 
         // Мобильное управление
         const mobileInput = {
             steering: 0,
-            gas: false,
-            brake: false
+            gas: false
         };
 
         // Переменные для кнопок управления
         let activeSteering = 0;
+        let activeGas = false;
 
         // Адаптация управления под размер экрана
         function adaptControlsToScreen() {
@@ -605,16 +490,10 @@
             
             if (screenWidth < 400) {
                 carPhysics.steering = 0.025;
-                carPhysics.acceleration = 0.012;
-                carPhysics.maxSpeed = 0.2;
             } else if (screenWidth < 768) {
                 carPhysics.steering = 0.03;
-                carPhysics.acceleration = 0.015;
-                carPhysics.maxSpeed = 0.25;
             } else {
                 carPhysics.steering = 0.035;
-                carPhysics.acceleration = 0.02;
-                carPhysics.maxSpeed = 0.3;
             }
         }
 
@@ -655,17 +534,8 @@
                     case 'right':
                         activeSteering = -1;
                         break;
-                    case 'up':
-                        mobileInput.gas = true;
-                        break;
-                    case 'down':
-                        mobileInput.brake = true;
-                        break;
-                    case 'center':
-                        // Сброс управления
-                        activeSteering = 0;
-                        mobileInput.gas = false;
-                        mobileInput.brake = false;
+                    case 'gas':
+                        activeGas = true;
                         break;
                 }
             };
@@ -676,11 +546,8 @@
                     case 'right':
                         activeSteering = 0;
                         break;
-                    case 'up':
-                        mobileInput.gas = false;
-                        break;
-                    case 'down':
-                        mobileInput.brake = false;
+                    case 'gas':
+                        activeGas = false;
                         break;
                 }
             };
@@ -720,66 +587,10 @@
                 });
             };
 
-            // Настройка всех кнопок
+            // Настройка кнопок
             setupButton(leftButton, 'left');
             setupButton(rightButton, 'right');
-            setupButton(upButton, 'up');
-            setupButton(downButton, 'down');
-            setupButton(centerButton, 'center');
-
-            // Педаль газа
-            const handleGasStart = () => {
-                mobileInput.gas = true;
-                gasPedal.style.transform = 'translateY(4px)';
-                gasPedal.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
-            };
-
-            const handleGasEnd = () => {
-                mobileInput.gas = false;
-                gasPedal.style.transform = 'translateY(0)';
-                gasPedal.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
-            };
-
-            gasPedal.addEventListener('touchstart', (e) => {
-                handleGasStart();
-                e.preventDefault();
-            });
-
-            gasPedal.addEventListener('touchend', (e) => {
-                handleGasEnd();
-                e.preventDefault();
-            });
-
-            gasPedal.addEventListener('mousedown', handleGasStart);
-            gasPedal.addEventListener('mouseup', handleGasEnd);
-            gasPedal.addEventListener('mouseleave', handleGasEnd);
-
-            // Педаль тормоза
-            const handleBrakeStart = () => {
-                mobileInput.brake = true;
-                brakePedal.style.transform = 'translateY(4px)';
-                brakePedal.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
-            };
-
-            const handleBrakeEnd = () => {
-                mobileInput.brake = false;
-                brakePedal.style.transform = 'translateY(0)';
-                brakePedal.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
-            };
-
-            brakePedal.addEventListener('touchstart', (e) => {
-                handleBrakeStart();
-                e.preventDefault();
-            });
-
-            brakePedal.addEventListener('touchend', (e) => {
-                handleBrakeEnd();
-                e.preventDefault();
-            });
-
-            brakePedal.addEventListener('mousedown', handleBrakeStart);
-            brakePedal.addEventListener('mouseup', handleBrakeEnd);
-            brakePedal.addEventListener('mouseleave', handleBrakeEnd);
+            setupButton(gasButton, 'gas');
         }
 
         // Инициализация Three.js сцены
@@ -836,7 +647,7 @@
             initScene();
             
             gameActive = true;
-            showNotification('Игра началась! Найдите желтое парковочное место 🅿️', 'info');
+            showNotification('Игра началась! Используйте кнопки для управления машиной 🅿️', 'info');
         }
 
         // Создание игрового поля
@@ -916,6 +727,7 @@
             
             carPhysics.position.x = -FIELD_WIDTH/2 + 3;
             carPhysics.position.z = -FIELD_HEIGHT/2 + 3;
+            carPhysics.rotation = 0;
             updateCarPosition();
         }
 
@@ -1115,10 +927,7 @@
         function resetCarPosition() {
             carPhysics.position.x = -FIELD_WIDTH/2 + 3;
             carPhysics.position.z = -FIELD_HEIGHT/2 + 3;
-            carPhysics.velocity.x = 0;
-            carPhysics.velocity.z = 0;
             carPhysics.rotation = 0;
-            carPhysics.speed = 0;
             updateCarPosition();
         }
 
@@ -1126,19 +935,7 @@
         function gameLoop() {
             if (!gameActive) return;
             
-            let acceleration = 0;
             let steering = 0;
-            
-            // Управление с кнопок
-            if (keys.ArrowUp || keys.KeyW || mobileInput.gas) {
-                acceleration = carPhysics.acceleration;
-            } else if (keys.ArrowDown || keys.KeyS) {
-                acceleration = -carPhysics.acceleration;
-            } else if (keys.Space || mobileInput.brake) {
-                carPhysics.speed *= (1 - carPhysics.braking);
-            } else {
-                carPhysics.speed *= (1 - carPhysics.deceleration);
-            }
             
             // Управление поворотом с кнопок
             if (keys.ArrowLeft || keys.KeyA) {
@@ -1150,17 +947,25 @@
                 steering = activeSteering * carPhysics.steering;
             }
             
-            carPhysics.speed += acceleration;
-            carPhysics.speed = Math.max(-carPhysics.maxSpeed, Math.min(carPhysics.maxSpeed, carPhysics.speed));
+            // Управление газом с клавиатуры и кнопок
+            const gasPressed = keys.ArrowUp || keys.KeyW || activeGas;
             
-            carPhysics.rotation += steering * (carPhysics.speed / carPhysics.maxSpeed);
+            // Машина едет только при нажатии газа
+            let currentSpeed = 0;
+            if (gasPressed) {
+                currentSpeed = carPhysics.speed;
+            }
             
-            carPhysics.velocity.x = Math.sin(carPhysics.rotation) * carPhysics.speed;
-            carPhysics.velocity.z = Math.cos(carPhysics.rotation) * carPhysics.speed;
+            carPhysics.rotation += steering;
+            
+            // Обновление позиции (только при нажатии газа)
+            carPhysics.velocity.x = Math.sin(carPhysics.rotation) * currentSpeed;
+            carPhysics.velocity.z = Math.cos(carPhysics.rotation) * currentSpeed;
             
             carPhysics.position.x += carPhysics.velocity.x;
             carPhysics.position.z += carPhysics.velocity.z;
             
+            // Ограничение движения в пределах игрового поля
             const halfCarWidth = CAR_WIDTH / 2;
             const halfCarLength = CAR_LENGTH / 2;
             
@@ -1231,7 +1036,6 @@
                 gameActive = true;
                 gameInterval = setInterval(gameLoop, 16);
                 startButton.textContent = 'Перезапустить';
-                showNotification('Игра началась! Найдите желтое парковочное место 🅿️', 'info');
             } else {
                 clearInterval(gameInterval);
                 initGame();
@@ -1254,7 +1058,7 @@
             setupMobileControls();
             adaptControlsToScreen();
             handleResize();
-            showNotification('Добро пожаловать в 3D Парковку! 🚗 Найдите желтое парковочное место', 'info');
+            showNotification('Добро пожаловать! Используйте кнопки для управления машиной 🚗', 'info');
             
             // Автозапуск на мобильных устройствах
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
