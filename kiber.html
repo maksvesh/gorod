@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кибер-лабиринт</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        .game-area {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stats-area {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 50, 150, 0.2);
+            border: 1px solid rgba(255, 50, 150, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.5);
+        }
+
+        .game-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #0096ff, #ff3296);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 150, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .game-subtitle {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .location-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .location-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0096ff;
+        }
+
+        .location-level {
+            font-size: 14px;
+            color: #ff3296;
+        }
+
+        .game-content {
+            flex: 1;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-left: 3px solid #0096ff;
+            background: rgba(0, 150, 255, 0.1);
+            border-radius: 0 5px 5px 0;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .enemy-message {
+            border-left-color: #ff3296;
+            background: rgba(255, 50, 150, 0.1);
+        }
+
+        .loot-message {
+            border-left-color: #ffcc00;
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #0096ff 0%, #0066cc 100%);
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 150, 255, 0.4);
+        }
+
+        .choice-btn:disabled {
+            background: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .choice-btn.danger {
+            background: linear-gradient(135deg, #ff3296 0%, #cc0066 100%);
+        }
+
+        .choice-btn.danger:hover {
+            box-shadow: 0 5px 15px rgba(255, 50, 150, 0.4);
+        }
+
+        .choice-btn.success {
+            background: linear-gradient(135deg, #00cc66 0%, #00994d 100%);
+        }
+
+        .choice-btn.success:hover {
+            box-shadow: 0 5px 15px rgba(0, 204, 102, 0.4);
+        }
+
+        .stats-container {
+            margin-bottom: 20px;
+        }
+
+        .stat-bar {
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .stat-bar-outer {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .stat-bar-inner {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+
+        .hp-bar { background: linear-gradient(90deg, #ff3296, #ff0066); }
+        .energy-bar { background: linear-gradient(90deg, #0096ff, #0066ff); }
+        .cyber-bar { background: linear-gradient(90deg, #00cc66, #00994d); }
+
+        .credits-display {
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .credits-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .credits-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffcc00;
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+        }
+
+        .inventory {
+            margin-top: 20px;
+        }
+
+        .inventory-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #ffcc00;
+            border-bottom: 1px solid rgba(255, 204, 0, 0.3);
+            padding-bottom: 5px;
+        }
+
+        .inventory-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .inventory-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .inventory-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .item-count {
+            font-size: 10px;
+            color: #ffcc00;
+        }
+
+        .upgrades {
+            margin-top: 20px;
+        }
+
+        .upgrade-option {
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upgrade-option:hover {
+            background: rgba(0, 150, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            color: #0096ff;
+        }
+
+        .upgrade-desc {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .upgrade-cost {
+            font-size: 12px;
+            color: #ffcc00;
+            margin-top: 5px;
+        }
+
+        .combat-log {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 50, 150, 0.1);
+            border-radius: 5px;
+            border: 1px solid rgba(255, 50, 150, 0.3);
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .combat-message {
+            margin-bottom: 5px;
+            padding: 3px;
+        }
+
+        .player-turn {
+            color: #0096ff;
+        }
+
+        .enemy-turn {
+            color: #ff3296;
+        }
+
+        .damage {
+            color: #ff6666;
+        }
+
+        .heal {
+            color: #66ff66;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #0096ff;
+            box-shadow: 0 0 30px rgba(0, 150, 255, 0.5);
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #0096ff;
+        }
+
+        .modal-text {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #0096ff 0%, #0066cc 100%);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 150, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .choices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-area">
+            <a href="games.html" class="back-button">← Назад к играм</a>
+            
+            <div class="game-header">
+                <h1 class="game-title">КИБЕР-ЛАБИРИНТ</h1>
+                <div class="game-subtitle">НЕОНОВЫЙ КОШМАР 2077</div>
+            </div>
+            
+            <div class="location-info">
+                <div class="location-name" id="locationName">Сектор 0: Начало</div>
+                <div class="location-level" id="locationLevel">Уровень опасности: Низкий</div>
+            </div>
+            
+            <div class="game-content" id="gameContent">
+                <div class="message">
+                    Добро пожаловать в Кибер-лабиринт, беглец. Тебе предстоит пройти через запутанные неоновые коридоры, полные опасностей и возможностей.
+                </div>
+                <div class="message">
+                    Твоя цель - добраться до ядра системы и либо уничтожить его, либо подчинить себе. Выбор за тобой.
+                </div>
+                <div class="message">
+                    Используй свои навыки, находи улучшения и будь готов ко всему. Удачи.
+                </div>
+            </div>
+            
+            <div class="choices" id="choicesContainer">
+                <button class="choice-btn" onclick="startGame()">НАЧАТЬ ПУТЕШЕСТВИЕ</button>
+            </div>
+        </div>
+        
+        <div class="stats-area">
+            <div class="credits-display">
+                <div class="credits-label">КРЕДИТЫ</div>
+                <div class="credits-value" id="creditsValue">50</div>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>ЦЕЛОСТНОСТЬ</span>
+                        <span id="hpText">100/100</span>
+                    </div>
+                    <div class="stat-bar-outer">
+                        <div class="stat-bar-inner hp-bar" id="hpBar" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>ЭНЕРГИЯ</span>
+                        <span id="energyText">100/100</span>
+                    </div>
+                    <div class="stat-bar-outer">
+                        <div class="stat-bar-inner energy-bar" id="energyBar" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>КИБЕРНЕТИКА</span>
+                        <span id="cyberText">0/100</span>
+                    </div>
+                    <div class="stat-bar-outer">
+                        <div class="stat-bar-inner cyber-bar" id="cyberBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="inventory">
+                <div class="inventory-title">ИНВЕНТАРЬ</div>
+                <div class="inventory-items" id="inventoryItems">
+                    <!-- Инвентарь будет заполняться динамически -->
+                </div>
+            </div>
+            
+            <div class="upgrades" id="upgradesContainer">
+                <div class="inventory-title">ДОСТУПНЫЕ УЛУЧШЕНИЯ</div>
+                <!-- Улучшения будут добавляться динамически -->
+            </div>
+            
+            <div class="combat-log" id="combatLog">
+                <!-- Лог боя будет заполняться динамически -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="gameOverTitle">КОНЕЦ ИГРЫ</h2>
+            <div class="modal-text" id="gameOverText">
+                Твоё путешествие завершилось здесь.
+            </div>
+            <div class="modal-stats" id="gameOverStats">
+                <!-- Статистика будет заполняться динамически -->
+            </div>
+            <button class="modal-btn" onclick="restartGame()">НОВАЯ ИГРА</button>
+        </div>
+    </div>
+
+    <script>
+        // Игровое состояние
+        const gameState = {
+            player: {
+                hp: 100,
+                maxHp: 100,
+                energy: 100,
+                maxEnergy: 100,
+                cyber: 0,
+                maxCyber: 100,
+                level: 1,
+                xp: 0,
+                xpToNextLevel: 100,
+                credits: 50,
+                inventory: {},
+                upgrades: {
+                    armor: 0,
+                    weapon: 0,
+                    hacking: 0,
+                    stealth: 0
+                }
+            },
+            location: {
+                name: "Сектор 0: Начало",
+                danger: "Низкий",
+                level: 0,
+                explored: false
+            },
+            gameActive: false,
+            currentEnemy: null,
+            inCombat: false,
+            turn: 0,
+            events: [],
+            gameLog: []
+        };
+
+        // Элементы DOM
+        const gameContent = document.getElementById('gameContent');
+        const choicesContainer = document.getElementById('choicesContainer');
+        const locationName = document.getElementById('locationName');
+        const locationLevel = document.getElementById('locationLevel');
+        const creditsValue = document.getElementById('creditsValue');
+        const hpText = document.getElementById('hpText');
+        const hpBar = document.getElementById('hpBar');
+        const energyText = document.getElementById('energyText');
+        const energyBar = document.getElementById('energyBar');
+        const cyberText = document.getElementById('cyberText');
+        const cyberBar = document.getElementById('cyberBar');
+        const inventoryItems = document.getElementById('inventoryItems');
+        const upgradesContainer = document.getElementById('upgradesContainer');
+        const combatLog = document.getElementById('combatLog');
+        const gameOverModal = document.getElementById('gameOverModal');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        const gameOverText = document.getElementById('gameOverText');
+        const gameOverStats = document.getElementById('gameOverStats');
+
+        // Базы данных игры
+        const items = {
+            medkit: { name: "Медпакет", type: "heal", value: 30, cost: 20, desc: "Восстанавливает 30 HP" },
+            energyDrink: { name: "Энергетик", type: "energy", value: 40, cost: 15, desc: "Восстанавливает 40 энергии" },
+            cyberModule: { name: "Кибер-модуль", type: "cyber", value: 10, cost: 30, desc: "Увеличивает кибернетику на 10" },
+            dataChip: { name: "Чип данных", type: "currency", value: 1, cost: 5, desc: "Можно обменять на кредиты" },
+            weaponUpgrade: { name: "Улучшение оружия", type: "upgrade", value: "weapon", cost: 50, desc: "Увеличивает урон от атак" },
+            armorUpgrade: { name: "Улучшение брони", type: "upgrade", value: "armor", cost: 50, desc: "Увеличивает максимальное HP" }
+        };
+
+        const enemies = [
+            { name: "Страж системы", hp: 30, damage: 5, xp: 20, credits: 10, level: 1 },
+            { name: "Кибер-охотник", hp: 50, damage: 8, xp: 35, credits: 20, level: 2 },
+            { name: "Виртуальный хищник", hp: 70, damage: 12, xp: 50, credits: 30, level: 3 },
+            { name: "Агент КОРП", hp: 100, damage: 15, xp: 80, credits: 50, level: 4 },
+            { name: "ИИ-надзиратель", hp: 150, damage: 20, xp: 120, credits: 80, level: 5 }
+        ];
+
+        const locations = [
+            { name: "Сектор 0: Начало", danger: "Низкий", level: 0, events: ["explore", "rest", "shop"] },
+            { name: "Сектор 1: Периферия", danger: "Низкий", level: 1, events: ["explore", "combat", "rest", "shop"] },
+            { name: "Сектор 2: Промзона", danger: "Средний", level: 2, events: ["explore", "combat", "hack", "shop"] },
+            { name: "Сектор 3: Ядро данных", danger: "Высокий", level: 3, events: ["explore", "combat", "boss", "hack"] },
+            { name: "Сектор 4: Контрольный центр", danger: "Критический", level: 4, events: ["boss", "hack", "final"] }
+        ];
+
+        const upgrades = {
+            armor: { 
+                name: "Улучшенная броня", 
+                desc: "Увеличивает максимальное HP на 20", 
+                cost: 50, 
+                effect: () => { 
+                    gameState.player.maxHp += 20; 
+                    gameState.player.hp = gameState.player.maxHp;
+                    updateStats();
+                } 
+            },
+            weapon: { 
+                name: "Улучшенное оружие", 
+                desc: "Увеличивает урон от атак на 5", 
+                cost: 50, 
+                effect: () => { 
+                    gameState.player.upgrades.weapon += 5;
+                } 
+            },
+            hacking: { 
+                name: "Взлом системы", 
+                desc: "Увеличивает шанс успешного взлома", 
+                cost: 40, 
+                effect: () => { 
+                    gameState.player.upgrades.hacking += 1;
+                } 
+            },
+            stealth: { 
+                name: "Скрытность", 
+                desc: "Увеличивает шанс избежать боя", 
+                cost: 40, 
+                effect: () => { 
+                    gameState.player.upgrades.stealth += 1;
+                } 
+            }
+        };
+
+        // Инициализация игры
+        function startGame() {
+            gameState.gameActive = true;
+            gameState.location = {...locations[0]};
+            updateLocation();
+            showMessage("Ты начинаешь своё путешествие по кибер-лабиринту. Выбери направление.");
+            showChoices([
+                { text: "Исследовать сектор", action: exploreLocation },
+                { text: "Перейти в следующий сектор", action: moveToNextLocation },
+                { text: "Отдохнуть (восстановить HP и энергию)", action: rest },
+                { text: "Посетить магазин", action: openShop }
+            ]);
+            updateInventory();
+            updateUpgrades();
+        }
+
+        // Обновление отображения локации
+        function updateLocation() {
+            locationName.textContent = gameState.location.name;
+            locationLevel.textContent = `Уровень опасности: ${gameState.location.danger}`;
+        }
+
+        // Обновление отображения кредитов
+        function updateCredits() {
+            creditsValue.textContent = gameState.player.credits;
+        }
+
+        // Показать сообщение в игровой консоли
+        function showMessage(text, type = "normal") {
+            const message = document.createElement('div');
+            message.className = `message ${type}-message`;
+            message.textContent = text;
+            gameContent.appendChild(message);
+            gameContent.scrollTop = gameContent.scrollHeight;
+        }
+
+        // Показать выбор действий
+        function showChoices(choices) {
+            choicesContainer.innerHTML = '';
+            choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.textContent = choice.text;
+                button.addEventListener('click', choice.action);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            const hpPercent = (gameState.player.hp / gameState.player.maxHp) * 100;
+            const energyPercent = (gameState.player.energy / gameState.player.maxEnergy) * 100;
+            const cyberPercent = (gameState.player.cyber / gameState.player.maxCyber) * 100;
+            
+            hpText.textContent = `${gameState.player.hp}/${gameState.player.maxHp}`;
+            hpBar.style.width = `${hpPercent}%`;
+            
+            energyText.textContent = `${gameState.player.energy}/${gameState.player.maxEnergy}`;
+            energyBar.style.width = `${energyPercent}%`;
+            
+            cyberText.textContent = `${gameState.player.cyber}/${gameState.player.maxCyber}`;
+            cyberBar.style.width = `${cyberPercent}%`;
+            
+            updateCredits();
+        }
+
+        // Обновление инвентаря
+        function updateInventory() {
+            inventoryItems.innerHTML = '';
+            Object.keys(gameState.player.inventory).forEach(itemKey => {
+                if (gameState.player.inventory[itemKey] > 0) {
+                    const item = items[itemKey];
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'inventory-item';
+                    itemElement.innerHTML = `
+                        <div>${item.name}</div>
+                        <div class="item-count">x${gameState.player.inventory[itemKey]}</div>
+                    `;
+                    itemElement.addEventListener('click', () => useItem(itemKey));
+                    inventoryItems.appendChild(itemElement);
+                }
+            });
+        }
+
+        // Обновление доступных улучшений
+        function updateUpgrades() {
+            upgradesContainer.innerHTML = '<div class="inventory-title">ДОСТУПНЫЕ УЛУЧШЕНИЯ</div>';
+            
+            Object.keys(upgrades).forEach(upgradeKey => {
+                const upgrade = upgrades[upgradeKey];
+                const upgradeElement = document.createElement('div');
+                upgradeElement.className = 'upgrade-option';
+                upgradeElement.innerHTML = `
+                    <div class="upgrade-name">${upgrade.name}</div>
+                    <div class="upgrade-desc">${upgrade.desc}</div>
+                    <div class="upgrade-cost">Стоимость: ${upgrade.cost} кредитов</div>
+                `;
+                upgradeElement.addEventListener('click', () => purchaseUpgrade(upgradeKey));
+                upgradesContainer.appendChild(upgradeElement);
+            });
+        }
+
+        // Использование предмета
+        function useItem(itemKey) {
+            const item = items[itemKey];
+            if (!item || gameState.player.inventory[itemKey] <= 0) return;
+            
+            switch(item.type) {
+                case "heal":
+                    gameState.player.hp = Math.min(gameState.player.maxHp, gameState.player.hp + item.value);
+                    showMessage(`Использован ${item.name}. Восстановлено ${item.value} HP.`, "loot");
+                    break;
+                case "energy":
+                    gameState.player.energy = Math.min(gameState.player.maxEnergy, gameState.player.energy + item.value);
+                    showMessage(`Использован ${item.name}. Восстановлено ${item.value} энергии.`, "loot");
+                    break;
+                case "cyber":
+                    gameState.player.cyber = Math.min(gameState.player.maxCyber, gameState.player.cyber + item.value);
+                    showMessage(`Использован ${item.name}. Увеличена кибернетика на ${item.value}.`, "loot");
+                    break;
+                case "currency":
+                    gameState.player.credits += item.value;
+                    showMessage(`Обменян ${item.name}. Получено ${item.value} кредитов.`, "loot");
+                    break;
+                case "upgrade":
+                    upgrades[item.value].effect();
+                    showMessage(`Установлено улучшение: ${upgrades[item.value].name}`, "loot");
+                    break;
+            }
+            
+            gameState.player.inventory[itemKey]--;
+            updateStats();
+            updateInventory();
+        }
+
+        // Покупка улучшения
+        function purchaseUpgrade(upgradeKey) {
+            const upgrade = upgrades[upgradeKey];
+            if (gameState.player.credits >= upgrade.cost) {
+                gameState.player.credits -= upgrade.cost;
+                upgrade.effect();
+                showMessage(`Приобретено улучшение: ${upgrade.name}`, "loot");
+                updateStats();
+            } else {
+                showMessage("Недостаточно кредитов для покупки этого улучшения.", "enemy");
+            }
+        }
+
+        // Исследование локации
+        function exploreLocation() {
+            if (gameState.player.energy < 10) {
+                showMessage("Недостаточно энергии для исследования.", "enemy");
+                return;
+            }
+            
+            gameState.player.energy -= 10;
+            updateStats();
+            
+            const events = gameState.location.events;
+            const randomEvent = events[Math.floor(Math.random() * events.length)];
+            
+            switch(randomEvent) {
+                case "combat":
+                    startCombat();
+                    break;
+                case "rest":
+                    showMessage("Ты находишь безопасное место для отдыха.", "loot");
+                    gameState.player.hp = Math.min(gameState.player.maxHp, gameState.player.hp + 20);
+                    gameState.player.energy = Math.min(gameState.player.maxEnergy, gameState.player.energy + 30);
+                    updateStats();
+                    showChoices([
+                        { text: "Продолжить исследование", action: exploreLocation },
+                        { text: "Вернуться к выбору действий", action: showLocationActions }
+                    ]);
+                    break;
+                case "hack":
+                    attemptHack();
+                    break;
+                case "shop":
+                    openShop();
+                    break;
+                case "boss":
+                    startBossFight();
+                    break;
+                default:
+                    showMessage("Ты исследуешь локацию, но не находишь ничего интересного.");
+                    showChoices([
+                        { text: "Продолжить исследование", action: exploreLocation },
+                        { text: "Вернуться к выбору действий", action: showLocationActions }
+                    ]);
+            }
+        }
+
+        // Показать действия для текущей локации
+        function showLocationActions() {
+            showChoices([
+                { text: "Исследовать сектор", action: exploreLocation },
+                { text: "Перейти в следующий сектор", action: moveToNextLocation },
+                { text: "Отдохнуть (восстановить HP и энергию)", action: rest },
+                { text: "Посетить магазин", action: openShop }
+            ]);
+        }
+
+        // Переход в следующую локацию
+        function moveToNextLocation() {
+            if (gameState.location.level >= locations.length - 1) {
+                showMessage("Ты достиг конечной точки лабиринта. Приготовься к финальной битве!");
+                startBossFight();
+                return;
+            }
+            
+            gameState.location = {...locations[gameState.location.level + 1]};
+            updateLocation();
+            showMessage(`Ты перемещаешься в ${gameState.location.name}. Уровень опасности: ${gameState.location.danger}`);
+            showLocationActions();
+        }
+
+        // Отдых
+        function rest() {
+            showMessage("Ты находишь укромное место и отдыхаешь.");
+            gameState.player.hp = gameState.player.maxHp;
+            gameState.player.energy = gameState.player.maxEnergy;
+            updateStats();
+            showLocationActions();
+        }
+
+        // Магазин
+        function openShop() {
+            showMessage("Ты находишь торговый терминал. Что хочешь приобрести?");
+            
+            const shopItems = Object.keys(items).filter(key => 
+                items[key].cost <= 100 // Показываем только доступные предметы
+            );
+            
+            const choices = shopItems.map(key => {
+                const item = items[key];
+                return {
+                    text: `${item.name} - ${item.cost} кредитов (${item.desc})`,
+                    action: () => purchaseItem(key)
+                };
+            });
+            
+            choices.push({ text: "Вернуться", action: showLocationActions });
+            showChoices(choices);
+        }
+
+        // Покупка предмета
+        function purchaseItem(itemKey) {
+            const item = items[itemKey];
+            if (gameState.player.credits >= item.cost) {
+                gameState.player.credits -= item.cost;
+                if (!gameState.player.inventory[itemKey]) {
+                    gameState.player.inventory[itemKey] = 0;
+                }
+                gameState.player.inventory[itemKey]++;
+                showMessage(`Приобретён ${item.name}.`, "loot");
+                updateInventory();
+                updateStats();
+            } else {
+                showMessage("Недостаточно кредитов для покупки.", "enemy");
+            }
+            openShop();
+        }
+
+        // Начало боя
+        function startCombat() {
+            const enemyLevel = Math.min(gameState.location.level, enemies.length - 1);
+            gameState.currentEnemy = {...enemies[enemyLevel]};
+            gameState.inCombat = true;
+            gameState.turn = 0;
+            combatLog.innerHTML = '';
+            
+            showMessage(`На тебя напал ${gameState.currentEnemy.name}!`, "enemy");
+            addCombatLog(`Начало боя с ${gameState.currentEnemy.name}`, "enemy");
+            
+            showCombatActions();
+        }
+
+        // Показать действия в бою
+        function showCombatActions() {
+            showChoices([
+                { text: "Атаковать", action: playerAttack },
+                { text: "Использовать предмет", action: openCombatInventory },
+                { text: "Попытаться сбежать", action: attemptEscape }
+            ]);
+        }
+
+        // Атака игрока
+        function playerAttack() {
+            if (!gameState.inCombat) return;
+            
+            const baseDamage = 10 + gameState.player.upgrades.weapon;
+            const damage = Math.max(1, baseDamage + Math.floor(Math.random() * 6) - 2);
+            gameState.currentEnemy.hp -= damage;
+            
+            addCombatLog(`Ты наносишь ${damage} урона ${gameState.currentEnemy.name}`, "player");
+            
+            if (gameState.currentEnemy.hp <= 0) {
+                endCombat(true);
+                return;
+            }
+            
+            enemyTurn();
+        }
+
+        // Ход врага
+        function enemyTurn() {
+            if (!gameState.inCombat) return;
+            
+            const damage = gameState.currentEnemy.damage + Math.floor(Math.random() * 4) - 1;
+            gameState.player.hp -= Math.max(1, damage);
+            
+            addCombatLog(`${gameState.currentEnemy.name} наносит тебе ${damage} урона`, "enemy");
+            updateStats();
+            
+            if (gameState.player.hp <= 0) {
+                gameOver("Поражение в бою");
+                return;
+            }
+            
+            showCombatActions();
+        }
+
+        // Попытка сбежать
+        function attemptEscape() {
+            const escapeChance = 0.5 + (gameState.player.upgrades.stealth * 0.1);
+            
+            if (Math.random() < escapeChance) {
+                addCombatLog("Тебе удалось сбежать от противника!", "player");
+                gameState.inCombat = false;
+                showLocationActions();
+            } else {
+                addCombatLog("Попытка сбежать не удалась!", "enemy");
+                enemyTurn();
+            }
+        }
+
+        // Открыть инвентарь в бою
+        function openCombatInventory() {
+            const inventoryChoices = Object.keys(gameState.player.inventory)
+                .filter(key => gameState.player.inventory[key] > 0 && items[key].type !== "upgrade")
+                .map(key => ({
+                    text: `Использовать ${items[key].name}`,
+                    action: () => useItemInCombat(key)
+                }));
+            
+            inventoryChoices.push({ text: "Назад", action: showCombatActions });
+            showChoices(inventoryChoices);
+        }
+
+        // Использовать предмет в бою
+        function useItemInCombat(itemKey) {
+            useItem(itemKey);
+            enemyTurn();
+        }
+
+        // Добавить запись в лог боя
+        function addCombatLog(text, type) {
+            const logEntry = document.createElement('div');
+            logEntry.className = `combat-message ${type}-turn`;
+            logEntry.textContent = text;
+            combatLog.appendChild(logEntry);
+            combatLog.scrollTop = combatLog.scrollHeight;
+        }
+
+        // Завершение боя
+        function endCombat(victory) {
+            if (victory) {
+                const xpGained = gameState.currentEnemy.xp;
+                const creditsGained = gameState.currentEnemy.credits;
+                
+                gameState.player.xp += xpGained;
+                gameState.player.credits += creditsGained;
+                
+                addCombatLog(`Победа! Получено ${xpGained} опыта и ${creditsGained} кредитов.`, "player");
+                showMessage(`Ты победил ${gameState.currentEnemy.name} и получил ${xpGained} опыта и ${creditsGained} кредитов.`, "loot");
+                
+                // Проверка уровня
+                checkLevelUp();
+            }
+            
+            gameState.inCombat = false;
+            gameState.currentEnemy = null;
+            showLocationActions();
+        }
+
+        // Проверка повышения уровня
+        function checkLevelUp() {
+            if (gameState.player.xp >= gameState.player.xpToNextLevel) {
+                gameState.player.level++;
+                gameState.player.xp -= gameState.player.xpToNextLevel;
+                gameState.player.xpToNextLevel = Math.floor(gameState.player.xpToNextLevel * 1.5);
+                
+                gameState.player.maxHp += 10;
+                gameState.player.hp = gameState.player.maxHp;
+                gameState.player.maxEnergy += 10;
+                gameState.player.energy = gameState.player.maxEnergy;
+                
+                showMessage(`Поздравляем! Ты достиг уровня ${gameState.player.level}!`, "loot");
+                updateStats();
+            }
+        }
+
+        // Попытка взлома
+        function attemptHack() {
+            if (gameState.player.energy < 15) {
+                showMessage("Недостаточно энергии для взлома.", "enemy");
+                return;
+            }
+            
+            gameState.player.energy -= 15;
+            updateStats();
+            
+            const successChance = 0.3 + (gameState.player.upgrades.hacking * 0.1);
+            
+            if (Math.random() < successChance) {
+                const reward = Math.floor(Math.random() * 3) + 1;
+                gameState.player.cyber += reward * 5;
+                gameState.player.credits += reward * 10;
+                
+                showMessage(`Взлом успешен! Получено ${reward * 5} кибернетики и ${reward * 10} кредитов.`, "loot");
+                updateStats();
+            } else {
+                showMessage("Взлом не удался. Система защиты активирована!", "enemy");
+                startCombat();
+                return;
+            }
+            
+            showChoices([
+                { text: "Продолжить исследование", action: exploreLocation },
+                { text: "Вернуться к выбору действий", action: showLocationActions }
+            ]);
+        }
+
+        // Босс-битва
+        function startBossFight() {
+            const boss = {
+                name: "ИИ-Сверхразум",
+                hp: 200,
+                damage: 25,
+                xp: 200,
+                credits: 100,
+                level: 5
+            };
+            
+            gameState.currentEnemy = boss;
+            gameState.inCombat = true;
+            gameState.turn = 0;
+            combatLog.innerHTML = '';
+            
+            showMessage(`Перед тобой ${gameState.currentEnemy.name} - финальный босс кибер-лабиринта!`, "enemy");
+            addCombatLog(`Начало финальной битвы с ${gameState.currentEnemy.name}`, "enemy");
+            
+            showCombatActions();
+        }
+
+        // Конец игры
+        function gameOver(reason) {
+            gameState.gameActive = false;
+            
+            let title = "КОНЕЦ ИГРЫ";
+            let text = "Твоё путешествие завершилось здесь.";
+            
+            switch(reason) {
+                case "Поражение в бою":
+                    title = "ПОРАЖЕНИЕ";
+                    text = "Ты был побеждён в кибер-пространстве. Твоё сознание рассеялось в цифровом потоке.";
+                    break;
+                case "Победа":
+                    title = "ПОБЕДА";
+                    text = "Ты подчинил себе ИИ-Сверхразум и стал повелителем кибер-лабиринта!";
+                    break;
+            }
+            
+            gameOverTitle.textContent = title;
+            gameOverText.textContent = text;
+            
+            // Статистика игры
+            gameOverStats.innerHTML = `
+                <div class="modal-stat">
+                    <div>Достигнутый уровень</div>
+                    <div>${gameState.player.level}</div>
+                </div>
+                <div class="modal-stat">
+                    <div>Собрано кредитов</div>
+                    <div>${gameState.player.credits}</div>
+                </div>
+                <div class="modal-stat">
+                    <div>Уровень кибернетики</div>
+                    <div>${gameState.player.cyber}</div>
+                </div>
+                <div class="modal-stat">
+                    <div>Исследовано секторов</div>
+                    <div>${gameState.location.level + 1}</div>
+                </div>
+            `;
+            
+            gameOverModal.style.display = 'flex';
+        }
+
+        // Перезапуск игры
+        function restartGame() {
+            // Сброс состояния игры
+            gameState.player = {
+                hp: 100,
+                maxHp: 100,
+                energy: 100,
+                maxEnergy: 100,
+                cyber: 0,
+                maxCyber: 100,
+                level: 1,
+                xp: 0,
+                xpToNextLevel: 100,
+                credits: 50,
+                inventory: {},
+                upgrades: {
+                    armor: 0,
+                    weapon: 0,
+                    hacking: 0,
+                    stealth: 0
+                }
+            };
+            
+            gameState.location = {...locations[0]};
+            gameState.gameActive = false;
+            gameState.currentEnemy = null;
+            gameState.inCombat = false;
+            gameState.turn = 0;
+            gameState.events = [];
+            gameState.gameLog = [];
+            
+            // Очистка интерфейса
+            gameContent.innerHTML = `
+                <div class="message">
+                    Добро пожаловать в Кибер-лабиринт, беглец. Тебе предстоит пройти через запутанные неоновые коридоры, полные опасностей и возможностей.
+                </div>
+                <div class="message">
+                    Твоя цель - добраться до ядра системы и либо уничтожить его, либо подчинить себе. Выбор за тобой.
+                </div>
+                <div class="message">
+                    Используй свои навыки, находи улучшения и будь готов ко всему. Удачи.
+                </div>
+            `;
+            
+            combatLog.innerHTML = '';
+            gameOverModal.style.display = 'none';
+            
+            updateStats();
+            updateInventory();
+            updateUpgrades();
+            updateLocation();
+            
+            showChoices([
+                { text: "НАЧАТЬ ПУТЕШЕСТВИЕ", action: startGame }
+            ]);
+        }
+
+        // Инициализация при загрузке страницы
+        window.onload = function() {
+            updateStats();
+            updateInventory();
+            updateUpgrades();
+        };
+    </script>
+</body>
+</html>
