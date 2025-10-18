@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нонограмм с подсветкой подсказок</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .difficulty-btn {
+            padding: 10px 15px;
+            background: #e0e0e0;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .difficulty-btn.active {
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #check-btn {
+            background: linear-gradient(to right, #2196F3, #0b7dda);
+        }
+        
+        #reset-btn {
+            background: linear-gradient(to right, #ff9800, #e68900);
+        }
+        
+        #new-game-btn {
+            background: linear-gradient(to right, #9C27B0, #7b1fa2);
+        }
+        
+        .mobile-controls {
+            display: none;
+            margin-top: 15px;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .mobile-btn {
+            padding: 12px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .mobile-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .nonogram-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow: auto;
+            padding: 10px;
+        }
+        
+        .puzzle-container {
+            display: inline-grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 2px;
+            margin: 0 auto;
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .col-hints {
+            grid-column: 2;
+            grid-row: 1;
+            display: grid;
+            gap: 1px;
+            padding-bottom: 5px;
+        }
+        
+        .row-hints {
+            grid-column: 1;
+            grid-row: 2;
+            display: grid;
+            gap: 1px;
+            padding-right: 5px;
+        }
+        
+        .grid-container {
+            grid-column: 2;
+            grid-row: 2;
+            display: grid;
+            gap: 1px;
+            background-color: #ddd;
+            border: 1px solid #999;
+        }
+        
+        .hint-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .hint-cell.correct {
+            background-color: #c8e6c9;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        
+        .col-hints .hint-cell {
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        
+        .row-hints .hint-cell {
+            flex-direction: row;
+            justify-content: flex-end;
+            padding-right: 5px;
+        }
+        
+        .grid-cell {
+            background-color: white;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .grid-cell.filled {
+            background-color: #333;
+        }
+        
+        .grid-cell.marked::after {
+            content: "✕";
+            color: #ff5252;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .progress-info {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            min-height: 25px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        
+        .instructions h2 {
+            color: #444;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .difficulty-info {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .game-container {
+                padding: 15px;
+            }
+            
+            .difficulty-selector, .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .difficulty-btn, button {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .nonogram-wrapper {
+                padding: 5px;
+            }
+            
+            .hint-cell, .grid-cell {
+                min-width: 20px;
+                min-height: 20px;
+                font-size: 12px;
+            }
+            
+            .mobile-controls {
+                display: flex;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .game-container {
+                padding: 10px;
+            }
+            
+            .hint-cell, .grid-cell {
+                min-width: 18px;
+                min-height: 18px;
+                font-size: 10px;
+            }
+            
+            .instructions {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Нонограмм с подсветкой подсказок</h1>
+            <p class="subtitle">Подсказки подсвечиваются, когда строка или столбец заполнены правильно</p>
+        </header>
+        
+        <div class="game-container">
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-difficulty="easy">Легкий</button>
+                <button class="difficulty-btn" data-difficulty="medium">Средний</button>
+                <button class="difficulty-btn" data-difficulty="hard">Сложный</button>
+            </div>
+            
+            <div class="controls">
+                <button id="check-btn">Проверить</button>
+                <button id="reset-btn">Сбросить</button>
+                <button id="new-game-btn">Новая игра</button>
+            </div>
+            
+            <div class="mobile-controls">
+                <div class="mobile-btn active" id="mode-fill">Закрасить</div>
+                <div class="mobile-btn" id="mode-mark">Пометить</div>
+            </div>
+            
+            <div class="nonogram-wrapper">
+                <div class="puzzle-container" id="puzzle-container">
+                    <!-- Контент будет сгенерирован JavaScript -->
+                </div>
+            </div>
+            
+            <div class="progress-info" id="progress-info"></div>
+            <div class="message" id="message"></div>
+            <div class="difficulty-info" id="difficulty-info"></div>
+        </div>
+        
+        <div class="instructions">
+            <h2>Как играть в нонограмм?</h2>
+            <ul>
+                <li><strong>Левый клик</strong> - закрасить клетку</li>
+                <li><strong>Правый клик</strong> - пометить клетку как пустую</li>
+                <li><strong>На телефоне:</strong> используйте кнопки "Закрасить" и "Пометить" для выбора режима</li>
+                <li><strong>Подсказки подсвечиваются зеленым</strong>, когда строка или столбец заполнены правильно</li>
+                <li>Числа слева и сверху показывают группы закрашенных клеток в строке/столбце</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация уровней сложности
+        const difficultyConfig = {
+            easy: { 
+                size: 5, 
+                fillRatio: 0.4, 
+                name: "Легкий уровень",
+                cellSize: 35
+            },
+            medium: { 
+                size: 8, 
+                fillRatio: 0.5, 
+                name: "Средний уровень",
+                cellSize: 30
+            },
+            hard: { 
+                size: 10, 
+                fillRatio: 0.55, 
+                name: "Сложный уровень",
+                cellSize: 25
+            }
+        };
+
+        let currentPuzzle = 'easy';
+        let gridState = [];
+        let gridSize = 0;
+        let cellSize = 30;
+        let currentMode = 'fill';
+        let longPressTimer;
+        let rowHints = [];
+        let colHints = [];
+
+        // Инициализация игры
+        function initGame() {
+            const config = difficultyConfig[currentPuzzle];
+            gridSize = config.size;
+            cellSize = config.cellSize;
+            
+            // Создаем начальное состояние сетки (все клетки пустые)
+            gridState = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+            
+            // Очищаем предыдущую игру
+            const container = document.getElementById('puzzle-container');
+            container.innerHTML = '';
+            
+            // Генерируем случайное решение
+            const solution = generateRandomSolution(gridSize, config.fillRatio);
+            
+            // Генерируем подсказки на основе решения
+            rowHints = generateRowHints(solution);
+            colHints = generateColHints(solution);
+            
+            // Сохраняем решение для проверки
+            window.currentSolution = solution;
+            
+            // Создаем подсказки для столбцов
+            createColHints(colHints);
+            
+            // Создаем подсказки для строк
+            createRowHints(rowHints);
+            
+            // Создаем игровую сетку
+            createGrid();
+            
+            // Обновляем информацию о сложности
+            document.getElementById('difficulty-info').textContent = config.name + ` (${gridSize}×${gridSize})`;
+            
+            // Обновляем активную кнопку сложности
+            updateDifficultyButtons();
+            
+            // Очищаем сообщение
+            document.getElementById('message').textContent = '';
+            
+            // Обновляем прогресс
+            updateProgress();
+        }
+
+        // Генерация случайного решения
+        function generateRandomSolution(size, fillRatio) {
+            const solution = [];
+            for (let i = 0; i < size; i++) {
+                const row = [];
+                for (let j = 0; j < size; j++) {
+                    // Заполняем клетку с вероятностью fillRatio
+                    row.push(Math.random() < fillRatio ? 1 : 0);
+                }
+                solution.push(row);
+            }
+            return solution;
+        }
+
+        // Генерация подсказок для строк
+        function generateRowHints(solution) {
+            const hints = [];
+            for (let i = 0; i < gridSize; i++) {
+                const row = solution[i];
+                const rowHints = [];
+                let count = 0;
+                
+                for (let j = 0; j < gridSize; j++) {
+                    if (row[j] === 1) {
+                        count++;
+                    } else if (count > 0) {
+                        rowHints.push(count);
+                        count = 0;
+                    }
+                }
+                
+                if (count > 0) {
+                    rowHints.push(count);
+                }
+                
+                hints.push(rowHints.length > 0 ? rowHints : [0]);
+            }
+            return hints;
+        }
+
+        // Генерация подсказок для столбцов
+        function generateColHints(solution) {
+            const hints = [];
+            for (let j = 0; j < gridSize; j++) {
+                const colHints = [];
+                let count = 0;
+                
+                for (let i = 0; i < gridSize; i++) {
+                    if (solution[i][j] === 1) {
+                        count++;
+                    } else if (count > 0) {
+                        colHints.push(count);
+                        count = 0;
+                    }
+                }
+                
+                if (count > 0) {
+                    colHints.push(count);
+                }
+                
+                hints.push(colHints.length > 0 ? colHints : [0]);
+            }
+            return hints;
+        }
+
+        // Создание подсказок для столбцов (сверху)
+        function createColHints(colHints) {
+            const colHintsContainer = document.createElement('div');
+            colHintsContainer.className = 'col-hints';
+            colHintsContainer.id = 'col-hints-container';
+            
+            // Находим максимальное количество подсказок в столбце
+            const maxHints = Math.max(...colHints.map(hints => hints.length));
+            
+            // Устанавливаем размеры сетки
+            colHintsContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
+            colHintsContainer.style.gridTemplateRows = `repeat(${maxHints}, ${cellSize}px)`;
+            
+            // Создаем строки для подсказок (каждая строка соответствует уровню подсказки)
+            for (let level = 0; level < maxHints; level++) {
+                for (let col = 0; col < gridSize; col++) {
+                    const hintCell = document.createElement('div');
+                    hintCell.className = 'hint-cell';
+                    hintCell.dataset.col = col;
+                    hintCell.dataset.level = level;
+                    
+                    // Добавляем подсказку, если она существует для этого уровня
+                    if (level < colHints[col].length) {
+                        const hintValue = colHints[col][level];
+                        hintCell.textContent = hintValue !== 0 ? hintValue : '';
+                    }
+                    
+                    colHintsContainer.appendChild(hintCell);
+                }
+            }
+            
+            document.getElementById('puzzle-container').appendChild(colHintsContainer);
+        }
+
+        // Создание подсказок для строк (слева)
+        function createRowHints(rowHints) {
+            const rowHintsContainer = document.createElement('div');
+            rowHintsContainer.className = 'row-hints';
+            rowHintsContainer.id = 'row-hints-container';
+            
+            // Находим максимальное количество подсказок в строке
+            const maxHints = Math.max(...rowHints.map(hints => hints.length));
+            
+            // Устанавливаем размеры сетки
+            rowHintsContainer.style.gridTemplateRows = `repeat(${gridSize}, ${cellSize}px)`;
+            rowHintsContainer.style.gridTemplateColumns = `repeat(${maxHints}, ${cellSize}px)`;
+            
+            // Создаем столбцы для подсказок (каждый столбец соответствует уровню подсказки)
+            for (let row = 0; row < gridSize; row++) {
+                for (let level = 0; level < maxHints; level++) {
+                    const hintCell = document.createElement('div');
+                    hintCell.className = 'hint-cell';
+                    hintCell.dataset.row = row;
+                    hintCell.dataset.level = level;
+                    
+                    // Добавляем подсказку, если она существует для этого уровня
+                    const hintIndex = rowHints[row].length - maxHints + level;
+                    if (hintIndex >= 0) {
+                        const hintValue = rowHints[row][hintIndex];
+                        hintCell.textContent = hintValue !== 0 ? hintValue : '';
+                    }
+                    
+                    rowHintsContainer.appendChild(hintCell);
+                }
+            }
+            
+            document.getElementById('puzzle-container').appendChild(rowHintsContainer);
+        }
+
+        // Создание игровой сетки
+        function createGrid() {
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'grid-container';
+            gridContainer.id = 'grid-container';
+            gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
+            gridContainer.style.gridTemplateRows = `repeat(${gridSize}, ${cellSize}px)`;
+            
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    // Обработчики событий для клеток
+                    cell.addEventListener('click', () => {
+                        handleCellClick(i, j, currentMode);
+                        updateProgress();
+                    });
+                    cell.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        handleCellClick(i, j, 'mark');
+                        updateProgress();
+                    });
+                    
+                    // Для мобильных устройств добавляем обработчик долгого нажатия
+                    cell.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        longPressTimer = setTimeout(() => {
+                            handleCellClick(i, j, 'mark');
+                            updateProgress();
+                        }, 500);
+                    });
+                    
+                    cell.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        clearTimeout(longPressTimer);
+                    });
+                    
+                    cell.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        clearTimeout(longPressTimer);
+                    });
+                    
+                    gridContainer.appendChild(cell);
+                }
+            }
+            
+            document.getElementById('puzzle-container').appendChild(gridContainer);
+        }
+
+        // Обработка кликов по клеткам
+        function handleCellClick(row, col, action) {
+            const cell = document.querySelector(`.grid-cell[data-row="${row}"][data-col="${col}"]`);
+            
+            if (action === 'fill') {
+                // Режим закрашивания
+                if (gridState[row][col] === 0) {
+                    gridState[row][col] = 1;
+                    cell.classList.add('filled');
+                    cell.classList.remove('marked');
+                } else if (gridState[row][col] === 1) {
+                    gridState[row][col] = 0;
+                    cell.classList.remove('filled');
+                }
+            } else if (action === 'mark') {
+                // Режим пометки
+                if (gridState[row][col] === 0) {
+                    gridState[row][col] = 2;
+                    cell.classList.add('marked');
+                } else if (gridState[row][col] === 2) {
+                    gridState[row][col] = 0;
+                    cell.classList.remove('marked');
+                }
+            }
+        }
+
+        // Проверка решения и подсветка подсказок
+        function updateProgress() {
+            const solution = window.currentSolution;
+            let correctRows = 0;
+            let correctCols = 0;
+            
+            // Проверяем строки
+            for (let i = 0; i < gridSize; i++) {
+                const isRowCorrect = checkLineCorrectness(i, 'row');
+                highlightHints(i, 'row', isRowCorrect);
+                if (isRowCorrect) correctRows++;
+            }
+            
+            // Проверяем столбцы
+            for (let j = 0; j < gridSize; j++) {
+                const isColCorrect = checkLineCorrectness(j, 'col');
+                highlightHints(j, 'col', isColCorrect);
+                if (isColCorrect) correctCols++;
+            }
+            
+            // Обновляем информацию о прогрессе
+            const progressInfo = document.getElementById('progress-info');
+            progressInfo.textContent = `Правильно заполнено: ${correctRows} строк и ${correctCols} столбцов из ${gridSize}`;
+            
+            // Проверяем, полностью ли решена головоломка
+            if (correctRows === gridSize && correctCols === gridSize) {
+                document.getElementById('message').textContent = 'Поздравляем! Вы решили нонограмм!';
+                document.getElementById('message').className = 'message success';
+            } else {
+                document.getElementById('message').textContent = '';
+                document.getElementById('message').className = 'message';
+            }
+        }
+
+        // Проверка правильности заполнения строки или столбца
+        function checkLineCorrectness(index, type) {
+            const solution = window.currentSolution;
+            let actualHints = [];
+            let count = 0;
+            
+            if (type === 'row') {
+                // Проверяем строку
+                for (let j = 0; j < gridSize; j++) {
+                    if (gridState[index][j] === 1) {
+                        count++;
+                    } else if (count > 0) {
+                        actualHints.push(count);
+                        count = 0;
+                    }
+                }
+            } else {
+                // Проверяем столбец
+                for (let i = 0; i < gridSize; i++) {
+                    if (gridState[i][index] === 1) {
+                        count++;
+                    } else if (count > 0) {
+                        actualHints.push(count);
+                        count = 0;
+                    }
+                }
+            }
+            
+            if (count > 0) {
+                actualHints.push(count);
+            }
+            
+            if (actualHints.length === 0) {
+                actualHints = [0];
+            }
+            
+            // Сравниваем с ожидаемыми подсказками
+            const expectedHints = type === 'row' ? rowHints[index] : colHints[index];
+            
+            if (actualHints.length !== expectedHints.length) {
+                return false;
+            }
+            
+            for (let i = 0; i < actualHints.length; i++) {
+                if (actualHints[i] !== expectedHints[i]) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Подсветка подсказок
+        function highlightHints(index, type, isCorrect) {
+            if (type === 'row') {
+                // Подсвечиваем подсказки для строки
+                const rowHintCells = document.querySelectorAll(`.row-hints .hint-cell[data-row="${index}"]`);
+                rowHintCells.forEach(cell => {
+                    if (isCorrect) {
+                        cell.classList.add('correct');
+                    } else {
+                        cell.classList.remove('correct');
+                    }
+                });
+            } else {
+                // Подсвечиваем подсказки для столбца
+                const colHintCells = document.querySelectorAll(`.col-hints .hint-cell[data-col="${index}"]`);
+                colHintCells.forEach(cell => {
+                    if (isCorrect) {
+                        cell.classList.add('correct');
+                    } else {
+                        cell.classList.remove('correct');
+                    }
+                });
+            }
+        }
+
+        // Проверка решения (кнопка)
+        function checkSolution() {
+            updateProgress();
+        }
+
+        // Сброс игры
+        function resetGame() {
+            initGame();
+        }
+
+        // Новая игра (случайная генерация)
+        function newGame() {
+            initGame();
+        }
+
+        // Обновление активных кнопок сложности
+        function updateDifficultyButtons() {
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                if (btn.dataset.difficulty === currentPuzzle) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Назначение обработчиков событий для кнопок
+        document.getElementById('check-btn').addEventListener('click', checkSolution);
+        document.getElementById('reset-btn').addEventListener('click', resetGame);
+        document.getElementById('new-game-btn').addEventListener('click', newGame);
+
+        // Обработчики для кнопок выбора сложности
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentPuzzle = this.dataset.difficulty;
+                initGame();
+            });
+        });
+
+        // Обработчики для мобильных кнопок управления
+        document.getElementById('mode-fill').addEventListener('click', function() {
+            currentMode = 'fill';
+            this.classList.add('active');
+            document.getElementById('mode-mark').classList.remove('active');
+        });
+
+        document.getElementById('mode-mark').addEventListener('click', function() {
+            currentMode = 'mark';
+            this.classList.add('active');
+            document.getElementById('mode-fill').classList.remove('active');
+        });
+
+        // Инициализация игры при загрузке страницы
+        window.onload = initGame;
+        
+        // Для мобильных устройств - предотвращение масштабирования при двойном тапе
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
