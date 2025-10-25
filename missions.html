@@ -522,60 +522,38 @@
             </p>
         </div>
         <div class="games-grid">
-
-            <!-- Кибер-лабиринт -->
-            <div class="game-card">
-                <div class="game-icon">🧩</div>
-                <h3 class="game-title">Операция "Кибер-лабиринт"</h3>
-                <p class="game-description">
-                    Агент, ваша миссия — проникнуть в цифровое логово враждебного ИИ и нейтрализовать угрозу. Используйте скрытность и хакерские навыки, чтобы пройти через кибернетический лабиринт, полный ловушек и стражей системы. Только вы можете предотвратить катастрофу глобального масштаба, взяв под контроль или уничтожив ядро искусственного интеллекта.
-                </p>
-                <a href="kiber.html" class="play-btn">Начать миссию</a>
-            </div>
-                      <!-- Детектив -->
-                      <div class="game-card">
-                        <div class="game-icon">🧩</div>
-                        <h3 class="game-title">Операция "Детектив"</h3>
-                        <p class="game-description">
-                            Описание отсуствует
-                        </p>
-                        <a href="detectiv+2.html" class="play-btn">Начать миссию</a>
-                    </div>
             <!-- Операция "Банк" -->
             <div class="game-card">
-                <!-- Таймер на карточке -->
-                <div class="card-countdown">
-                    <div class="countdown-label" id="bank-label">До открытия операции:</div>
-                    <div class="countdown-timer">
-                        <div class="time-block">
-                            <span class="time-value" id="bank-days">00</span>
-                            <span class="time-text">дней</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="bank-hours">00</span>
-                            <span class="time-text">часов</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="bank-minutes">00</span>
-                            <span class="time-text">мин</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="bank-seconds">00</span>
-                            <span class="time-text">сек</span>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="game-icon">💰</div>
                 <h3 class="game-title">Операция "Банк"</h3>
                 <p class="game-description">
                     Детали будут раскрыты в день начала операции. Будьте готовы ко всему.
                 </p>
-                <a href=".html" class="play-btn disabled" id="bank-btn">Начать миссию</a>
+                <a href="http://host1882872.hostland.pro/bank.html" class="play-btn disabled" id="bank-btn">Начать
+                    миссию</a>
             </div>
+            <!-- Кибер-лабиринт -->
+            <div class="game-card">
+                <div class="game-icon">🧩</div>
+                <h3 class="game-title">Операция "Кибер-лабиринт"</h3>
+                <p class="game-description">
+                    Агент, ваша миссия — проникнуть в цифровое логово враждебного ИИ и нейтрализовать угрозу.
+                    Используйте скрытность и хакерские навыки, чтобы пройти через кибернетический лабиринт, полный
+                    ловушек и стражей системы. Только вы можете предотвратить катастрофу глобального масштаба, взяв под
+                    контроль или уничтожив ядро искусственного интеллекта.
+                </p>
+                <a href="kiber.html" class="play-btn">Начать миссию</a>
+            </div>
+            <!-- Детектив -->
+            <div class="game-card">
+                <div class="game-icon">🧩</div>
+                <h3 class="game-title">Операция "Детектив"</h3>
+                <p class="game-description">
+                    Описание отсуствует
+                </p>
+                <a href="detectiv+2.html" class="play-btn">Начать миссию</a>
+            </div>
+
 
             <!-- Операция "Неизвестно" -->
             <div class="game-card">
@@ -614,7 +592,7 @@
                 <a href=".html" class="play-btn disabled" id="unknown-btn">Начать миссию</a>
             </div>
 
-           
+
         </div>
     </div>
 
@@ -641,10 +619,10 @@
         async function updateCountdowns() {
             const serverTime = await getServerTime();
             const now = serverTime.getTime();
-            
+
             // Обновляем таймер для операции "Банк"
             updateOperationTimer('bank', bankTargetDate, now);
-            
+
             // Обновляем таймер для операции "Неизвестно"
             updateOperationTimer('unknown', unknownTargetDate, now);
         }
@@ -654,24 +632,24 @@
             const timeLeft = targetDate - now;
             const label = document.getElementById(`${operation}-label`);
             const btn = document.getElementById(`${operation}-btn`);
-            
+
             if (timeLeft <= 0) {
                 // Таймер завершен
                 label.textContent = 'Операция открыта!';
                 document.querySelector(`#${operation}-days`).parentElement.parentElement.style.display = 'none';
-                
+
                 // Активируем кнопку
                 btn.classList.remove('disabled');
                 btn.textContent = 'Начать миссию';
                 return;
             }
-            
+
             // Вычисляем оставшееся время
             const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-            
+
             // Обновляем значения таймера
             updateCardElement(`${operation}-days`, days);
             updateCardElement(`${operation}-hours`, hours);
@@ -684,7 +662,7 @@
             const element = document.getElementById(elementId);
             const oldValue = element.textContent;
             const formattedValue = newValue.toString().padStart(2, '0');
-            
+
             if (oldValue !== formattedValue) {
                 element.classList.add('changing');
                 setTimeout(() => {
