@@ -520,7 +520,43 @@
         
         <!-- Сетка игр -->
         <div class="games-grid">
-            
+            <!-- Операция "Неизвестно" -->
+<div class="game-card">
+    <!-- Таймер на карточке -->
+    <div class="card-countdown">
+        <div class="countdown-label" id="unknown-label">До открытия операции:</div>
+        <div class="countdown-timer">
+            <div class="time-block">
+                <span class="time-value" id="unknown-days">00</span>
+                <span class="time-text">дней</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span class="time-value" id="unknown-hours">00</span>
+                <span class="time-text">часов</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span class="time-value" id="unknown-minutes">00</span>
+                <span class="time-text">мин</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span class="time-value" id="unknown-seconds">00</span>
+                <span class="time-text">сек</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-icon"></div>
+    <h3 class="game-title">Операция "Неизвестно"</h3>
+    <p class="game-description">
+        Засекреченная миссия. Детали будут раскрыты в день начала операции.
+        Будьте готовы ко всему.
+    </p>
+    <a href=".html" class="play-btn disabled" id="unknown-btn">Начать миссию</a>
+</div>
+
             <div class="game-card">
                 <div class="game-icon"> </div>
                 <h3 class="game-title">Операция "Нонограма"</h3>
@@ -588,7 +624,7 @@
         <div class="greeting">
             <h3 style="color: #00ffff; margin-bottom: 15px;">⚠️ ВНИМАНИЕ АГЕНТАМ</h3>
             <p style="margin-top: 10px; color: #80ffff; font-size: 0.9rem;">
-                Управление: стрелки клавиатуры или свайпы на мобильных устройствах
+                Операция "Неизвестно" откроется 13 ноября 2024 года, 13:30 по московскому времени
             </p>
         </div>
     </div>
@@ -638,6 +674,69 @@
 
             document.querySelector('.bg-animation').style.transform = `translateY(${rate}px)`;
         });
+
+
+        // Целевая дата для операции "Неизвестно"
+const unknownTargetDate = new Date('2024-11-13T13:30:00+03:00').getTime(); // 13 ноября 2024, 13:30 МСК
+
+// Основная функция обновления таймеров
+async function updateCountdowns() {
+    const serverTime = await getServerTime();
+    const now = serverTime.getTime();
+    
+    // Обновляем таймер для операции "Неизвестно"
+    updateOperationTimer('unknown', unknownTargetDate, now, 'открытия');
+}
+
+// Функция обновления таймера для операции "Неизвестно"
+function updateOperationTimer(operation, targetDate, now, actionType) {
+    const timeLeft = targetDate - now;
+    const label = document.getElementById(`${operation}-label`);
+    const btn = document.getElementById(`${operation}-btn`);
+    
+    if (timeLeft <= 0) {
+        // Таймер завершен
+        label.textContent = 'Операция открыта!';
+        document.querySelector(`#${operation}-days`).parentElement.parentElement.style.display = 'none';
+        
+        // Активируем кнопку
+        if (btn) {
+            btn.classList.remove('disabled');
+            btn.textContent = 'Начать миссию';
+        }
+        return;
+    }
+    
+    // Вычисляем оставшееся время
+    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+    // Обновляем значения таймера
+    updateCardElement(`${operation}-days`, days);
+    updateCardElement(`${operation}-hours`, hours);
+    updateCardElement(`${operation}-minutes`, minutes);
+    updateCardElement(`${operation}-seconds`, seconds);
+    
+    // Обновляем текст
+    label.textContent = `До ${actionType} операции:`;
+}
+
+// Функция для обновления элемента с анимацией
+function updateCardElement(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    const oldValue = element.textContent;
+    const formattedValue = newValue.toString().padStart(2, '0');
+    
+    if (oldValue !== formattedValue) {
+        element.classList.add('changing');
+        setTimeout(() => {
+            element.textContent = formattedValue;
+            element.classList.remove('changing');
+        }, 150);
+    }
+}
     </script>
 </body>
 

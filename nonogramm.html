@@ -9,6 +9,10 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -20,6 +24,7 @@
             padding: 20px;
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: #333;
+            touch-action: manipulation;
         }
         
         .container {
@@ -152,11 +157,13 @@
             flex: 1;
             text-align: center;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         
         .mobile-btn.active {
             background: #4CAF50;
             color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .nonogram-wrapper {
@@ -165,6 +172,7 @@
             width: 100%;
             overflow: auto;
             padding: 10px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .puzzle-container {
@@ -201,6 +209,7 @@
             gap: 1px;
             background-color: #ddd;
             border: 1px solid #999;
+            touch-action: manipulation;
         }
         
         .hint-cell {
@@ -239,6 +248,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .grid-cell.filled {
@@ -250,6 +261,10 @@
             color: #ff5252;
             font-size: 16px;
             font-weight: bold;
+        }
+        
+        .grid-cell.touched {
+            background-color: #e0e0e0;
         }
         
         .progress-info {
@@ -348,6 +363,10 @@
             .mobile-controls {
                 display: flex;
             }
+            
+            .grid-cell.marked::after {
+                font-size: 14px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -371,6 +390,35 @@
             
             .instructions {
                 padding: 15px;
+            }
+            
+            .grid-cell.marked::after {
+                font-size: 12px;
+            }
+        }
+        
+        /* Для очень маленьких экранов */
+        @media (max-width: 360px) {
+            .hint-cell, .grid-cell {
+                min-width: 16px;
+                min-height: 16px;
+                font-size: 9px;
+            }
+            
+            .grid-cell.marked::after {
+                font-size: 10px;
+            }
+        }
+        
+        /* Улучшения для сенсорных устройств */
+        @media (hover: none) and (pointer: coarse) {
+            button:active, .difficulty-btn:active, .mobile-btn:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            
+            .grid-cell:active {
+                background-color: #e0e0e0;
             }
         }
     </style>
@@ -398,6 +446,7 @@
             <div class="mobile-controls">
                 <div class="mobile-btn active" id="mode-fill">Закрасить</div>
                 <div class="mobile-btn" id="mode-mark">Пометить</div>
+                <div class="mobile-btn" id="mode-clear">Очистить</div>
             </div>
             
             <div class="nonogram-wrapper">
@@ -416,7 +465,8 @@
             <ul>
                 <li><strong>Левый клик</strong> - закрасить клетку</li>
                 <li><strong>Правый клик</strong> - пометить клетку как пустую</li>
-                <li><strong>На телефоне:</strong> используйте кнопки "Закрасить" и "Пометить" для выбора режима</li>
+                <li><strong>На телефоне:</strong> используйте кнопки "Закрасить", "Пометить" и "Очистить" для выбора режима</li>
+                <li><strong>Долгое нажатие</strong> на телефоне переключает режим пометки</li>
                 <li><strong>Подсказки подсвечиваются зеленым</strong>, когда строка или столбец заполнены правильно</li>
                 <li>Числа слева и сверху показывают группы закрашенных клеток в строке/столбце</li>
             </ul>
@@ -454,6 +504,13 @@
         let longPressTimer;
         let rowHints = [];
         let colHints = [];
+        let isTouchDevice = false;
+
+        // Проверка на сенсорное устройство
+        function checkTouchDevice() {
+            isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+            return isTouchDevice;
+        }
 
         // Инициализация игры
         function initGame() {
@@ -498,6 +555,12 @@
             
             // Обновляем прогресс
             updateProgress();
+            
+            // Проверяем устройство и показываем соответствующие инструкции
+            checkTouchDevice();
+            if (isTouchDevice) {
+                document.querySelector('.mobile-controls').style.display = 'flex';
+            }
         }
 
         // Генерация случайного решения
@@ -654,6 +717,7 @@
                         handleCellClick(i, j, currentMode);
                         updateProgress();
                     });
+                    
                     cell.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         handleCellClick(i, j, 'mark');
@@ -663,20 +727,24 @@
                     // Для мобильных устройств добавляем обработчик долгого нажатия
                     cell.addEventListener('touchstart', (e) => {
                         e.preventDefault();
+                        cell.classList.add('touched');
                         longPressTimer = setTimeout(() => {
                             handleCellClick(i, j, 'mark');
                             updateProgress();
+                            cell.classList.remove('touched');
                         }, 500);
                     });
                     
                     cell.addEventListener('touchend', (e) => {
                         e.preventDefault();
                         clearTimeout(longPressTimer);
+                        cell.classList.remove('touched');
                     });
                     
                     cell.addEventListener('touchmove', (e) => {
                         e.preventDefault();
                         clearTimeout(longPressTimer);
+                        cell.classList.remove('touched');
                     });
                     
                     gridContainer.appendChild(cell);
@@ -705,10 +773,15 @@
                 if (gridState[row][col] === 0) {
                     gridState[row][col] = 2;
                     cell.classList.add('marked');
+                    cell.classList.remove('filled');
                 } else if (gridState[row][col] === 2) {
                     gridState[row][col] = 0;
                     cell.classList.remove('marked');
                 }
+            } else if (action === 'clear') {
+                // Режим очистки
+                gridState[row][col] = 0;
+                cell.classList.remove('filled', 'marked');
             }
         }
 
@@ -865,15 +938,33 @@
         // Обработчики для мобильных кнопок управления
         document.getElementById('mode-fill').addEventListener('click', function() {
             currentMode = 'fill';
-            this.classList.add('active');
-            document.getElementById('mode-mark').classList.remove('active');
+            updateMobileButtons();
         });
 
         document.getElementById('mode-mark').addEventListener('click', function() {
             currentMode = 'mark';
-            this.classList.add('active');
-            document.getElementById('mode-fill').classList.remove('active');
+            updateMobileButtons();
         });
+
+        document.getElementById('mode-clear').addEventListener('click', function() {
+            currentMode = 'clear';
+            updateMobileButtons();
+        });
+
+        // Обновление состояния мобильных кнопок
+        function updateMobileButtons() {
+            document.querySelectorAll('.mobile-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (currentMode === 'fill') {
+                document.getElementById('mode-fill').classList.add('active');
+            } else if (currentMode === 'mark') {
+                document.getElementById('mode-mark').classList.add('active');
+            } else if (currentMode === 'clear') {
+                document.getElementById('mode-clear').classList.add('active');
+            }
+        }
 
         // Инициализация игры при загрузке страницы
         window.onload = initGame;
@@ -887,6 +978,19 @@
             }
             lastTouchEnd = now;
         }, false);
+        
+        // Предотвращение стандартного поведения для жестов масштабирования
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function (e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function (e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
