@@ -712,7 +712,7 @@
                     cell.dataset.row = i;
                     cell.dataset.col = j;
                     
-                    // Обработчики событий для клеток
+                    // Обработчики событий для десктопов
                     cell.addEventListener('click', () => {
                         handleCellClick(i, j, currentMode);
                         updateProgress();
@@ -724,34 +724,65 @@
                         updateProgress();
                     });
                     
-                    // Для мобильных устройств добавляем обработчик долгого нажатия
-                    cell.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        cell.classList.add('touched');
-                        longPressTimer = setTimeout(() => {
-                            handleCellClick(i, j, 'mark');
-                            updateProgress();
-                            cell.classList.remove('touched');
-                        }, 500);
-                    });
-                    
-                    cell.addEventListener('touchend', (e) => {
-                        e.preventDefault();
-                        clearTimeout(longPressTimer);
-                        cell.classList.remove('touched');
-                    });
-                    
-                    cell.addEventListener('touchmove', (e) => {
-                        e.preventDefault();
-                        clearTimeout(longPressTimer);
-                        cell.classList.remove('touched');
-                    });
+                    // Обработчики событий для мобильных устройств
+                    cell.addEventListener('touchstart', handleTouchStart);
+                    cell.addEventListener('touchend', handleTouchEnd);
+                    cell.addEventListener('touchmove', handleTouchMove);
                     
                     gridContainer.appendChild(cell);
                 }
             }
             
             document.getElementById('puzzle-container').appendChild(gridContainer);
+        }
+
+        // Обработка начала касания
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const cell = e.target;
+            if (!cell.classList.contains('grid-cell')) return;
+            
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            
+            cell.classList.add('touched');
+            
+            // Запускаем таймер для долгого нажатия
+            longPressTimer = setTimeout(() => {
+                handleCellClick(row, col, 'mark');
+                updateProgress();
+                cell.classList.remove('touched');
+            }, 500);
+        }
+
+        // Обработка окончания касания
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            const cell = e.target;
+            if (!cell.classList.contains('grid-cell')) return;
+            
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            
+            clearTimeout(longPressTimer);
+            
+            // Если таймер не сработал (короткое нажатие)
+            if (!cell.classList.contains('long-press')) {
+                handleCellClick(row, col, currentMode);
+                updateProgress();
+            }
+            
+            cell.classList.remove('touched', 'long-press');
+        }
+
+        // Обработка движения касания
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const cell = e.target;
+            if (!cell.classList.contains('grid-cell')) return;
+            
+            clearTimeout(longPressTimer);
+            cell.classList.remove('touched', 'long-press');
         }
 
         // Обработка кликов по клеткам
