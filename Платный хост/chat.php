@@ -2192,6 +2192,9 @@ $chat_enabled = isChatEnabled($pdo);
                 <span class="btn-icon">🖼️</span>
                 Галерея
             </a>
+            <a href="http://day.host1882872.hostland.pro/" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Месяцные заданияя
         </div>
 
         <!-- Панель пользователя -->
