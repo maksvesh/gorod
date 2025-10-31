@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Темный город | Месяцные задания</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: #0a0a12;
+            color: #c0c0c0;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(30, 30, 60, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(40, 40, 80, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
+            animation: pulse 15s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .scan-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 255, 0.03) 50%);
+            background-size: 100% 4px;
+            z-index: -1;
+            pointer-events: none;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Панель пользователя */
+        .user-panel {
+            background: rgba(0, 20, 40, 0.8);
+            border: 1px solid #00ffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .user-info h2 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #80ffff;
+        }
+
+        .user-completed {
+            background: rgba(0, 100, 0, 0.3);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            font-size: 0.8rem;
+            color: #00ff00;
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #660000, #aa0000);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(45deg, #880000, #cc0000);
+        }
+
+        /* Прогресс бар уровня */
+        .level-progress {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00aaff, #00ffff);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: #80ffff;
+        }
+
+        /* Заголовок и приветствие */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .title {
+            font-size: 3rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #80ffff;
+            margin-bottom: 30px;
+        }
+
+        .greeting {
+            background: rgba(0, 20, 40, 0.7);
+            border-left: 3px solid #00ffff;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        /* Навигационные кнопки */
+        .navigation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 1px solid #00ffff;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
+        }
+
+        /* Кнопки категорий */
+        .category-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Статистика выполнения - СКРЫТА ДО НАЧАЛА ЗАДАНИЯ */
+        .completion-stats {
+            background: rgba(0, 30, 60, 0.6);
+            border: 1px solid #004477;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .completion-stats.visible {
+            display: flex;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #003366, #005588);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border: 1px solid #0088aa;
+        }
+
+        .category-btn:hover {
+            background: linear-gradient(45deg, #004477, #006699);
+            transform: translateY(-2px);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(45deg, #006600, #008800);
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        /* Секция топа игроков */
+        .leaderboard-section {
+            margin: 40px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #00ffff;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .leaderboard-container {
+            background: rgba(0, 20, 40, 0.8);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .leaderboard-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px 120px 120px 100px;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(0, 40, 80, 0.6);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #00ffff;
+            border-bottom: 2px solid #00aaff;
+            min-width: 700px;
+        }
+
+        .badge-click {
+            background: linear-gradient(45deg, #aa0044, #ff0066);
+            color: #fff;
+        }
+
+        .leaderboard-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px 120px 120px 100px;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(10, 30, 50, 0.5);
+            border-radius: 5px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            min-width: 700px;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(20, 50, 80, 0.7);
+            transform: translateX(5px);
+            border-left-color: #00ffff;
+        }
+
+        .leaderboard-item.current-user {
+            background: rgba(0, 80, 120, 0.6);
+            border-left-color: #ffff00;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+        }
+
+        .rank {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .rank-1 {
+            color: #ffd700;
+            text-shadow: 0 0 5px #ffd700;
+        }
+
+        .rank-2 {
+            color: #c0c0c0;
+            text-shadow: 0 0 5px #c0c0c0;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+            text-shadow: 0 0 5px #cd7f32;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #004466, #0088aa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .player-name {
+            font-weight: bold;
+        }
+
+        .current-user .player-name {
+            color: #ffff00;
+        }
+
+        .player-level {
+            text-align: center;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .player-xp {
+            text-align: center;
+            color: #ffff80;
+        }
+
+        .player-quests {
+            text-align: center;
+            color: #ff8080;
+            font-weight: bold;
+        }
+
+        .player-status {
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .status-online {
+            background: linear-gradient(45deg, #006600, #00aa00);
+            color: #ffffff;
+        }
+
+        .status-offline {
+            background: linear-gradient(45deg, #666666, #999999);
+            color: #cccccc;
+        }
+
+        .leaderboard-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .leaderboard-stat {
+            text-align: center;
+        }
+
+        .stat-big {
+            font-size: 2rem;
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #80ffff;
+        }
+
+        /* Карточки заданий */
+        .quests-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .quest-card {
+            background: rgba(10, 20, 40, 0.8);
+            border: 1px solid #004466;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quest-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 100, 255, 0.3);
+            border-color: #00aaff;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            position: relative;
+            padding-right: 80px;
+        }
+
+        .quest-title {
+            color: #00aaff;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            padding-right: 10px;
+        }
+
+        .quest-xp {
+            color: #ffff00;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .quest-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .status-active {
+            background: rgba(0, 100, 0, 0.3);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .status-completed {
+            background: rgba(0, 50, 100, 0.3);
+            color: #00aaff;
+            border: 1px solid #00aaff;
+        }
+
+        .status-locked {
+            background: rgba(100, 0, 0, 0.3);
+            color: #ff3333;
+            border: 1px solid #ff3333;
+        }
+
+        .quest-content {
+            line-height: 1.6;
+        }
+
+        .quest-description {
+            margin-bottom: 15px;
+            color: #a0a0c0;
+        }
+
+        .quest-progress {
+            margin: 15px 0;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .progress-score {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .progress-target {
+            color: #00ff00;
+        }
+
+        /* Новые стили для статистики выполнения */
+        .quest-stats {
+            background: rgba(0, 40, 80, 0.6);
+            border: 1px solid #0066aa;
+            border-radius: 5px;
+            padding: 12px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-completion {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .stat-icon {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #80ffff;
+        }
+
+        .completion-badge {
+            background: linear-gradient(45deg, #006600, #00aa00);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .popular-badge {
+            background: linear-gradient(45deg, #aa0000, #ff0000);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .stats-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stats-number {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .stats-label {
+            font-size: 0.7rem;
+            color: #80ffff;
+        }
+
+        .quest-reward {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .reward-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .reward-text {
+            font-size: 0.9rem;
+            color: #ffff80;
+        }
+
+        .quest-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .quest-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(45deg, #006688, #00aacc);
+        }
+
+        .btn-claim {
+            background: linear-gradient(45deg, #006600, #00aa00);
+            color: white;
+        }
+
+        .btn-claim:hover {
+            background: linear-gradient(45deg, #008800, #00cc00);
+        }
+
+        .btn-locked {
+            background: linear-gradient(45deg, #444444, #666666);
+            color: #aaaaaa;
+            cursor: not-allowed;
+        }
+
+        .xp-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #ffaa00, #ffff00);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .stat-label-small {
+            font-size: 0.7rem;
+            color: #80ffff;
+        }
+
+        .completion-rate {
+            background: linear-gradient(45deg, #004466, #0088aa);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Стили для мини-игры в карточке */
+        .mini-game-container {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 10, 20, 0.6);
+            border: 1px solid #004466;
+            border-radius: 5px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .game-score {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        
+        .game-target {
+            color: #00ff00;
+            font-size: 0.9rem;
+        }
+        
+        .game-progress {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .game-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffff00);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .game-hint {
+            font-size: 0.8rem;
+            color: #80ffff;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Бейдж типа игры */
+        .game-type-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .badge-snake {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            color: #000;
+        }
+
+        .badge-tetris {
+            background: linear-gradient(45deg, #0044aa, #0088ff);
+            color: #fff;
+        }
+
+        .badge-click {
+            background: linear-gradient(45deg, #aa0044, #ff0066);
+            color: #fff;
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 768px) {
+            .user-panel {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .user-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .quests-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .category-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .completion-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .quest-stats {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .leaderboard-container {
+                padding: 15px;
+                overflow-x: visible;
+            }
+            
+            .leaderboard-header {
+                display: none;
+            }
+            
+            .leaderboard-item {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+                min-width: unset;
+                margin-bottom: 15px;
+            }
+            
+            .leaderboard-item .rank {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+            }
+            
+            .player-info {
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            
+            .player-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .player-name {
+                font-size: 1.1rem;
+            }
+            
+            .player-stats-mobile {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+                text-align: center;
+                width: 100%;
+            }
+            
+            .stat-mobile {
+                background: rgba(0, 20, 40, 0.6);
+                padding: 8px;
+                border-radius: 5px;
+            }
+            
+            .stat-label-mobile {
+                font-size: 0.7rem;
+                color: #80ffff;
+                margin-bottom: 3px;
+            }
+            
+            .stat-value-mobile {
+                font-size: 1rem;
+                font-weight: bold;
+            }
+            
+            .player-level .stat-value-mobile {
+                color: #00ff00;
+            }
+            
+            .player-xp .stat-value-mobile {
+                color: #ffff80;
+            }
+            
+            .player-quests .stat-value-mobile {
+                color: #ff8080;
+            }
+            
+            .player-status-mobile {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+            }
+            
+            .status-dot-online {
+                background: #00ff00;
+                box-shadow: 0 0 5px #00ff00;
+            }
+            
+            .status-dot-offline {
+                background: #666666;
+            }
+            
+            .leaderboard-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .user-panel {
+                padding: 15px;
+            }
+            
+            .user-stats {
+                gap: 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .category-btn {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .quest-card {
+                padding: 20px;
+            }
+            
+            .quest-header {
+                padding-right: 70px;
+            }
+            
+            .quest-title {
+                font-size: 1.1rem;
+            }
+            
+            .player-stats-mobile {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .game-type-badge {
+                top: 8px;
+                left: 8px;
+                font-size: 0.6rem;
+                padding: 2px 6px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .quest-card {
+                padding: 15px;
+            }
+            
+            .quest-header {
+                padding-right: 60px;
+            }
+            
+            .quest-title {
+                font-size: 1rem;
+            }
+            
+            .player-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+            
+            .player-name {
+                font-size: 1rem;
+            }
+            
+            .player-stats-mobile {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        /* Стили для счетчика заданий */
+        .quests-counter {
+            background: rgba(0, 40, 80, 0.8);
+            border: 1px solid #00aaff;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .quests-counter h3 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .quests-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .quest-stat {
+            text-align: center;
+        }
+
+        .quest-stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffff00;
+            margin-bottom: 5px;
+        }
+
+        .quest-stat-label {
+            font-size: 0.9rem;
+            color: #80ffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="scan-lines"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Темный город</h1>
+            <p class="subtitle">Система месяцных заданий и отслеживания прогресса</p>
+            
+            <div class="greeting">
+                <p>Агент <span id="greeting-username"></span>, перед вами список текущих оперативных заданий.</p>
+                <p>Выполняйте задания, получайте опыт и повышайте свой уровень!</p>
+            </div>
+        </header>
+
+       <!-- Навигационные кнопки -->
+       <div class="navigation-buttons">
+        <a href="https://maksvesh.github.io/gorod/" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Главная
+        </a>
+        <a href="sotrud.html" class="nav-btn">
+            <span class="btn-icon">👥</span>
+            Сотрудники
+        </a>
+        <a href="games.html" class="nav-btn">
+            <span class="btn-icon">🎮</span>
+            Игровая зона
+        </a>
+        <a href="missions.html" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Миссии
+        </a>
+        <a href="gallery.html" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Галерея
+        </a>
+        <a href="http://host1882872.hostland.pro/chat.php" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Чат
+        </a>
+        
+    </div>
+
+        <!-- Панель пользователя -->
+        <div class="user-panel">
+            <div class="user-info">
+                <h2>Агент: <span id="username-display"></span></h2>
+                <div class="user-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="user-level">1</div>
+                        <div class="stat-label">УРОВЕНЬ</div>
+                        <div class="level-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="level-progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text" id="level-progress-text">0/100 XP</div>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-xp">0</div>
+                        <div class="stat-label">ОПЫТ</div>
+                    </div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+
+        <!-- Счетчик заданий -->
+        <div class="quests-counter">
+            <h3>📊 СТАТИСТИКА ЗАДАНИЙ</h3>
+            <div class="quests-stats">
+                <div class="quest-stat">
+                    <div class="quest-stat-number" id="total-quests-count">0</div>
+                    <div class="quest-stat-label">Всего заданий</div>
+                </div>
+                <div class="quest-stat">
+                    <div class="quest-stat-number" id="available-quests-count">0</div>
+                    <div class="quest-stat-label">Доступно сейчас</div>
+                </div>
+                <div class="quest-stat">
+                    <div class="quest-stat-number" id="user-completed-count">0</div>
+                    <div class="quest-stat-label">Выполнено вами</div>
+                </div>
+                <div class="quest-stat">
+                    <div class="quest-stat-number" id="completion-rate">0%</div>
+                    <div class="quest-stat-label">Процент выполнения</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Секция топа игроков -->
+        <section class="leaderboard-section">
+            <h2 class="section-title">ТОП ИГРОКОВ</h2>
+            <div class="leaderboard-container">
+                <div class="leaderboard-header">
+                    <div>Ранг</div>
+                    <div>Игрок</div>
+                    <div>Уровень</div>
+                    <div>Опыт</div>
+                    <div>Задания</div>
+                    <div>Статус</div>
+                </div>
+                <div id="leaderboard-content">
+                    <!-- Содержимое топа будет загружено через JavaScript -->
+                </div>
+                
+                <div class="leaderboard-stats">
+                    <div class="leaderboard-stat">
+                        <div class="stat-big" id="total-players">0</div>
+                        <div class="stat-label">Всего игроков</div>
+                    </div>
+                    <div class="leaderboard-stat">
+                        <div class="stat-big" id="online-players">0</div>
+                        <div class="stat-label">Онлайн сейчас</div>
+                    </div>
+                    <div class="leaderboard-stat">
+                        <div class="stat-big" id="avg-level">0</div>
+                        <div class="stat-label">Средний уровень</div>
+                    </div>
+                    <div class="leaderboard-stat">
+                        <div class="stat-big" id="total-completed">0</div>
+                        <div class="stat-label">Выполнено заданий</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 style="text-align: center; color: #00ffff; margin: 30px 0; font-size: 2rem;">СИСТЕМА МЕСЯЦНЫХ ЗАДАНИЙ</h2>
+            <!-- Кнопки категорий -->
+<div class="category-buttons">
+    <button class="category-btn active" data-category="all">Все задания</button>
+    <button class="category-btn" data-category="snake_game">Змейка</button>
+    <button class="category-btn" data-category="tetris">Тетрис</button>
+    <button class="category-btn" data-category="click_game">Кликер</button>
+</div>
+            <div class="quests-container" id="quests-container">
+                <!-- Задания будут загружены через JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Проверяем авторизацию
+        const userId = localStorage.getItem('user_id');
+        const username = localStorage.getItem('username');
+        
+        if (!userId || !username) {
+            window.location.href = 'index.html';
+        }
+    
+        // Отображаем информацию пользователя
+        document.getElementById('username-display').textContent = username;
+        document.getElementById('greeting-username').textContent = username;
+    
+        // Данные пользователя
+        let userData = {
+            level: 1,
+            xp: 0,
+            nextLevelXp: 100,
+            completedQuests: 0,
+            userCompletedQuests: 0,
+            totalActiveQuests: 8
+        };
+    
+        // Текущая категория фильтра
+        let currentCategory = 'all';
+    
+        // Функция для расчета уровня на основе опыта
+        function calculateLevel(xp) {
+            const levelRequirements = [
+                0,      // Уровень 1
+                500,    // Уровень 2  
+                1200,   // Уровень 3
+                2500,   // Уровень 4
+                4500,   // Уровень 5
+                6000,   // Уровень 6
+                8900,   // Уровень 7
+                12000,  // Уровень 8
+                16000,  // Уровень 9
+                20000   // Уровень 10
+            ];
+            
+            let level = 1;
+            let currentXp = xp;
+            let xpNeeded = levelRequirements[1];
+            
+            for (let i = levelRequirements.length - 1; i >= 1; i--) {
+                if (xp >= levelRequirements[i]) {
+                    level = i + 1;
+                    currentXp = xp - levelRequirements[i];
+                    xpNeeded = (levelRequirements[i + 1] || (levelRequirements[i] + 500)) - levelRequirements[i];
+                    break;
+                }
+            }
+            
+            if (level === 1) {
+                xpNeeded = levelRequirements[1];
+                currentXp = xp;
+            }
+            
+            return {
+                level: level,
+                currentXp: currentXp,
+                nextLevelXp: xpNeeded,
+                progress: (currentXp / xpNeeded) * 100
+            };
+        }
+    
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                const response = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_user_data',
+                        user_id: userId
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        userData = {
+                            ...userData,
+                            ...result.user_data
+                        };
+                        updateUserDisplay();
+                        updateQuestCounter();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                updateUserDisplay();
+            }
+        }
+    
+        // Обновление счетчика заданий
+        function updateQuestCounter() {
+            document.getElementById('total-quests-count').textContent = userData.total_active_quests || 12;
+            document.getElementById('user-completed-count').textContent = userData.user_completed_quests || 0;
+            
+            // Рассчитываем доступные задания
+            const availableQuests = (userData.total_active_quests || 12) - (userData.user_completed_quests || 0);
+            document.getElementById('available-quests-count').textContent = Math.max(0, availableQuests);
+            
+            // Рассчитываем процент выполнения
+            const completionRate = userData.total_active_quests > 0 
+                ? Math.round((userData.user_completed_quests / userData.total_active_quests) * 100) 
+                : 0;
+            document.getElementById('completion-rate').textContent = completionRate + '%';
+        }
+    
+        // Обновление отображения данных пользователя
+        function updateUserDisplay() {
+            const levelData = calculateLevel(userData.xp);
+            
+            document.getElementById('user-level').textContent = levelData.level;
+            document.getElementById('total-xp').textContent = userData.xp;
+            
+            document.getElementById('level-progress-bar').style.width = levelData.progress + '%';
+            document.getElementById('level-progress-text').textContent = 
+                `${Math.round(levelData.currentXp)}/${levelData.nextLevelXp} XP`;
+        }
+    
+        // Загрузка топа игроков
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_leaderboard',
+                        user_id: userId
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        displayLeaderboard(result.leaderboard, result.stats);
+                    } else {
+                        console.error('Server error:', result.error);
+                        // Показываем заглушку при ошибке
+                        displayLeaderboard([], {
+                            total_players: 0,
+                            avg_level: 0,
+                            total_completed_quests: 0,
+                            online_players: 0
+                        });
+                    }
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                // Показываем заглушку при ошибке сети
+                displayLeaderboard([], {
+                    total_players: 0,
+                    avg_level: 0,
+                    total_completed_quests: 0,
+                    online_players: 0
+                });
+            }
+        }
+    
+        // Отображение топа игроков
+        function displayLeaderboard(leaderboard, stats) {
+            const container = document.getElementById('leaderboard-content');
+            
+            if (!leaderboard || leaderboard.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff6666;">Нет данных о игроках</div>';
+                return;
+            }
+    
+            let html = '';
+            
+            leaderboard.forEach((player, index) => {
+                const rank = index + 1;
+                const isCurrentUser = player.id == userId;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                const userClass = isCurrentUser ? 'current-user' : '';
+                
+                // Проверяем статус онлайн
+                const isOnline = player.is_online == 1;
+                const statusClass = isOnline ? 'status-online' : 'status-offline';
+                const statusText = isOnline ? 'В СЕТИ' : 'НЕ В СЕТИ';
+                
+                // Проверяем мобильное устройство
+                const isMobile = window.innerWidth <= 768;
+                
+                if (isMobile) {
+                    // Мобильная версия
+                    html += `
+                        <div class="leaderboard-item ${userClass}">
+                            <div class="rank ${rankClass}">${rank}</div>
+                            <div class="player-info">
+                                <div class="player-avatar">${player.username.charAt(0).toUpperCase()}</div>
+                                <div class="player-name">${player.username}</div>
+                            </div>
+                            <div class="player-stats-mobile">
+                                <div class="stat-mobile player-level">
+                                    <div class="stat-label-mobile">Уровень</div>
+                                    <div class="stat-value-mobile">${player.level}</div>
+                                </div>
+                                <div class="stat-mobile player-xp">
+                                    <div class="stat-label-mobile">Опыт</div>
+                                    <div class="stat-value-mobile">${player.xp}</div>
+                                </div>
+                                <div class="stat-mobile player-quests">
+                                    <div class="stat-label-mobile">Задания</div>
+                                    <div class="stat-value-mobile">${player.completed_quests}</div>
+                                </div>
+                                <div class="stat-mobile player-status-mobile">
+                                    <div class="status-dot ${isOnline ? 'status-dot-online' : 'status-dot-offline'}"></div>
+                                    <div class="stat-label-mobile">${statusText}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Десктопная версия
+                    html += `
+                        <div class="leaderboard-item ${userClass}">
+                            <div class="rank ${rankClass}">${rank}</div>
+                            <div class="player-info">
+                                <div class="player-avatar">${player.username.charAt(0).toUpperCase()}</div>
+                                <div class="player-name">${player.username}</div>
+                            </div>
+                            <div class="player-level">${player.level}</div>
+                            <div class="player-xp">${player.xp}</div>
+                            <div class="player-quests">${player.completed_quests}</div>
+                            <div class="player-status ${statusClass}">${statusText}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = html;
+            
+            // Обновляем статистику
+            if (stats) {
+                document.getElementById('total-players').textContent = stats.total_players || 0;
+                document.getElementById('online-players').textContent = stats.online_players || 0;
+                
+                // Преобразуем avg_level в число, если это строка
+                const avgLevel = parseFloat(stats.avg_level) || 0;
+                document.getElementById('avg-level').textContent = avgLevel.toFixed(1);
+                
+                document.getElementById('total-completed').textContent = stats.total_completed_quests || 0;
+            }
+        }
+    
+        // Загрузка заданий с сервера
+        async function loadQuests() {
+            try {
+                const response = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_quests',
+                        user_id: userId
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        return result.quests || [];
+                    } else {
+                        console.error('Server error:', result.error);
+                        return [];
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading quests:', error);
+                showNotification('Ошибка загрузки заданий', 'error');
+                return [];
+            }
+            return [];
+        }
+    
+        // Функция для отображения заданий
+        async function displayQuests() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '<div style="text-align: center; color: #00ffff;">Загрузка заданий...</div>';
+    
+            const quests = await loadQuests();
+            
+            // Фильтруем задания по категории
+            const filteredQuests = currentCategory === 'all' 
+                ? quests 
+                : quests.filter(quest => quest.mission_type === currentCategory);
+            
+            container.innerHTML = '';
+    
+            if (filteredQuests.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #ff6666; grid-column: 1 / -1;">Нет доступных заданий</div>';
+                return;
+            }
+    
+            filteredQuests.forEach(quest => {
+                const questCard = createQuestCard(quest);
+                container.appendChild(questCard);
+            });
+        }
+    
+        // Создание HTML для статистики выполнения
+        function createStatsHtml(quest) {
+            const completions = quest.completions || 0;
+            const totalUsers = quest.total_users || 1;
+            const completionRate = quest.completion_rate || 0;
+            
+            let popularityBadge = '';
+            if (completionRate >= 50) {
+                popularityBadge = '<span class="popular-badge">ПОПУЛЯРНОЕ</span>';
+            }
+            
+            return `
+                <div class="quest-stats">
+                    <div class="stat-completion">
+                        <span class="stat-icon">👥</span>
+                        <span class="stat-value">${completions}</span>
+                        <span class="stat-label">игроков выполнили</span>
+                        ${popularityBadge}
+                    </div>
+                    <div class="stats-row">
+                        <div class="stats-item">
+                            <div class="stats-number">${completionRate}%</div>
+                            <div class="stats-label">ВЫПОЛНЕНИЕ</div>
+                        </div>
+                        <div class="stats-item">
+                            <div class="stats-number">${totalUsers}</div>
+                            <div class="stats-label">ВСЕГО ИГРОКОВ</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    
+        // Создание карточки задания
+        function createQuestCard(quest) {
+            const questCard = document.createElement('div');
+            questCard.className = 'quest-card';
+            questCard.setAttribute('data-quest-id', quest.id);
+            
+            const statusInfo = getStatusInfo(quest);
+            const buttonHtml = createButtonHtml(quest);
+            const progressHtml = createProgressHtml(quest);
+            const statsHtml = createStatsHtml(quest);
+            const gameTypeBadge = createGameTypeBadge(quest.mission_type);
+            
+            // ВРЕМЕННОЕ РЕШЕНИЕ: Определяем, показывать ли статистику выполнения
+            // Показываем статистику только для активных заданий с прогрессом > 0
+            // Это временное решение, пока не добавим поле show_stats в базу
+            const showCompletionStats = quest.action === 'continue' || quest.action === 'claim' || 
+                                       (quest.action === 'active' && quest.user_progress > 0);
+            
+            questCard.innerHTML = `
+                ${gameTypeBadge}
+                <div class="quest-header">
+                    <div>
+                        <h3 class="quest-title">${quest.title}</h3>
+                        <div class="quest-xp">(${quest.reward_xp} XP)</div>
+                    </div>
+                    <span class="quest-status ${statusInfo.class}">${statusInfo.text}</span>
+                </div>
+                <div class="quest-content">
+                    <p class="quest-description">${quest.description}</p>
+                    
+                    ${statsHtml}
+                    
+                    <div class="completion-stats ${showCompletionStats ? 'visible' : ''}">
+                        <div class="stat-item">
+                            <div class="stat-number">${quest.best_score || 0}</div>
+                            <div class="stat-label-small">ЛУЧШИЙ СЧЕТ</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${quest.target_score}</div>
+                            <div class="stat-label-small">ЦЕЛЕВОЙ СЧЕТ</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="completion-rate">${Math.round(quest.progress_percent)}%</div>
+                            <div class="stat-label-small">ПРОГРЕСС</div>
+                        </div>
+                    </div>
+                    
+                    ${progressHtml}
+                    
+                    <div class="quest-reward">
+                        <span class="reward-icon">🎁</span>
+                        <span class="reward-text">Награда: ${quest.reward_xp} XP</span>
+                    </div>
+                </div>
+                <div class="quest-actions">
+                    ${buttonHtml}
+                </div>
+            `;
+            
+            return questCard;
+        }
+    
+        // Создание бейджа типа игры
+        function createGameTypeBadge(gameType) {
+            if (gameType === 'tetris') {
+                return '<div class="game-type-badge badge-tetris">Тетрис</div>';
+            } else if (gameType === 'click_game') {
+                return '<div class="game-type-badge badge-click">Кликер</div>';
+            } else {
+                return '<div class="game-type-badge badge-snake">Змейка</div>';
+            }
+        }
+    
+        function createProgressHtml(quest) {
+            const currentScore = quest.user_progress || 0;
+            const targetScore = quest.target_score || 30;
+            const gameType = quest.mission_type || 'snake_game';
+            
+            let gameHint = '';
+            if (gameType === 'tetris') {
+                gameHint = '🎮 Нажмите "Играть в Тетрис" чтобы начать игру';
+            } else if (gameType === 'click_game') {
+                gameHint = '🎮 Нажмите "Играть в Кликер" чтобы начать игру';
+            } else {
+                gameHint = '🎮 Нажмите "Играть в Змейку" чтобы начать игру';
+            }
+            
+            return `
+                <div class="quest-progress">
+                    <div class="progress-info">
+                        <span class="progress-score">Очки: ${currentScore}/${targetScore}</span>
+                        <span class="progress-target">Цель: ${targetScore} очков</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${quest.progress_percent || 0}%"></div>
+                    </div>
+                    <div class="game-hint">
+                        ${gameHint}
+                    </div>
+                </div>
+            `;
+        }
+    
+       // Получение информации о статусе
+        function getStatusInfo(quest) {
+            switch(quest.action) {
+                case 'active':
+                case 'continue':
+                    return { class: 'status-active', text: 'ВЫПОЛНЯЕТСЯ' };
+                case 'claim':
+                    return { class: 'status-active', text: 'ГОТОВО К СДАЧЕ' };
+                case 'completed':
+                    return { class: 'status-completed', text: 'ЗАВЕРШЕНО' };
+                case 'locked':
+                    return { class: 'status-locked', text: 'ЗАБЛОКИРОВАНО' };
+                default:
+                    return { class: 'status-active', text: 'ДОСТУПНО' };
+            }
+        }
+    
+        // Создание HTML для кнопок
+        function createButtonHtml(quest) {
+            const questId = quest.id;
+            const gameType = quest.mission_type || 'snake_game';
+            
+            switch(quest.action) {
+                case 'start':
+                    return `<button class="quest-btn btn-start" onclick="startQuest(${questId})">Начать задание</button>`;
+                case 'continue':
+                    if (gameType === 'tetris') {
+                        return `<button class="quest-btn btn-start" onclick="playTetrisGame(${questId}, ${quest.target_score})">Играть в Тетрис</button>`;
+                    } else if (gameType === 'click_game') {
+                        return `<button class="quest-btn btn-start" onclick="playClickGame(${questId}, ${quest.target_score}, '${quest.title}')">Играть в Кликер</button>`;
+                    } else {
+                        return `<button class="quest-btn btn-start" onclick="playSnakeGame(${questId}, ${quest.target_score})">Играть в Змейку</button>`;
+                    }
+                case 'claim':
+                    if (gameType === 'tetris') {
+                        return `
+                            <button class="quest-btn btn-claim" onclick="claimReward(${questId})">Получить награду</button>
+                            <button class="quest-btn btn-start" onclick="playTetrisGame(${questId}, ${quest.target_score})">Играть еще</button>
+                        `;
+                    } else if (gameType === 'click_game') {
+                        return `
+                            <button class="quest-btn btn-claim" onclick="claimReward(${questId})">Получить награду</button>
+                            <button class="quest-btn btn-start" onclick="playClickGame(${questId}, ${quest.target_score}, '${quest.title}')">Играть еще</button>
+                        `;
+                    } else {
+                        return `
+                            <button class="quest-btn btn-claim" onclick="claimReward(${questId})">Получить награду</button>
+                            <button class="quest-btn btn-start" onclick="playSnakeGame(${questId}, ${quest.target_score})">Играть еще</button>
+                        `;
+                    }
+                case 'completed':
+                    return `<button class="quest-btn btn-locked" disabled>Завершено</button>`;
+                case 'locked':
+                    return `<button class="quest-btn btn-locked" disabled>Требуется уровень ${quest.required_level}</button>`;
+                default:
+                    return `<button class="quest-btn btn-start" onclick="startQuest(${questId})">Начать задание</button>`;
+            }
+        }
+    
+        // Функция для начала задания
+        async function startQuest(questId) {
+            try {
+                const response = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'start_quest',
+                        user_id: userId,
+                        quest_id: questId
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        showNotification('Задание начато! Удачи, агент!', 'success');
+                        // Перезагружаем задания чтобы обновить интерфейс и показать статистику
+                        setTimeout(() => {
+                            displayQuests();
+                            loadLeaderboard();
+                            loadUserData();
+                        }, 1000);
+                    } else {
+                        showNotification(result.error || 'Ошибка при начале задания', 'error');
+                    }
+                }
+            } catch (error) {
+                showNotification('Ошибка соединения', 'error');
+            }
+        }
+    
+        // Функция для запуска игры Змейка
+        function playSnakeGame(questId, targetScore) {
+            // Сохраняем ID текущего задания и его цель
+            localStorage.setItem('current_snake_quest', questId);
+            localStorage.setItem('current_target_score', targetScore);
+            
+            // Открываем игру в новой вкладке
+            const gameWindow = window.open('snake_game.html', '_blank');
+            
+            if (!gameWindow) {
+                showNotification('Разрешите всплывающие окна для игры', 'warning');
+                return;
+            }
+            
+            showNotification('Запуск игры Змейка...', 'success');
+        }
+    
+        // Функция для запуска игры Тетрис
+        function playTetrisGame(questId, targetScore) {
+            // Сохраняем ID текущего задания и его цель
+            localStorage.setItem('current_tetris_quest', questId);
+            localStorage.setItem('current_target_score', targetScore);
+            
+            // Открываем игру в новой вкладке
+            const gameWindow = window.open('tetris.html', '_blank');
+            
+            if (!gameWindow) {
+                showNotification('Разрешите всплывающие окна для игры', 'warning');
+                return;
+            }
+            
+            showNotification('Запуск игры Тетрис...', 'success');
+        }
+    
+        // Функция для запуска кликер-игры
+        function playClickGame(questId, targetScore, questTitle) {
+            // Сохраняем ID текущего задания и его цель
+            localStorage.setItem('current_click_quest', questId);
+            localStorage.setItem('current_target_score', targetScore);
+            localStorage.setItem('current_quest_title', questTitle);
+            
+            // Открываем игру в новой вкладке
+            const gameWindow = window.open('click_game.html', '_blank');
+            
+            if (!gameWindow) {
+                showNotification('Разрешите всплывающие окна для игры', 'warning');
+                return;
+            }
+            
+            showNotification('Запуск игры "Быстрые клики"...', 'success');
+        }
+    
+        // Функция для получения награды
+        async function claimReward(questId) {
+            try {
+                const response = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'claim_reward',
+                        user_id: userId,
+                        quest_id: questId
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        showNotification(`Награда получена! +${result.reward_xp} XP`, 'success');
+                        await loadUserData();
+                        await displayQuests();
+                        await loadLeaderboard();
+                    } else {
+                        showNotification(result.error || 'Ошибка при получении награды', 'error');
+                    }
+                }
+            } catch (error) {
+                showNotification('Ошибка соединения', 'error');
+            }
+        }
+    
+        // Функция для показа уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 20px';
+            notification.style.borderRadius = '5px';
+            notification.style.color = '#fff';
+            notification.style.fontWeight = 'bold';
+            notification.style.zIndex = '1000';
+            notification.style.maxWidth = '300px';
+            notification.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.5)';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            notification.style.transition = 'all 0.3s ease';
+            
+            switch(type) {
+                case 'success':
+                    notification.style.background = 'linear-gradient(45deg, #006600, #00aa00)';
+                    notification.style.borderLeft = '3px solid #00ff00';
+                    break;
+                case 'error':
+                    notification.style.background = 'linear-gradient(45deg, #660000, #aa0000)';
+                    notification.style.borderLeft = '3px solid #ff0000';
+                    break;
+                case 'warning':
+                    notification.style.background = 'linear-gradient(45deg, #666600, #aaaa00)';
+                    notification.style.borderLeft = '3px solid #ffff00';
+                    break;
+                default:
+                    notification.style.background = 'linear-gradient(45deg, #004466, #0088aa)';
+                    notification.style.borderLeft = '3px solid #00ffff';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+    
+        // Функция выхода
+        function logout() {
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('username');
+            localStorage.removeItem('current_snake_quest');
+            localStorage.removeItem('current_tetris_quest');
+            localStorage.removeItem('current_click_quest');
+            localStorage.removeItem('current_target_score');
+            window.location.href = 'index.html';
+        }
+    
+        // Функция для получения ID текущего пользователя
+        function getCurrentUserId() {
+            return localStorage.getItem('user_id');
+        }
+    
+        // Функция для обновления статистики заданий
+        async function updateQuestStats() {
+            try {
+                const userDataResponse = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_user_data',
+                        user_id: userId
+                    })
+                });
+                
+                if (userDataResponse.ok) {
+                    const result = await userDataResponse.json();
+                    if (result.success) {
+                        const user = result.user_data;
+                        const completed = user.completed_quests || 0;
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка при обновлении статистики:', error);
+            }
+        }
+    
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            displayQuests();
+            loadLeaderboard();
+            updateQuestStats();
+            
+            // Добавляем обработчики для кнопок категорий
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Убираем активный класс у всех кнопок
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Добавляем активный класс к текущей кнопке
+                    this.classList.add('active');
+                    
+                    // Устанавливаем текущую категорию
+                    currentCategory = this.getAttribute('data-category');
+                    
+                    // Обновляем отображение заданий
+                    displayQuests();
+                });
+            });
+            
+            // Обновляем данные каждые 30 секунд
+            setInterval(() => {
+                loadUserData();
+                displayQuests();
+                loadLeaderboard();
+                updateQuestStats();
+            }, 30000);
+            
+            // Обновляем отображение при изменении размера окна
+            window.addEventListener('resize', function() {
+                loadLeaderboard();
+            });
+        });
+    </script>
+</body>
+</html>

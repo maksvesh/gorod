@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Быстрые клики - Темный город</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a12;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .game-container {
+            text-align: center;
+            padding: 10px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .game-header {
+            margin-bottom: 10px;
+        }
+        
+        .game-title {
+            font-size: 1.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 5px;
+        }
+        
+        .game-info {
+            background: rgba(0, 20, 40, 0.8);
+            border: 1px solid #00ffff;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 8px 0;
+            gap: 5px;
+        }
+        
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+            color: #ffff00;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: #80ffff;
+        }
+        
+        .game-area {
+            background: rgba(0, 10, 20, 0.6);
+            border: 2px solid #004466;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+        
+        .target {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #ff0000, #ff6666);
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ff0000;
+            transition: transform 0.1s;
+        }
+        
+        .target:hover {
+            transform: scale(1.1);
+        }
+        
+        .target:active {
+            transform: scale(0.9);
+        }
+        
+        .game-controls {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid #00ffff;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(45deg, #006688, #00aacc);
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .timer {
+            font-size: 2rem;
+            color: #ffff00;
+            font-weight: bold;
+            margin: 5px 0;
+            text-shadow: 0 0 8px #ffff00;
+        }
+        
+        .game-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #00ffff;
+            text-align: center;
+            z-index: 10;
+            width: 85%;
+        }
+        
+        .combo {
+            position: absolute;
+            color: #ffff00;
+            font-weight: bold;
+            font-size: 0.9rem;
+            animation: floatUp 1s ease-out;
+            pointer-events: none;
+        }
+        
+        .reaction-bonus {
+            position: absolute;
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 0.8rem;
+            animation: floatUp 1s ease-out;
+            pointer-events: none;
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            margin: 6px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffff00);
+            border-radius: 3px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .quest-info {
+            background: rgba(0, 40, 80, 0.8);
+            border: 1px solid #00aaff;
+            border-radius: 5px;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 0.8rem;
+        }
+
+        .quest-title {
+            color: #00ff00;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .quest-target {
+            color: #ffff00;
+            font-size: 0.8rem;
+        }
+
+        .reaction-info {
+            background: rgba(80, 40, 0, 0.8);
+            border: 1px solid #ffaa00;
+            border-radius: 5px;
+            padding: 6px;
+            margin: 6px 0;
+            font-size: 0.7rem;
+            line-height: 1.1;
+        }
+
+        .reaction-title {
+            color: #ffaa00;
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+        }
+
+        .combo-bonus {
+            position: absolute;
+            color: #ff00ff;
+            font-weight: bold;
+            font-size: 1rem;
+            animation: floatUp 1s ease-out;
+            pointer-events: none;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        /* Адаптивность для маленьких экранов */
+        @media (max-height: 700px) {
+            .game-area {
+                height: 150px;
+            }
+            
+            .game-title {
+                font-size: 1.3rem;
+            }
+            
+            .timer {
+                font-size: 1.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .game-area {
+                height: 130px;
+            }
+            
+            .game-info, .quest-info, .reaction-info {
+                padding: 6px;
+                margin: 5px 0;
+            }
+            
+            .game-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">⚡ БЫСТРЫЕ КЛИКИ</h1>
+            <div class="game-info">
+                <p>Кликайте по появляющимся целям как можно быстрее!</p>
+                <p>Чем быстрее кликаете - тем больше очков получаете!</p>
+            </div>
+        </div>
+        
+        <!-- Информация о задании -->
+        <div class="quest-info" id="questInfo" style="display: none;">
+            <div class="quest-title" id="questTitle">Задание: </div>
+            <div class="quest-target" id="questTarget">Цель: 0 очков</div>
+        </div>
+
+        <!-- Информация о бонусах за реакцию -->
+        <div class="reaction-info">
+            <div class="reaction-title">⚡ МЕГА БОНУСЫ ЗА РЕАКЦИЮ:</div>
+            <div>Молниеносно (0.3с): 200 очков ×3.0</div>
+            <div>Быстро (0.6с): 100 очков ×2.0</div>
+            <div>Хорошо (1.0с): 50 очков ×1.5</div>
+            <div>Комбо: МАКСИМУМ 5x! Сбрасывается если не успеешь за 1.2с</div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat">
+                <div class="stat-value" id="current-score">0</div>
+                <div class="stat-label">ОЧКИ</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="target-score">10000</div>
+                <div class="stat-label">ЦЕЛЬ</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="combo">1x</div>
+                <div class="stat-label">КОМБО</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="reaction-multiplier">1.0x</div>
+                <div class="stat-label">РЕАКЦИЯ</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div class="timer" id="timer">30</div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="game-message" id="startMessage">
+                <h2>ГОТОВЫ?</h2>
+                <p>У вас есть 30 секунд!</p>
+                <p>Кликайте быстро для МЕГА бонусных очков!</p>
+                <p>Комбо 5x сбрасывается если не успеешь за 1.2 секунды!</p>
+                <button class="btn" id="startBtn">НАЧАТЬ ИГРУ</button>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button class="btn" id="restartBtn" disabled>ИГРАТЬ СНОВА</button>
+            <button class="btn" id="backBtn">НАЗАД</button>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация игры
+        const config = {
+            gameTime: 30, // секунд
+            targetScore: 10000,
+            targetLifetime: 1500, // milliseconds
+            spawnInterval: 700, // уменьшено для большего количества целей
+            basePoints: 25, // УВЕЛИЧЕНО базовые очки за клик
+            maxCombo: 5, // МАКСИМАЛЬНОЕ КОМБО 5x
+            comboTimeWindow: 1200, // Окно для комбо в миллисекундах (1.2 секунды)
+            // МЕГА бонусы за скорость реакции (в миллисекундах)
+            reactionBonuses: [
+                { threshold: 300, bonus: 200, multiplier: 3.0, name: "МЕГА УЛЬТРА!" }, // до 0.3 секунды
+                { threshold: 600, bonus: 100, multiplier: 2.0, name: "СУПЕР БЫСТРО!" }, // до 0.6 секунды
+                { threshold: 1000, bonus: 50, multiplier: 1.5, name: "ОТЛИЧНО!" } // до 1.0 секунды
+            ],
+            comboMultiplier: 1.1 // Множитель за каждый уровень комбо
+        };
+
+        // Состояние игры
+        let gameState = {
+            score: 0,
+            timeLeft: config.gameTime,
+            isPlaying: false,
+            targetsClicked: 0,
+            combo: 1,
+            lastClickTime: 0,
+            targetCreationTime: 0,
+            questId: null,
+            questTitle: '',
+            targetScore: config.targetScore,
+            timerInterval: null,
+            spawnTimeout: null,
+            currentReactionMultiplier: 1.0,
+            maxCombo: 1
+        };
+
+        // Элементы DOM
+        const elements = {
+            timer: document.getElementById('timer'),
+            currentScore: document.getElementById('current-score'),
+            targetScore: document.getElementById('target-score'),
+            combo: document.getElementById('combo'),
+            reactionMultiplier: document.getElementById('reaction-multiplier'),
+            gameArea: document.getElementById('gameArea'),
+            startMessage: document.getElementById('startMessage'),
+            startBtn: document.getElementById('startBtn'),
+            restartBtn: document.getElementById('restartBtn'),
+            backBtn: document.getElementById('backBtn'),
+            progressFill: document.getElementById('progress-fill'),
+            questInfo: document.getElementById('questInfo'),
+            questTitle: document.getElementById('questTitle'),
+            questTarget: document.getElementById('questTarget')
+        };
+
+        // Получаем данные задания из localStorage
+        function loadQuestData() {
+            const questId = localStorage.getItem('current_click_quest');
+            const targetScore = localStorage.getItem('current_target_score');
+            const questTitle = localStorage.getItem('current_quest_title');
+            
+            if (questId && targetScore) {
+                gameState.questId = parseInt(questId);
+                gameState.targetScore = parseInt(targetScore);
+                gameState.questTitle = questTitle || 'Быстрые клики';
+                
+                elements.targetScore.textContent = gameState.targetScore;
+                config.targetScore = gameState.targetScore;
+                
+                // Показываем информацию о задании
+                elements.questInfo.style.display = 'block';
+                elements.questTitle.textContent = `Задание: ${gameState.questTitle}`;
+                elements.questTarget.textContent = `Цель: ${gameState.targetScore} очков`;
+            } else {
+                // Заглушка для тестирования
+                gameState.questId = 9; // ID для Кликер-новичок
+                gameState.targetScore = 10000;
+                gameState.questTitle = 'Кликер-новичок';
+                
+                elements.questInfo.style.display = 'block';
+                elements.questTitle.textContent = `Задание: ${gameState.questTitle}`;
+                elements.questTarget.textContent = `Цель: ${gameState.targetScore} очков`;
+            }
+        }
+
+        // Запуск игры
+        function startGame() {
+            // Очищаем предыдущие интервалы, если есть
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            
+            if (gameState.spawnTimeout) {
+                clearTimeout(gameState.spawnTimeout);
+                gameState.spawnTimeout = null;
+            }
+            
+            // Очищаем все цели
+            const targets = document.querySelectorAll('.target');
+            targets.forEach(target => target.remove());
+            
+            // Сбрасываем состояние игры
+            gameState.isPlaying = true;
+            gameState.score = 0;
+            gameState.timeLeft = config.gameTime;
+            gameState.targetsClicked = 0;
+            gameState.combo = 1;
+            gameState.lastClickTime = 0;
+            gameState.currentReactionMultiplier = 1.0;
+            gameState.maxCombo = 1;
+            
+            elements.startMessage.style.display = 'none';
+            elements.restartBtn.disabled = false;
+            
+            updateDisplay();
+            startTimer();
+            startSpawning();
+        }
+
+        // Таймер игры
+        function startTimer() {
+            gameState.timerInterval = setInterval(() => {
+                if (!gameState.isPlaying) {
+                    clearInterval(gameState.timerInterval);
+                    return;
+                }
+                
+                gameState.timeLeft--;
+                elements.timer.textContent = gameState.timeLeft;
+                
+                if (gameState.timeLeft <= 0) {
+                    endGame();
+                    clearInterval(gameState.timerInterval);
+                }
+            }, 1000);
+        }
+
+        // Создание целей
+        function startSpawning() {
+            const spawnTarget = () => {
+                if (!gameState.isPlaying) return;
+                
+                createTarget();
+                gameState.spawnTimeout = setTimeout(spawnTarget, config.spawnInterval);
+            };
+            
+            spawnTarget();
+        }
+
+        // Создание одной цели
+        function createTarget() {
+            const target = document.createElement('div');
+            target.className = 'target';
+            
+            // Случайная позиция
+            const maxX = elements.gameArea.offsetWidth - 45;
+            const maxY = elements.gameArea.offsetHeight - 45;
+            const x = Math.floor(Math.random() * maxX);
+            const y = Math.floor(Math.random() * maxY);
+            
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
+            
+            // Разный размер для разнообразия
+            const size = 25 + Math.random() * 25; // Уменьшен диапазон размеров
+            target.style.width = size + 'px';
+            target.style.height = size + 'px';
+            
+            // Разный цвет
+            const hue = Math.random() * 60; // Красные оттенки
+            target.style.background = `linear-gradient(45deg, hsl(${hue}, 100%, 50%), hsl(${hue}, 100%, 70%))`;
+            
+            target.onclick = () => hitTarget(target);
+            
+            elements.gameArea.appendChild(target);
+            
+            // Запоминаем время создания цели для расчета реакции
+            target.creationTime = Date.now();
+            
+            // Автоматическое удаление через время
+            setTimeout(() => {
+                if (target.parentNode) {
+                    target.parentNode.removeChild(target);
+                    // Сброс комбо при пропуске цели
+                    if (gameState.isPlaying) {
+                        resetCombo();
+                        showComboLost(target, "ПРОПУЩЕНО!");
+                    }
+                }
+            }, config.targetLifetime);
+        }
+
+        // Сброс комбо
+        function resetCombo() {
+            gameState.combo = 1;
+            gameState.currentReactionMultiplier = 1.0;
+            updateComboDisplay();
+        }
+
+        // Показ сообщения о потере комбо
+        function showComboLost(target, reason) {
+            const lostText = document.createElement('div');
+            lostText.className = 'combo';
+            lostText.textContent = `КОМБО ПОТЕРЯНО! (${reason})`;
+            lostText.style.color = '#ff0000';
+            lostText.style.left = (parseInt(target.style.left) - 25) + 'px';
+            lostText.style.top = (parseInt(target.style.top) - 30) + 'px';
+            lostText.style.fontSize = '0.7rem';
+            
+            elements.gameArea.appendChild(lostText);
+            
+            setTimeout(() => {
+                if (lostText.parentNode) {
+                    lostText.parentNode.removeChild(lostText);
+                }
+            }, 1000);
+        }
+
+        // Попадание по цели
+        function hitTarget(target) {
+            if (!gameState.isPlaying) return;
+            
+            // Удаляем цель
+            target.remove();
+            
+            // Расчет времени реакции
+            const clickTime = Date.now();
+            const reactionTime = clickTime - target.creationTime;
+            
+            // Проверяем время между кликами для комбо
+            const timeSinceLastClick = clickTime - gameState.lastClickTime;
+            
+            // ЛОГИКА КОМБО: сбрасываем если не успели за 1.2 секунды
+            if (timeSinceLastClick > config.comboTimeWindow) {
+                // Сбрасываем комбо если опоздали
+                resetCombo();
+                showComboLost(target, "МЕДЛЕННО!");
+            } else {
+                // Увеличиваем комбо если кликаем вовремя
+                if (gameState.combo < config.maxCombo) {
+                    gameState.combo++;
+                }
+                
+                // Показываем достижение максимального комбо
+                if (gameState.combo === config.maxCombo) {
+                    showMaxComboAchieved(target);
+                }
+            }
+            
+            // Обновляем максимальное комбо
+            if (gameState.combo > gameState.maxCombo) {
+                gameState.maxCombo = gameState.combo;
+            }
+            
+            // Базовые очки за размер (меньшие цели дают больше очков)
+            const targetSize = parseInt(target.style.width);
+            const sizeBonus = Math.max(10, Math.floor(100 / (targetSize / 30))); // УВЕЛИЧЕНО
+            const basePoints = config.basePoints + sizeBonus;
+            
+            // Бонус за скорость реакции
+            const reactionBonus = calculateReactionBonus(reactionTime);
+            const reactionMultiplier = reactionBonus.multiplier;
+            
+            // Множитель комбо (растет с каждым уровнем)
+            const comboMultiplier = Math.pow(config.comboMultiplier, gameState.combo - 1);
+            
+            // Общий множитель
+            const totalMultiplier = reactionMultiplier * comboMultiplier;
+            
+            // Расчет итоговых очков
+            const reactionPoints = reactionBonus.bonus;
+            const comboBonus = Math.floor(basePoints * 0.5 * (gameState.combo - 1)); // Дополнительный бонус за комбо
+            const totalPoints = Math.floor((basePoints + reactionPoints + comboBonus) * totalMultiplier);
+            
+            gameState.score += totalPoints;
+            gameState.targetsClicked++;
+            gameState.lastClickTime = clickTime;
+            gameState.currentReactionMultiplier = reactionMultiplier;
+            
+            // Показываем бонусы
+            showBonus(target, totalPoints, reactionBonus, reactionTime);
+            
+            updateDisplay();
+            
+            // Проверка достижения цели
+            if (gameState.score >= gameState.targetScore) {
+                // Сохраняем прогресс автоматически
+                saveProgress();
+            }
+        }
+
+        // Показ достижения максимального комбо
+        function showMaxComboAchieved(target) {
+            const maxComboText = document.createElement('div');
+            maxComboText.className = 'combo-bonus';
+            maxComboText.textContent = `⚡ МАКСИМАЛЬНОЕ КОМБО ${config.maxCombo}x! ⚡`;
+            maxComboText.style.left = (parseInt(target.style.left) - 40) + 'px';
+            maxComboText.style.top = (parseInt(target.style.top) - 40) + 'px';
+            maxComboText.style.color = '#ff0000';
+            maxComboText.style.textShadow = '0 0 15px #ff0000';
+            
+            elements.gameArea.appendChild(maxComboText);
+            
+            setTimeout(() => {
+                if (maxComboText.parentNode) {
+                    maxComboText.parentNode.removeChild(maxComboText);
+                }
+            }, 2000);
+        }
+
+        // Расчет бонуса за реакцию
+        function calculateReactionBonus(reactionTime) {
+            for (const bonus of config.reactionBonuses) {
+                if (reactionTime <= bonus.threshold) {
+                    return bonus;
+                }
+            }
+            // Если реакция медленная - базовый бонус
+            return { threshold: 0, bonus: 10, multiplier: 1.2, name: "НОРМАЛЬНО" };
+        }
+
+        // Показ бонусов
+        function showBonus(target, totalPoints, reactionBonus, reactionTime) {
+            const bonusText = document.createElement('div');
+            bonusText.className = 'combo';
+            bonusText.textContent = `+${totalPoints}`;
+            
+            if (gameState.combo > 1) {
+                bonusText.textContent += ` x${gameState.combo}`;
+                bonusText.style.color = getComboColor(gameState.combo);
+            }
+            
+            bonusText.style.left = target.style.left;
+            bonusText.style.top = target.style.top;
+            
+            elements.gameArea.appendChild(bonusText);
+            
+            // Показываем бонус за реакцию, если есть
+            if (reactionBonus.bonus > 0) {
+                const reactionText = document.createElement('div');
+                reactionText.className = 'reaction-bonus';
+                reactionText.textContent = `${reactionBonus.name} +${reactionBonus.bonus}`;
+                reactionText.style.left = (parseInt(target.style.left) + 8) + 'px';
+                reactionText.style.top = (parseInt(target.style.top) - 15) + 'px';
+                reactionText.style.color = getReactionColor(reactionBonus.multiplier);
+                reactionText.style.textShadow = `0 0 6px ${getReactionColor(reactionBonus.multiplier)}`;
+                
+                elements.gameArea.appendChild(reactionText);
+                
+                setTimeout(() => {
+                    if (reactionText.parentNode) {
+                        reactionText.parentNode.removeChild(reactionText);
+                    }
+                }, 1000);
+            }
+            
+            setTimeout(() => {
+                if (bonusText.parentNode) {
+                    bonusText.parentNode.removeChild(bonusText);
+                }
+            }, 1000);
+        }
+
+        // Цвет для комбо
+        function getComboColor(combo) {
+            if (combo >= 5) return '#ff0000'; // Красный для максимального комбо
+            if (combo >= 4) return '#ff00ff'; // Фиолетовый для высокого комбо
+            if (combo >= 3) return '#ffff00'; // Желтый для среднего комбо
+            if (combo >= 2) return '#00ff00'; // Зеленый для хорошего комбо
+            return '#ffff00'; // Желтый для базового комбо
+        }
+
+        // Цвет для бонуса реакции
+        function getReactionColor(multiplier) {
+            if (multiplier >= 3.0) return '#ff00ff'; // Фиолетовый для молниеносной реакции
+            if (multiplier >= 2.0) return '#00ff00'; // Зеленый для быстрой реакции
+            return '#ffff00'; // Желтый для хорошей реакции
+        }
+
+        // Обновление отображения
+        function updateDisplay() {
+            elements.currentScore.textContent = gameState.score;
+            elements.combo.textContent = gameState.combo + 'x';
+            elements.reactionMultiplier.textContent = gameState.currentReactionMultiplier.toFixed(1) + 'x';
+            
+            // Цвет комбо в зависимости от уровня
+            elements.combo.style.color = getComboColor(gameState.combo);
+            elements.combo.style.textShadow = `0 0 6px ${getComboColor(gameState.combo)}`;
+            
+            // Цвет множителя реакции в зависимости от значения
+            if (gameState.currentReactionMultiplier >= 3.0) {
+                elements.reactionMultiplier.style.color = '#ff00ff';
+                elements.reactionMultiplier.style.textShadow = '0 0 6px #ff00ff';
+            } else if (gameState.currentReactionMultiplier >= 2.0) {
+                elements.reactionMultiplier.style.color = '#00ff00';
+                elements.reactionMultiplier.style.textShadow = '0 0 6px #00ff00';
+            } else {
+                elements.reactionMultiplier.style.color = '#ffff00';
+                elements.reactionMultiplier.style.textShadow = '0 0 6px #ffff00';
+            }
+            
+            // Прогресс
+            const progress = Math.min((gameState.score / gameState.targetScore) * 100, 100);
+            elements.progressFill.style.width = progress + '%';
+        }
+
+        // Обновление комбо
+        function updateComboDisplay() {
+            elements.combo.textContent = gameState.combo + 'x';
+            elements.reactionMultiplier.textContent = gameState.currentReactionMultiplier.toFixed(1) + 'x';
+        }
+
+        // Конец игры
+        function endGame() {
+            gameState.isPlaying = false;
+            
+            // Очищаем все интервалы
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            
+            if (gameState.spawnTimeout) {
+                clearTimeout(gameState.spawnTimeout);
+                gameState.spawnTimeout = null;
+            }
+            
+            // Очищаем все цели
+            const targets = document.querySelectorAll('.target');
+            targets.forEach(target => target.remove());
+            
+            const message = document.createElement('div');
+            message.className = 'game-message';
+            message.innerHTML = `
+                <h2>ИГРА ОКОНЧЕНА!</h2>
+                <p>Ваш счет: <strong style="color: #00ff00; font-size: 1.3rem;">${gameState.score}</strong></p>
+                <p>Целей поражено: <strong>${gameState.targetsClicked}</strong></p>
+                <p>Максимальное комбо: <strong style="color: ${getComboColor(gameState.maxCombo)}">${gameState.maxCombo}x</strong></p>
+                ${gameState.score >= gameState.targetScore ? 
+                    '<p style="color: #00ff00; font-size: 1.1rem;">✓ ЦЕЛЬ ДОСТИГНУТА!</p>' : 
+                    '<p style="color: #ff6666;">✗ Цель не достигнута</p>'
+                }
+                <button class="btn" id="playAgainBtn">ИГРАТЬ СНОВА</button>
+            `;
+            
+            elements.gameArea.appendChild(message);
+            
+            // Сохраняем прогресс в конце игры
+            saveProgress();
+            
+            // Добавляем обработчик для кнопки "Играть снова"
+            document.getElementById('playAgainBtn').addEventListener('click', function() {
+                message.remove();
+                startGame();
+            });
+        }
+
+        // Перезапуск игры
+        function restartGame() {
+            const message = elements.gameArea.querySelector('.game-message');
+            if (message) message.remove();
+            
+            startGame();
+        }
+
+        // Сохранение прогресса
+        async function saveProgress() {
+            if (!gameState.questId) {
+                console.log('ID задания не найден, прогресс не сохранен');
+                return;
+            }
+
+            try {
+                const response = await fetch('weekly_quests.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'update_click_score',
+                        user_id: localStorage.getItem('user_id'),
+                        quest_id: gameState.questId,
+                        score: gameState.score
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        console.log(`Прогресс сохранен! Счет: ${gameState.score}`);
+                    } else {
+                        console.log('Ошибка сохранения: ' + result.error);
+                    }
+                } else {
+                    console.log('Ошибка сети при сохранении');
+                }
+            } catch (error) {
+                console.log('Ошибка соединения: ' + error.message);
+            }
+        }
+
+        // Возврат назад
+        function goBack() {
+            if (gameState.score > 0) {
+                if (confirm('У вас есть несохраненный прогресс. Вернуться без сохранения?')) {
+                    window.close();
+                }
+            } else {
+                window.close();
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestData();
+            elements.targetScore.textContent = gameState.targetScore;
+            
+            // Назначаем обработчики событий
+            elements.startBtn.addEventListener('click', startGame);
+            elements.restartBtn.addEventListener('click', restartGame);
+            elements.backBtn.addEventListener('click', goBack);
+        });
+    </script>
+</body>
+</html>
