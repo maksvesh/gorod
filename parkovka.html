@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>3D Парковка</title>
     <style>
         * {
@@ -18,6 +18,8 @@
             --warning-color: #ff9800;
             --dark-bg: rgba(0, 0, 0, 0.8);
             --light-text: #ffffff;
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
         
         body {
@@ -32,11 +34,13 @@
             width: 100vw;
             touch-action: none;
             position: fixed;
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
         }
         
         .header {
             text-align: center;
-            padding: 12px 16px;
+            padding: max(12px, var(--safe-area-inset-top)) 16px 12px;
             width: 100%;
             background: var(--dark-bg);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -46,7 +50,7 @@
         }
         
         .header h1 {
-            font-size: clamp(18px, 5vw, 24px);
+            font-size: 22px;
             font-weight: 700;
         }
         
@@ -87,8 +91,8 @@
         
         #gameCanvas {
             width: 100%;
-            height: 100%;
-            max-height: 60vh;
+            height: calc(100vh - 320px);
+            max-height: 55vh;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             touch-action: none;
@@ -101,17 +105,17 @@
         }
         
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: var(--primary-color);
             color: var(--light-text);
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             transition: all 0.2s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            min-width: 120px;
+            min-width: 140px;
         }
         
         button:active {
@@ -124,13 +128,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 25vh;
-            min-height: 150px;
+            height: 220px;
             background: rgba(0, 0, 0, 0.85);
-            display: none;
+            display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 20px var(--safe-area-inset-bottom) max(20px, var(--safe-area-inset-bottom));
             z-index: 1000;
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -140,12 +143,12 @@
         .steering-buttons {
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 50px;
         }
         
         .steering-button {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             background: rgba(255, 255, 255, 0.15);
             border: 3px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
@@ -153,7 +156,7 @@
             align-items: center;
             justify-content: center;
             color: var(--light-text);
-            font-size: 32px;
+            font-size: 40px;
             font-weight: bold;
             touch-action: none;
             user-select: none;
@@ -178,7 +181,7 @@
         
         .stats {
             display: flex;
-            gap: 20px;
+            gap: 30px;
         }
         
         .stat {
@@ -189,12 +192,12 @@
         }
         
         .stat-label {
-            font-size: 14px;
+            font-size: 16px;
             opacity: 0.8;
         }
         
         .stat-value {
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
             color: var(--primary-color);
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -202,12 +205,12 @@
         
         .notification {
             position: absolute;
-            top: 20px;
+            top: max(70px, var(--safe-area-inset-top));
             left: 50%;
             transform: translateX(-50%);
             background: var(--dark-bg);
             color: var(--light-text);
-            padding: 12px 24px;
+            padding: 16px 32px;
             border-radius: 24px;
             text-align: center;
             z-index: 1000;
@@ -216,7 +219,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 16px;
+            font-size: 18px;
             max-width: 90%;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
@@ -253,23 +256,64 @@
         
         .control-hints {
             position: absolute;
-            bottom: 10px;
+            bottom: 230px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.6);
             color: var(--light-text);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 20px;
             text-align: center;
-            font-size: 12px;
+            font-size: 14px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
             z-index: 10;
         }
         
-        /* Мобильные стили */
+        /* Адаптация для 2436x1080 и подобных экранов */
+        @media (max-width: 480px) and (min-height: 1000px) {
+            #gameCanvas {
+                height: calc(100vh - 360px);
+                max-height: 52vh;
+            }
+            
+            .mobile-controls {
+                height: 200px;
+                padding: 15px var(--safe-area-inset-bottom) max(15px, var(--safe-area-inset-bottom));
+            }
+            
+            .steering-button {
+                width: 90px;
+                height: 90px;
+                font-size: 36px;
+            }
+            
+            .steering-buttons {
+                gap: 40px;
+            }
+            
+            .control-hints {
+                bottom: 210px;
+                font-size: 13px;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 15px;
+                min-width: 130px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .stat-label {
+                font-size: 15px;
+            }
+        }
+        
+        /* Мобильные стили для обычных экранов */
         @media (max-width: 768px) {
             .game-container {
                 padding: 0;
@@ -293,22 +337,15 @@
             .control-hints {
                 display: block;
             }
-            
-            button {
-                min-width: 100px;
-                padding: 8px 16px;
-            }
-            
-            .steering-button {
-                width: 70px;
-                height: 70px;
-                font-size: 28px;
-            }
         }
         
         @media (max-width: 480px) {
             .header {
-                padding: 10px 12px;
+                padding: max(10px, var(--safe-area-inset-top)) 12px 10px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
             }
             
             .game-ui {
@@ -316,52 +353,115 @@
             }
             
             .mobile-controls {
-                padding: 16px;
-                height: 22vh;
+                height: 180px;
+                padding: 16px var(--safe-area-inset-bottom) max(16px, var(--safe-area-inset-bottom));
             }
             
             .steering-button {
-                width: 65px;
-                height: 65px;
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .steering-buttons {
+                gap: 30px;
+            }
+            
+            .stats {
+                gap: 20px;
+            }
+            
+            .stat-value {
                 font-size: 26px;
+            }
+            
+            .stat-label {
+                font-size: 14px;
+            }
+            
+            button {
+                min-width: 120px;
+                padding: 9px 18px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .mobile-controls {
+                padding: 12px var(--safe-area-inset-bottom) max(12px, var(--safe-area-inset-bottom));
+                height: 160px;
+            }
+            
+            .steering-button {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
             }
             
             .steering-buttons {
                 gap: 25px;
             }
             
-            .stats {
-                gap: 15px;
+            button {
+                min-width: 110px;
+                padding: 8px 16px;
+                font-size: 13px;
             }
             
-            .stat-value {
-                font-size: 20px;
-            }
-            
-            .stat-label {
+            .control-hints {
+                bottom: 170px;
                 font-size: 12px;
+                padding: 8px 16px;
             }
         }
         
-        @media (max-width: 360px) {
-            .mobile-controls {
-                padding: 12px;
+        /* Ландшафтная ориентация */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .game-area {
+                flex-direction: row;
+                padding: 8px;
             }
             
-            .steering-button {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
+            .game-ui {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: auto;
+                z-index: 20;
+            }
+            
+            #gameCanvas {
+                height: calc(100vh - 120px);
+                max-height: 100%;
+            }
+            
+            .mobile-controls {
+                width: 180px;
+                height: 100%;
+                right: 0;
+                left: auto;
+                top: 0;
+                bottom: 0;
+                flex-direction: column;
+                justify-content: center;
+                padding: 20px;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: none;
             }
             
             .steering-buttons {
-                gap: 20px;
+                flex-direction: column;
+                gap: 30px;
             }
             
-            button {
-                min-width: 90px;
-                padding: 6px 12px;
-                font-size: 12px;
+            .control-hints {
+                display: none;
+            }
+            
+            .notification {
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
     </style>
@@ -457,8 +557,8 @@
             position: { x: 0, z: 0 },
             velocity: { x: 0, z: 0 },
             rotation: 0,
-            speed: 0.05, // Базовая скорость
-            maxSpeed: 0.15,
+            speed: 0.15, // Базовая скорость
+            maxSpeed: 0.30,
             steering: 0.03,
             braking: 0.1,
             gasPressed: false
@@ -487,8 +587,14 @@
         // Адаптация управления под размер экрана
         function adaptControlsToScreen() {
             const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const aspectRatio = screenWidth / screenHeight;
             
-            if (screenWidth < 400) {
+            // Оптимизация для экрана 2436x1080 (~20:9)
+            if (screenWidth >= 1080 && screenHeight >= 2436 && aspectRatio > 2) {
+                carPhysics.steering = 0.035;
+                carPhysics.speed = 0.18;
+            } else if (screenWidth < 400) {
                 carPhysics.steering = 0.025;
             } else if (screenWidth < 768) {
                 carPhysics.steering = 0.03;
