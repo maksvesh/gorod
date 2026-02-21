@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новогодние миссии - Темный город</title>
+    <title>Игровая зона - Темный город</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             padding: 20px;
         }
 
-        /* Новогодний анимированный фон */
+        /* Анимированный фон */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -35,8 +35,8 @@
             height: 100%;
             z-index: -1;
             background:
-                radial-gradient(circle at 20% 30%, rgba(30, 60, 30, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(60, 30, 30, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 20% 30%, rgba(30, 30, 60, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(40, 40, 80, 0.3) 0%, transparent 50%),
                 linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
             animation: pulse 15s infinite alternate;
         }
@@ -51,39 +51,7 @@
             }
         }
 
-        /* Новогодние снежинки */
-        .snowflakes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: #00ffaa;
-            font-size: 1.5rem;
-            opacity: 0.7;
-            animation: snowfall linear infinite;
-        }
-
-        @keyframes snowfall {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 0.7;
-            }
-
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Сетка сканирования с новогодним оттенком */
+        /* Сетка сканирования */
         .scan-lines {
             position: fixed;
             top: 0;
@@ -92,7 +60,7 @@
             height: 100%;
             background: linear-gradient(to bottom,
                     transparent 50%,
-                    rgba(0, 255, 200, 0.03) 50%);
+                    rgba(0, 255, 255, 0.03) 50%);
             background-size: 100% 4px;
             z-index: -1;
             pointer-events: none;
@@ -132,32 +100,12 @@
 
         .title {
             font-size: 3.5rem;
-            color: #00ffaa;
-            text-shadow: 0 0 10px #00ffaa, 0 0 20px #00ffaa;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             margin-bottom: 20px;
             letter-spacing: 3px;
             text-transform: uppercase;
             animation: flicker 3s infinite alternate;
-            position: relative;
-        }
-
-        .title::after {
-            content: '🎄';
-            position: absolute;
-            right: -40px;
-            top: 0;
-            font-size: 2.5rem;
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
         }
 
         @keyframes flicker {
@@ -171,63 +119,25 @@
             56%,
             100% {
                 opacity: 1;
-                text-shadow: 0 0 10px #00ffaa, 0 0 20px #00ffaa;
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             }
 
             20%,
             24%,
             55% {
                 opacity: 0.8;
-                text-shadow: 0 0 5px #00ffaa, 0 0 10px #00ffaa;
+                text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
             }
         }
 
         .subtitle {
             font-size: 1.2rem;
-            color: #80ffcc;
+            color: #80ffff;
             margin-bottom: 30px;
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
             line-height: 1.6;
-        }
-
-        /* Новогодний баннер */
-        .new-year-banner {
-            background: linear-gradient(45deg, #004433, #008866);
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(0, 255, 170, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .new-year-banner::before {
-            content: '✨ 🎄 ✨';
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            font-size: 1.5rem;
-        }
-
-        .new-year-banner::after {
-            content: '✨ 🎅 ✨';
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            font-size: 1.5rem;
-        }
-
-        .banner-text {
-            color: #ffffff;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            letter-spacing: 2px;
         }
 
         /* Навигационные кнопки */
@@ -244,7 +154,7 @@
             align-items: center;
             gap: 10px;
             padding: 12px 25px;
-            background: linear-gradient(45deg, #004433, #008866);
+            background: linear-gradient(45deg, #004466, #0088aa);
             color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
@@ -253,8 +163,8 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s;
-            border: 1px solid #00ffaa;
-            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
             position: relative;
             overflow: hidden;
             transform: perspective(500px) rotateX(5deg);
@@ -273,8 +183,8 @@
 
         .nav-btn:hover {
             transform: perspective(500px) rotateX(0deg) translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 200, 150, 0.4);
-            background: linear-gradient(45deg, #006644, #00aa77);
+            box-shadow: 0 8px 15px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
             border-color: #00ff88;
         }
 
@@ -287,7 +197,7 @@
             filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
         }
 
-        /* Сетка миссий */
+        /* Сетка игр */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -297,8 +207,8 @@
         }
 
         .game-card {
-            background: rgba(10, 40, 20, 0.8);
-            border: 1px solid #004433;
+            background: rgba(10, 20, 40, 0.8);
+            border: 1px solid #004466;
             padding: 30px;
             border-radius: 5px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -313,8 +223,8 @@
 
         .game-card:hover {
             transform: translateY(-10px) rotateX(5deg);
-            box-shadow: 0 15px 30px rgba(0, 200, 150, 0.3);
-            border-color: #00ff88;
+            box-shadow: 0 15px 30px rgba(0, 100, 255, 0.3);
+            border-color: #00aaff;
         }
 
         .game-card::before {
@@ -324,7 +234,7 @@
             left: 0;
             width: 100%;
             height: 3px;
-            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            background: linear-gradient(90deg, #00ffff, #0088ff);
             transform: scaleX(0);
             transform-origin: left;
             transition: transform 0.5s;
@@ -334,23 +244,14 @@
             transform: scaleX(1);
         }
 
-        .game-card::after {
-            content: '❄️';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            opacity: 0.7;
-        }
-
         .game-icon {
             font-size: 5rem;
             margin-bottom: 25px;
-            filter: drop-shadow(0 0 15px rgba(0, 255, 200, 0.7));
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.7));
         }
 
         .game-title {
-            color: #00cc88;
+            color: #00aaff;
             font-size: 1.8rem;
             margin-bottom: 20px;
             display: flex;
@@ -359,9 +260,9 @@
         }
 
         .game-title::before {
-            content: '🎁';
+            content: '▶';
             margin-right: 12px;
-            color: #00ffaa;
+            color: #00ffff;
             font-size: 1.2rem;
         }
 
@@ -377,7 +278,7 @@
             display: block;
             margin: 20px auto 0;
             padding: 15px 40px;
-            background: linear-gradient(45deg, #004433, #008866);
+            background: linear-gradient(45deg, #004466, #0088aa);
             color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
@@ -408,8 +309,8 @@
 
         .play-btn:hover {
             transform: perspective(500px) rotateX(0deg) translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 200, 150, 0.4);
-            background: linear-gradient(45deg, #006644, #00aa77);
+            box-shadow: 0 10px 20px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
         }
 
         .play-btn:hover::before {
@@ -433,29 +334,17 @@
 
         /* Стили для таймера на карточке */
         .card-countdown {
-            background: rgba(0, 40, 20, 0.7);
+            background: rgba(0, 30, 60, 0.7);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
-            border: 1px solid rgba(0, 200, 150, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-countdown::before {
-            content: '⏰';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 1.2rem;
-            opacity: 0.7;
+            border: 1px solid rgba(0, 150, 255, 0.3);
         }
 
         .countdown-label {
             font-size: 1rem;
-            color: #80ffcc;
+            color: #80ffff;
             margin-bottom: 10px;
-            text-align: center;
         }
 
         .countdown-timer {
@@ -474,39 +363,39 @@
         .time-value {
             font-size: 1.8rem;
             font-weight: bold;
-            color: #00ffaa;
-            text-shadow: 0 0 5px rgba(0, 255, 200, 0.7);
+            color: #00ffff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
             min-width: 40px;
             transition: all 0.3s;
         }
 
         .time-value.changing {
             transform: scale(1.2);
-            color: #ffcc00;
+            color: #ff9900;
         }
 
         .time-text {
             font-size: 0.7rem;
-            color: #80ffcc;
+            color: #80ffff;
             margin-top: 2px;
         }
 
         .time-separator {
             font-size: 1.5rem;
-            color: #00ffaa;
+            color: #00ffff;
             margin: 0 5px;
             align-self: flex-end;
             margin-bottom: 8px;
         }
 
-        /* Агентский эффект с новогодней тематикой */
+        /* Агентский эффект */
         .agent-effect {
             position: fixed;
             bottom: 20px;
             right: 20px;
             width: 100px;
             height: 100px;
-            background: radial-gradient(circle, rgba(0, 255, 200, 0.3) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
             border-radius: 50%;
             animation: pulse-glow 3s infinite alternate;
             pointer-events: none;
@@ -526,25 +415,14 @@
         }
 
         .greeting {
-            background: rgba(0, 40, 20, 0.7);
-            border-left: 3px solid #00ffaa;
+            background: rgba(0, 20, 40, 0.7);
+            border-left: 3px solid #00ffff;
             padding: 20px;
             margin: 30px 0;
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
             transform: rotateX(5deg);
             transition: transform 0.5s;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .greeting::before {
-            content: '🎅';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            opacity: 0.7;
         }
 
         .greeting:hover {
@@ -628,133 +506,118 @@
                 font-size: 1.2rem;
                 margin-bottom: 6px;
             }
-
-            .new-year-banner::before,
-            .new-year-banner::after {
-                display: none;
-            }
         }
     </style>
 </head>
 
 <body>
     <div class="bg-animation"></div>
-    <div class="snowflakes" id="snowflakes"></div>
     <div class="scan-lines"></div>
     <div class="agent-effect"></div>
 
     <div class="container">
         <header class="header">
-            <h1 class="title">🎄 Новогодние миссии</h1>
-            <p class="subtitle">Праздничные операции для агентов Темного города</p>
-            
-            <div class="new-year-banner">
-                <div class="banner-text">НОВОГОДНИЕ ОПЕРАЦИИ АКТИВИРОВАНЫ</div>
-            </div>
+            <h1 class="title">Миссии</h1>
+            <p class="subtitle">Настоящие миссии для агентов Темного города</p>
         </header>
 
-        <!-- Навигационные кнопки -->
-        <div class="navigation-buttons">
-            <a href="index.html" class="nav-btn">
-                <span class="btn-icon">🏠</span>
-                Главная
-            </a>
-            <a href="sotrud.html" class="nav-btn">
-                <span class="btn-icon">👥</span>
-                Сотрудники
-            </a>
-            <a href="games.html" class="nav-btn">
-                <span class="btn-icon">🎮</span>
-                Игровая зона
-            </a>
-            <a href="missions.html" class="nav-btn">
-                <span class="btn-icon">🎯</span>
-                Миссии
-            </a>
-            <a href="gallery.html" class="nav-btn">
-                <span class="btn-icon">🖼️</span>
-                Галерея
-            </a>
-            <a href="http://host1882872.hostland.pro/chat.php" class="nav-btn">
-                <span class="btn-icon">💬</span>
-                Чат
-            </a>
-            <a href="http://day.host1882872.hostland.pro/" class="nav-btn">
-                <span class="btn-icon">📅</span>
-                Месячные задания
-            </a>
-        </div>
-        
+ <!-- Навигационные кнопки -->
+ <div class="navigation-buttons">
+    <a href="index.html" class="nav-btn">
+        <span class="btn-icon"> </span>
+        Главная
+    </a>
+    <a href="sotrud.html" class="nav-btn">
+        <span class="btn-icon">👥</span>
+        Сотрудники
+    </a>
+    <a href="games.html" class="nav-btn">
+        <span class="btn-icon">🎮</span>
+        Игровая зона
+    </a>
+    <a href="missions.html" class="nav-btn">
+        <span class="btn-icon"> </span>
+        Миссии
+    </a>
+    <a href="gallery.html" class="nav-btn">
+        <span class="btn-icon"> </span>
+        Галерея
+    </a>
+    <a href="http://host1882872.hostland.pro/chat.php" class="nav-btn">
+        <span class="btn-icon"> </span>
+        Чат
+    </a>
+    <a href="http://day.host1882872.hostland.pro/" class="nav-btn">
+        <span class="btn-icon"> </span>
+        Месячные заданияя
+    </a>
+</div>
         <div class="greeting">
-            <h3 style="color: #00ffaa; margin-bottom: 15px;">⚠️ ВНИМАНИЕ АГЕНТАМ</h3>
-            <p>Операция "Подарочный фонд" будет закрыта 29 декабря 2025 года. Успейте выполнить миссию до Нового года!</p>
-            <p style="margin-top: 10px; color: #80ffcc; font-size: 0.9rem;">
-                Операция "Новогодняя тайна" откроется 1 января 2026 года, 10:00 по московскому времени
+            <h3 style="color: #00ffff; margin-bottom: 15px;">⚠️ ВНИМАНИЕ АГЕНТАМ</h3>
+            <p>Операция "Банк" будет закрыта 29 декабря 2025 года. Успейте выполнить миссию!</p>
+            <p style="margin-top: 10px; color: #80ffff; font-size: 0.9rem;">
+                Операция "Неизвестно" откроется 1 января 2026 года, 10:00 по московскому времени
             </p>
         </div>
-        
         <div class="games-grid">
-            <!-- Операция "Подарочный фонд" -->
-            <div class="game-card expiring-card">
-                <!-- Таймер на карточке -->
-                <div class="card-countdown">
-                    <div class="countdown-label" id="bank-label">До закрытия операции:</div>
-                    <div class="countdown-timer">
-                        <div class="time-block">
-                            <span class="time-value" id="bank-days">00</span>
-                            <span class="time-text">дней</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="bank-hours">00</span>
-                            <span class="time-text">часов</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="bank-minutes">00</span>
-                            <span class="time-text">мин</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="bank-seconds">00</span>
-                            <span class="time-text">сек</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="game-icon">🎁</div>
-                <h3 class="game-title">Операция "Подарочный фонд"</h3>
-                <p class="game-description">
-                    Внимание, агент! Операция "Подарочный фонд" будет закрыта 29 декабря 2025 года. 
-                    Успейте выполнить миссию до истечения срока и получить новогодние награды.
-                </p>
-                <a href="http://host1882872.hostland.pro/bank.html" class="play-btn">Начать миссию</a>
+<!-- Операция "Банк" -->
+<div class="game-card expiring-card">
+    <!-- Таймер на карточке -->
+    <div class="card-countdown">
+        <div class="countdown-label" id="bank-label">До закрытия операции:</div>
+        <div class="countdown-timer">
+            <div class="time-block">
+                <span class="time-value" id="bank-days">00</span>
+                <span class="time-text">дней</span>
             </div>
-            
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span class="time-value" id="bank-hours">00</span>
+                <span class="time-text">часов</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span class="time-value" id="bank-minutes">00</span>
+                <span class="time-text">мин</span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span class="time-value" id="bank-seconds">00</span>
+                <span class="time-text">сек</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-icon">💰</div>
+    <h3 class="game-title">Операция "Банк"</h3>
+    <p class="game-description">
+        Внимание, агент! Операция "Банк" будет закрыта 29 декабря 2025 года. Успейте выполнить миссию до истечения срока.
+    </p>
+    <a href="http://host1882872.hostland.pro/bank.html" class="play-btn">Начать миссию</a>
+</div>
             <!-- Кибер-лабиринт -->
             <div class="game-card">
-                <div class="game-icon">🎄</div>
-                <h3 class="game-title">Операция "Новогодний лабиринт"</h3>
+                <div class="game-icon">🧩</div>
+                <h3 class="game-title">Операция "Кибер-лабиринт"</h3>
                 <p class="game-description">
-                    Агент, ваша миссия — проникнуть в цифровое логово враждебного ИИ и нейтрализовать угрозу. 
-                    Используйте скрытность и хакерские навыки, чтобы пройти через праздничный кибернетический лабиринт, 
-                    полный ловушек и стражей системы. Только вы можете предотвратить катастрофу глобального масштаба.
+                    Агент, ваша миссия — проникнуть в цифровое логово враждебного ИИ и нейтрализовать угрозу. Используйте скрытность и хакерские навыки, чтобы пройти через кибернетический лабиринт, полный ловушек и стражей системы. Только вы можете предотвратить катастрофу глобального масштаба, взяв под контроль или уничтожив ядро искусственного интеллекта.
                 </p>
                 <a href="kiber.html" class="play-btn">Начать миссию</a>
             </div>
             
             <!-- Детектив -->
             <div class="game-card">
-                <div class="game-icon">🔍</div>
-                <h3 class="game-title">Операция "Новогодний детектив"</h3>
+                <div class="game-icon">🧩</div>
+                <h3 class="game-title">Операция "Детектив"</h3>
                 <p class="game-description">
-                    Раскройте тайну исчезновения новогодних подарков. Используйте свои детективные навыки, 
-                    чтобы найти улики и разгадать загадку праздничного преступления.
+                    Описание отсуствует
                 </p>
                 <a href="detectiv+2.html" class="play-btn">Начать миссию</a>
             </div>
+            
+            
 
-            <!-- Операция "Новогодняя тайна" -->
+            <!-- Операция "Неизвестно" -->
             <div class="game-card">
                 <!-- Таймер на карточке -->
                 <div class="card-countdown">
@@ -782,11 +645,11 @@
                     </div>
                 </div>
 
-                <div class="game-icon">❓</div>
-                <h3 class="game-title">Операция "Новогодняя тайна"</h3>
+                <div class="game-icon"></div>
+                <h3 class="game-title">Операция "Неизвестно"</h3>
                 <p class="game-description">
-                    Засекреченная праздничная миссия. Детали будут раскрыты в новогоднюю ночь.
-                    Будьте готовы ко всему. Праздничные сюрпризы ждут!
+                    Засекреченная миссия. Детали будут раскрыты в день начала операции.
+                    Будьте готовы ко всему.
                 </p>
                 <a href=".html" class="play-btn disabled" id="unknown-btn">Начать миссию</a>
             </div>
@@ -794,25 +657,6 @@
     </div>
 
     <script>
-        // Создание снежинок
-        function createSnowflakes() {
-            const snowflakesContainer = document.getElementById('snowflakes');
-            const snowflakeSymbols = ['❄', '✨', '⭐', '💠'];
-            
-            for (let i = 0; i < 50; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.textContent = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
-                
-                // Случайные начальные позиции и параметры анимации
-                snowflake.style.left = Math.random() * 100 + 'vw';
-                snowflake.style.animationDuration = (Math.random() * 10 + 5) + 's';
-                snowflake.style.animationDelay = Math.random() * 5 + 's';
-                
-                snowflakesContainer.appendChild(snowflake);
-            }
-        }
-
         // Функция для получения серверного времени
         async function getServerTime() {
             try {
@@ -836,10 +680,10 @@
             const serverTime = await getServerTime();
             const now = serverTime.getTime();
             
-            // Обновляем таймер для операции "Подарочный фонд"
+            // Обновляем таймер для операции "Банк"
             updateOperationTimer('bank', bankCloseDate, now, 'закрытия');
             
-            // Обновляем таймер для операции "Новогодняя тайна"
+            // Обновляем таймер для операции "Неизвестно"
             updateOperationTimer('unknown', unknownTargetDate, now, 'открытия');
         }
 
@@ -852,7 +696,7 @@
             if (timeLeft <= 0) {
                 // Таймер завершен
                 if (operation === 'bank') {
-                    label.textContent = '🎄 Операция закрыта!';
+                    label.textContent = 'Операция закрыта!';
                     document.querySelector(`#${operation}-days`).parentElement.parentElement.style.display = 'none';
                     
                     // Деактивируем кнопку
@@ -861,7 +705,7 @@
                         btn.textContent = 'Миссия закрыта';
                     }
                 } else {
-                    label.textContent = '🎉 Операция открыта!';
+                    label.textContent = 'Операция открыта!';
                     document.querySelector(`#${operation}-days`).parentElement.parentElement.style.display = 'none';
                     
                     // Активируем кнопку
@@ -921,9 +765,6 @@
             // Запуск таймеров
             updateCountdowns();
             setInterval(updateCountdowns, 1000);
-            
-            // Создание снежинок
-            createSnowflakes();
         });
 
         // 3D эффект при наведении (как в основном сайте)

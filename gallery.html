@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Темный город | Новогодний фотоархив</title>
+    <title>Темный город | Фотоархив</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
             padding: 20px;
         }
 
-        /* Новогодний анимированный фон */
+        /* Анимированный фон */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -34,8 +34,8 @@
             height: 100%;
             z-index: -1;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(30, 60, 30, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(60, 30, 30, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 20% 30%, rgba(30, 30, 60, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(40, 40, 80, 0.3) 0%, transparent 50%),
                 linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
             animation: pulse 15s infinite alternate;
         }
@@ -45,38 +45,7 @@
             100% { opacity: 1; }
         }
 
-        /* Новогодние снежинки */
-        .snowflakes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: #00ffaa;
-            font-size: 1.5rem;
-            opacity: 0.7;
-            animation: snowfall linear infinite;
-        }
-
-        @keyframes snowfall {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Сетка сканирования с новогодним оттенком */
+        /* Сетка сканирования */
         .scan-lines {
             position: fixed;
             top: 0;
@@ -85,7 +54,7 @@
             height: 100%;
             background: linear-gradient(to bottom, 
                 transparent 50%, 
-                rgba(0, 255, 200, 0.03) 50%);
+                rgba(0, 255, 255, 0.03) 50%);
             background-size: 100% 4px;
             z-index: -1;
             pointer-events: none;
@@ -113,43 +82,28 @@
 
         .title {
             font-size: 3.5rem;
-            color: #00ffaa;
-            text-shadow: 0 0 10px #00ffaa, 0 0 20px #00ffaa;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             margin-bottom: 20px;
             letter-spacing: 3px;
             text-transform: uppercase;
             animation: flicker 3s infinite alternate;
-            position: relative;
-        }
-
-        .title::after {
-            content: '🎄';
-            position: absolute;
-            right: -40px;
-            top: 0;
-            font-size: 2.5rem;
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         @keyframes flicker {
             0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
                 opacity: 1;
-                text-shadow: 0 0 10px #00ffaa, 0 0 20px #00ffaa;
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             }
             20%, 24%, 55% {
                 opacity: 0.8;
-                text-shadow: 0 0 5px #00ffaa, 0 0 10px #00ffaa;
+                text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
             }
         }
 
         .subtitle {
             font-size: 1.2rem;
-            color: #80ffcc;
+            color: #80ffff;
             margin-bottom: 30px;
             max-width: 800px;
             margin-left: auto;
@@ -158,24 +112,13 @@
         }
 
         .greeting {
-            background: rgba(0, 40, 20, 0.7);
-            border-left: 3px solid #00ffaa;
+            background: rgba(0, 20, 40, 0.7);
+            border-left: 3px solid #00ffff;
             padding: 20px;
             margin: 30px 0;
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
             transform: rotateX(5deg);
             transition: transform 0.5s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .greeting::before {
-            content: '❄️';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            opacity: 0.7;
         }
 
         .greeting:hover {
@@ -196,7 +139,7 @@
             align-items: center;
             gap: 12px;
             padding: 15px 30px;
-            background: linear-gradient(45deg, #004433, #008866);
+            background: linear-gradient(45deg, #004466, #0088aa);
             color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
@@ -205,8 +148,8 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             transition: all 0.3s;
-            border: 1px solid #00ffaa;
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
             position: relative;
             overflow: hidden;
             transform: perspective(500px) rotateX(5deg);
@@ -225,8 +168,8 @@
 
         .nav-btn:hover {
             transform: perspective(500px) rotateX(0deg) translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 200, 150, 0.4);
-            background: linear-gradient(45deg, #006644, #00aa77);
+            box-shadow: 0 10px 20px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
             border-color: #00ff88;
         }
 
@@ -239,79 +182,17 @@
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
         }
 
-        /* Новогодний баннер */
-        .new-year-banner {
-            background: linear-gradient(45deg, #004433, #008866);
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(0, 255, 170, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .new-year-banner::before {
-            content: '✨ 🎄 ✨';
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            font-size: 1.5rem;
-        }
-
-        .new-year-banner::after {
-            content: '✨ 🎅 ✨';
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            font-size: 1.5rem;
-        }
-
-        .banner-text {
-            color: #ffffff;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            letter-spacing: 2px;
-        }
-
-        /* Галерея с новогодним оформлением */
+        /* Галерея */
         .gallery-container {
             margin: 50px 0;
         }
 
         .gallery-title {
             text-align: center;
-            color: #00ffaa;
+            color: #00ffff;
             font-size: 2.5rem;
             margin-bottom: 30px;
-            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
-            position: relative;
-        }
-
-        .gallery-title::before {
-            content: '🎁';
-            position: absolute;
-            left: 20%;
-            top: 0;
-            font-size: 2rem;
-            animation: bounce 2s infinite;
-        }
-
-        .gallery-title::after {
-            content: '🎁';
-            position: absolute;
-            right: 20%;
-            top: 0;
-            font-size: 2rem;
-            animation: bounce 2s infinite 0.5s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
         .gallery-grid {
@@ -329,14 +210,13 @@
             transform-style: preserve-3d;
             transition: all 0.5s ease;
             cursor: pointer;
-            border: 1px solid #004433;
-            background: rgba(10, 40, 20, 0.8);
+            border: 1px solid #004466;
         }
 
         .gallery-item:hover {
             transform: translateY(-10px) rotateX(5deg);
-            box-shadow: 0 15px 30px rgba(0, 200, 150, 0.3);
-            border-color: #00ff88;
+            box-shadow: 0 15px 30px rgba(0, 100, 255, 0.3);
+            border-color: #00aaff;
         }
 
         .gallery-item::before {
@@ -346,7 +226,7 @@
             left: 0;
             width: 100%;
             height: 3px;
-            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            background: linear-gradient(90deg, #00ffff, #0088ff);
             transform: scaleX(0);
             transform-origin: left;
             transition: transform 0.5s;
@@ -354,16 +234,6 @@
 
         .gallery-item:hover::before {
             transform: scaleX(1);
-        }
-
-        .gallery-item::after {
-            content: '❄️';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.2rem;
-            opacity: 0.7;
-            z-index: 2;
         }
 
         .gallery-img {
@@ -383,7 +253,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 40, 20, 0.9);
+            background: rgba(0, 20, 40, 0.8);
             padding: 15px;
             transform: translateY(100%);
             transition: transform 0.3s;
@@ -394,7 +264,7 @@
         }
 
         .gallery-caption {
-            color: #00ffaa;
+            color: #00ffff;
             font-size: 1.1rem;
             margin-bottom: 10px;
         }
@@ -406,9 +276,9 @@
 
         .gallery-btn {
             padding: 8px 15px;
-            background: rgba(0, 150, 100, 0.5);
+            background: rgba(0, 100, 255, 0.5);
             color: #ffffff;
-            border: 1px solid #00ffaa;
+            border: 1px solid #00aaff;
             border-radius: 3px;
             cursor: pointer;
             font-size: 0.9rem;
@@ -416,11 +286,11 @@
         }
 
         .gallery-btn:hover {
-            background: rgba(0, 200, 150, 0.7);
-            box-shadow: 0 0 10px rgba(0, 255, 200, 0.5);
+            background: rgba(0, 150, 255, 0.7);
+            box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
         }
 
-        /* Модальное окно для просмотра фото с новогодним оформлением */
+        /* Модальное окно для просмотра фото */
         .modal {
             display: none;
             position: fixed;
@@ -461,14 +331,14 @@
             overflow: hidden;
             max-width: 100%;
             max-height: 80vh;
-            border: 2px solid #00ffaa;
-            box-shadow: 0 0 30px rgba(0, 255, 170, 0.5);
         }
 
         .modal-img {
             max-width: 100%;
             max-height: 80vh;
             display: block;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            border: 1px solid #00ffff;
             transition: transform 0.3s;
             cursor: zoom-in;
         }
@@ -484,10 +354,6 @@
             margin-top: 15px;
             font-size: 1.2rem;
             width: 100%;
-            background: rgba(0, 40, 20, 0.8);
-            padding: 10px;
-            border-radius: 5px;
-            border-left: 3px solid #00ffaa;
         }
 
         .modal-close {
@@ -496,7 +362,7 @@
             right: 15px;
             background: rgba(0, 0, 0, 0.7);
             color: #ffffff;
-            border: 1px solid #00ffaa;
+            border: 1px solid #00ffff;
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -520,7 +386,7 @@
             transform: translateY(-50%);
             background: rgba(0, 0, 0, 0.7);
             color: #ffffff;
-            border: 1px solid #00ffaa;
+            border: 1px solid #00ffff;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -534,8 +400,8 @@
         }
 
         .modal-nav:hover {
-            background: rgba(0, 150, 100, 0.7);
-            box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
+            background: rgba(0, 100, 255, 0.7);
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
         }
 
         .modal-prev {
@@ -556,9 +422,9 @@
 
         .modal-btn {
             padding: 10px 20px;
-            background: rgba(0, 150, 100, 0.7);
+            background: rgba(0, 100, 255, 0.7);
             color: #ffffff;
-            border: 1px solid #00ffaa;
+            border: 1px solid #00ffff;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s;
@@ -566,18 +432,18 @@
         }
 
         .modal-btn:hover {
-            background: rgba(0, 200, 150, 0.9);
-            box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
+            background: rgba(0, 150, 255, 0.9);
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
         }
 
-        /* Агентский эффект с новогодней тематикой */
+        /* Агентский эффект */
         .agent-effect {
             position: fixed;
             bottom: 20px;
             right: 20px;
             width: 100px;
             height: 100px;
-            background: radial-gradient(circle, rgba(0, 255, 200, 0.3) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
             border-radius: 50%;
             animation: pulse-glow 3s infinite alternate;
             pointer-events: none;
@@ -631,69 +497,56 @@
                 align-items: center;
                 gap: 10px;
             }
-            
-            .new-year-banner::before,
-            .new-year-banner::after {
-                display: none;
-            }
-            
-            .gallery-title::before,
-            .gallery-title::after {
-                display: none;
-            }
         }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
-    <div class="snowflakes" id="snowflakes"></div>
     <div class="scan-lines"></div>
     <div class="agent-effect"></div>
 
     <div class="container">
         <header class="header">
             <h1 class="title">Темный город</h1>
-            <p class="subtitle">Новогодний фотоархив оперативных данных. Каждая фотография - улика праздничной тайны.</p>
-            
-            <div class="new-year-banner">
-                <div class="banner-text">НОВОГОДНИЙ АРХИВ АКТИВИРОВАН</div>
-            </div>
+            <p class="subtitle">Фотоархив оперативных данных. Каждая фотография - улика.</p>
             
             <div class="greeting">
-                <p>Агент, в этом новогоднем архиве собраны улики и свидетельства праздничных событий. Каждое фото может содержать ключ к разгадке новогодней тайны. Используйте функцию приближения для детального изучения.</p>
+                <p>Агент, в этом архиве собраны улики и свидетельства. Каждое фото может содержать ключ к разгадке. Используйте функцию приближения для детального изучения.</p>
             </div>
         </header>
 
         <div class="navigation-buttons">
             <a href="index.html" class="nav-btn">
-                <span class="btn-icon">🏠</span>
+                <span class="btn-icon"> </span>
                 Главная
             </a>
-            <a href="sotrud.html" class="nav-btn">
-                <span class="btn-icon">👥</span>
-                Сотрудники
-            </a>
-            <a href="games.html" class="nav-btn">
-                <span class="btn-icon">🎮</span>
-                Игровая зона
-            </a>
-            <a href="missions.html" class="nav-btn">
-                <span class="btn-icon">🎯</span>
-                Миссии
-            </a>
-            <a href="http://host1882872.hostland.pro/chat.php" class="nav-btn">
-                <span class="btn-icon">💬</span>
-                Чат
-            </a>
-            <a href="http://day.host1882872.hostland.pro/" class="nav-btn">
-                <span class="btn-icon">📅</span>
-                Месячные задания
-            </a>
-        </div>
+        <a href="sotrud.html" class="nav-btn">
+            <span class="btn-icon">👥</span>
+            Сотрудники
+        </a>
+        <a href="games.html" class="nav-btn">
+            <span class="btn-icon">🎮</span>
+            Игровая зона
+        </a>
+        <a href="missions.html" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Миссии
+        </a>
+
+        <a href="http://host1882872.hostland.pro/chat.php" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Чат
+        </a>
+        <a href="http://day.host1882872.hostland.pro/" class="nav-btn">
+            <span class="btn-icon"> </span>
+            Месячные заданияя
+        </a>
+    </div>
+    </div>
 
         <!-- Галерея -->
         <section class="gallery-container">
-            <h2 class="gallery-title">НОВОГОДНИЙ ФОТОАРХИВ</h2>
+            <h2 class="gallery-title">ОПЕРАТИВНЫЙ ФОТОАРХИВ</h2>
             
             <div class="gallery-grid" id="galleryGrid">
                 <!-- Фотографии будут добавлены через JavaScript -->
@@ -723,40 +576,21 @@
     </div>
 
     <script>
-        // Создание снежинок
-        function createSnowflakes() {
-            const snowflakesContainer = document.getElementById('snowflakes');
-            const snowflakeSymbols = ['❄', '✨', '⭐', '💠'];
-            
-            for (let i = 0; i < 50; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.textContent = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
-                
-                // Случайные начальные позиции и параметры анимации
-                snowflake.style.left = Math.random() * 100 + 'vw';
-                snowflake.style.animationDuration = (Math.random() * 10 + 5) + 's';
-                snowflake.style.animationDelay = Math.random() * 5 + 's';
-                
-                snowflakesContainer.appendChild(snowflake);
-            }
-        }
-
         // Данные галереи
         const galleryData = [
             {
                 id: 1,
                 src: "https://sun7-18.userapi.com/s/v1/ig2/o_nHczW0NUZhuPWa-8s2TrMZGwYfR_dxPs-1A-7SEnUnQkb6n5E2gpULPpyZBjCWgt4Z-UnPbkZwB1lKe_mqh_q7.jpg?quality=95&as=32x56,48x84,72x126,108x189,160x280,240x420,360x630,480x840,540x945,640x1120,720x1260,768x1344&from=bu&cs=768x0",
-                caption: "Улица новогодних теней. Зафиксировано движение в 03:47. Праздничная активность повышена.",
+                caption: "Улица теней. Зафиксировано движение в 03:47",
                 download: "https://sun7-18.userapi.com/s/v1/ig2/o_nHczW0NUZhuPWa-8s2TrMZGwYfR_dxPs-1A-7SEnUnQkb6n5E2gpULPpyZBjCWgt4Z-UnPbkZwB1lKe_mqh_q7.jpg?quality=95&as=32x56,48x84,72x126,108x189,160x280,240x420,360x630,480x840,540x945,640x1120,720x1260,768x1344&from=bu&cs=768x0"
             },
             {
                 id: 2,
                 src: "https://sun9-83.userapi.com/s/v1/ig2/x8uc2LgsqEIIh9hHCqdMTiadjRQfeTZTvUYYNie_ZSBOlaVwWGsRRsRIV_5NSy-btHHGzr9BsC99hwhUEnNfPveh.jpg?quality=95&as=32x56,48x84,72x126,108x189,160x280,240x420,360x630,480x840,540x945,640x1120,720x1260,768x1344&from=bu&cs=768x0",
-                caption: "Перекресток новогодних событий. Объект под наблюдением. Подарочная активность зафиксирована.",
+                caption: "Перекресток событий. Объект под наблюдением",
                 download: "https://sun9-83.userapi.com/s/v1/ig2/x8uc2LgsqEIIh9hHCqdMTiadjRQfeTZTvUYYNie_ZSBOlaVwWGsRRsRIV_5NSy-btHHGzr9BsC99hwhUEnNfPveh.jpg?quality=95&as=32x56,48x84,72x126,108x189,160x280,240x420,360x630,480x840,540x945,640x1120,720x1260,768x1344&from=bu&cs=768x0"
             },
-            // Добавьте больше изображений по необходимости
+           
         ];
 
         // Инициализация галереи
@@ -787,14 +621,11 @@
                 const downloadBtn = galleryItem.querySelector('.download-btn');
                 
                 viewBtn.addEventListener('click', () => openModal(item.id));
-                downloadBtn.addEventListener('click', () => downloadImage(item.download, `newyear_evidence_${item.id}.jpg`));
+                downloadBtn.addEventListener('click', () => downloadImage(item.download, `evidence_${item.id}.jpg`));
             });
             
             // Инициализация модального окна
             initModal();
-            
-            // Создание снежинок
-            createSnowflakes();
         });
 
         // Функции для работы с модальным окном
@@ -832,7 +663,7 @@
             // Скачивание
             modalDownload.addEventListener('click', function() {
                 const currentItem = galleryData[currentImageIndex];
-                downloadImage(currentItem.download, `newyear_evidence_${currentItem.id}.jpg`);
+                downloadImage(currentItem.download, `evidence_${currentItem.id}.jpg`);
             });
             
             // Перетаскивание при приближении
@@ -913,7 +744,7 @@
                     if (e.key === 'r' || e.key === 'R') resetZoom();
                     if (e.key === 'd' || e.key === 'D') {
                         const currentItem = galleryData[currentImageIndex];
-                        downloadImage(currentItem.download, `newyear_evidence_${currentItem.id}.jpg`);
+                        downloadImage(currentItem.download, `evidence_${currentItem.id}.jpg`);
                     }
                 }
             });
@@ -931,7 +762,7 @@
             modalImg.src = currentItem.download;
             modalCaption.textContent = currentItem.caption;
             modalDownload.href = currentItem.download;
-            modalDownload.download = `newyear_evidence_${currentItem.id}.jpg`;
+            modalDownload.download = `evidence_${currentItem.id}.jpg`;
             
             modal.classList.add('active');
             resetZoom();
@@ -962,7 +793,7 @@
             modalImg.src = currentItem.download;
             modalCaption.textContent = currentItem.caption;
             modalDownload.href = currentItem.download;
-            modalDownload.download = `newyear_evidence_${currentItem.id}.jpg`;
+            modalDownload.download = `evidence_${currentItem.id}.jpg`;
             
             // Сброс масштаба при смене изображения
             resetZoom();
