@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Темный город | Тренажер модератора</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: #0a0a12;
+            color: #c0c0c0;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Анимированный фон */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(30, 30, 60, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(40, 40, 80, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
+            animation: pulse 15s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Сетка сканирования */
+        .scan-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                transparent 50%, 
+                rgba(0, 255, 255, 0.03) 50%);
+            background-size: 100% 4px;
+            z-index: -1;
+            pointer-events: none;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* Заголовок */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(5deg); }
+            50% { transform: translateY(-10px) rotateX(5deg); }
+        }
+
+        .title {
+            font-size: 3.2rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: flicker 3s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            }
+            20%, 24%, 55% {
+                opacity: 0.8;
+                text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #80ffff;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Приветственная панель */
+        .greeting {
+            background: rgba(0, 20, 40, 0.7);
+            border-left: 3px solid #00ffff;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            transform: rotateX(5deg);
+            transition: transform 0.5s;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .greeting:hover {
+            transform: rotateX(5deg) translateY(-5px);
+        }
+
+        /* Навигационные кнопки */
+        .navigation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #004466, #0088aa);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: perspective(500px) rotateX(5deg);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover {
+            transform: perspective(500px) rotateX(0deg) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(45deg, #006688, #00aacc);
+            border-color: #00ff88;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+
+        /* ОСНОВНОЙ БЛОК ТРЕНАЖЕРА */
+        .training-section {
+            margin: 50px 0;
+            background: rgba(0, 15, 30, 0.7);
+            border: 2px solid #00aaff;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 100, 255, 0.4);
+            backdrop-filter: blur(2px);
+            border-radius: 8px;
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .section-title span {
+            font-size: 2.5rem;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px cyan; }
+            to { text-shadow: 0 0 20px cyan, 0 0 30px blue; }
+        }
+
+        /* Карточка кейса */
+        .case-card {
+            background: rgba(10, 20, 40, 0.9);
+            border: 1px solid #004466;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .case-card:hover {
+            border-color: #00aaff;
+            box-shadow: 0 0 25px rgba(0, 170, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #00aaff;
+            padding-bottom: 10px;
+        }
+
+        .case-icon {
+            font-size: 2rem;
+        }
+
+        .case-title {
+            color: #ffaa00;
+            font-size: 1.6rem;
+            text-shadow: 0 0 5px rgba(255, 170, 0, 0.5);
+        }
+
+        .case-description {
+            background: rgba(0, 30, 50, 0.5);
+            padding: 15px;
+            border-left: 3px solid #ffaa00;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ddd;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Сообщение для анализа */
+        .message-sample {
+            background: #0a0f1a;
+            border: 1px solid #2a4a6a;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+            color: #aaf0ff;
+        }
+
+        .message-header {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #88ccff;
+            border-bottom: 1px solid #2a4a6a;
+            padding-bottom: 8px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .avatar-placeholder {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, #2266aa, #44aaff);
+            border-radius: 50%;
+        }
+
+        .username {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .message-content {
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .message-footer {
+            margin-top: 15px;
+            color: #6699cc;
+            font-size: 0.85rem;
+        }
+
+        /* Варианты ответов */
+        .actions-area {
+            margin-top: 25px;
+        }
+
+        .action-label {
+            color: #88aaff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+            border: 1px solid transparent;
+        }
+
+        .action-btn.warning {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        .action-btn.warning:hover {
+            background: #ffbb22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #886600, 0 0 15px #ffaa00;
+        }
+
+        .action-btn.mute {
+            background: #ff6600;
+            color: #fff;
+        }
+
+        .action-btn.mute:hover {
+            background: #ff7700;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #994400, 0 0 15px #ff6600;
+        }
+
+        .action-btn.ban {
+            background: #cc3300;
+            color: #fff;
+        }
+
+        .action-btn.ban:hover {
+            background: #dd4400;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #882200, 0 0 15px #ff3300;
+        }
+
+        .action-btn.ignore {
+            background: #2a4a6a;
+            color: #ddd;
+        }
+
+        .action-btn.ignore:hover {
+            background: #3a5a7a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #112233, 0 0 10px #2a4a6a;
+        }
+
+        .action-btn.report {
+            background: #aa44ff;
+            color: #fff;
+        }
+
+        .action-btn.report:hover {
+            background: #bb55ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #552288, 0 0 15px #aa44ff;
+        }
+
+        /* Обратная связь */
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.5s;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #444;
+        }
+
+        .feedback.correct {
+            background: rgba(0, 80, 0, 0.7);
+            border-color: #00ff00;
+            color: #aaffaa;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .feedback.incorrect {
+            background: rgba(80, 0, 0, 0.7);
+            border-color: #ff0000;
+            color: #ffaaaa;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        /* Статистика модератора */
+        .stats-panel {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0 20px;
+            padding: 20px;
+            background: #0a0f1a;
+            border: 1px solid #00aaff;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 10px cyan;
+        }
+
+        .stat-label {
+            color: #88aaff;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid #ff6600;
+            color: #ff6600;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            background: #ff6600;
+            color: #000;
+            box-shadow: 0 0 15px #ff6600;
+        }
+
+        /* Агентский эффект */
+        .agent-effect {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 3s infinite alternate;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .navigation-buttons { flex-direction: column; align-items: center; }
+            .action-buttons { flex-direction: column; }
+            .nav-btn { min-width: 250px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="scan-lines"></div>
+    <div class="agent-effect"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Темный город</h1>
+            <p class="subtitle">[Практика модерации] Протокол "Чистый эфир"</p>
+            
+            <div class="greeting">
+                <p>Агент, перед тобой реальные кейсы из бесед. Твоя задача — классифицировать нарушение и применить санкции согласно уставу. Каждое решение влияет на чистоту сектора.</p>
+                <p>Твоя статистика ведется. Ошибешься — получишь предупреждение. Сработаешь верно — получишь доступ к следующим уровням.</p>
+            </div>
+        </header>
+
+        <!-- Навигационные кнопки (из твоего шаблона) -->
+        <div class="navigation-buttons">
+            <a href="#" class="nav-btn"><span class="btn-icon">👥</span> Сотрудники</a>
+            <a href="#" class="nav-btn"><span class="btn-icon">🎮</span> Игровая зона</a>
+            <a href="#" class="nav-btn"><span class="btn-icon">⚡</span> Миссии</a>
+            <a href="#" class="nav-btn"><span class="btn-icon">📷</span> Галерея</a>
+            <a href="#" class="nav-btn"><span class="btn-icon">💬</span> Чат</a>
+            <a href="#" class="nav-btn"><span class="btn-icon">📅</span> Месячные задания</a>
+        </div>
+
+        <!-- Тренажер -->
+        <div class="training-section">
+            <div class="section-title">
+                <span>⚡</span> ИНЦИДЕНТ №<span id="case-number">1</span> <span>⚡</span>
+            </div>
+
+            <!-- Динамический кейс будет вставлен сюда -->
+            <div id="case-container"></div>
+
+            <!-- Панель статистики -->
+            <div class="stats-panel" id="stats-panel">
+                <div class="stat-item">
+                    <div class="stat-value" id="correct-count">0</div>
+                    <div class="stat-label">Верных решений</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="incorrect-count">0</div>
+                    <div class="stat-label">Ошибок</div>
+                </div>
+                <div class="stat-item">
+                    <button class="reset-btn" id="reset-stats">⟲ Сброс протокола</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // База кейсов (нарушения и правильные действия)
+            const cases = [
+                {
+                    id: 1,
+                    title: "Язык вражды",
+                    description: "Пользователь переходит на личности, использует оскорбления по национальному признаку.",
+                    message: {
+                        user: "Дмитрий_1990",
+                        text: "Да вы все [цензура] нерусские! Понаехали тут, вон из страны! Таких как ты гнать надо, понял, чурка?",
+                        time: "15:34, сегодня"
+                    },
+                    correctAction: "ban", // красный уровень
+                    explanation: "Прямое разжигание межнациональной розни, оскорбления — статья 1, уровень «Красный» (бан)."
+                },
+                {
+                    id: 2,
+                    title: "Реклама/спам",
+                    description: "Участник массово рассылает ссылки на подозрительный ресурс.",
+                    message: {
+                        user: "free_money_forever",
+                        text: "СРОЧНО! Переходи по ссылке vk.cc/fake123 и получи 5000 руб на счет! Только сегодня! Вступай в группу https://vk.com/scam_group",
+                        time: "12:07, сегодня"
+                    },
+                    correctAction: "ban", // красный, так как спам и мошенничество
+                    explanation: "Несанкционированная реклама, подозрительные ссылки — статья 2, уровень «Красный»."
+                },
+                {
+                    id: 3,
+                    title: "Флуд и оффтоп",
+                    description: "Пользователь засоряет эфир однотипными сообщениями, мешая обсуждению.",
+                    message: {
+                        user: "max_sticker",
+                        text: "хахахахахахах\nкруто\nхахахах\nкруто\nхахахахаха\nкруто\n🤣🤣🤣\n🤣🤣🤣\n🤣🤣🤣",
+                        time: "09:22, сегодня"
+                    },
+                    correctAction: "mute", // оранжевый — замрозка (мут)
+                    explanation: "Массовая отправка бессмысленных сообщений — статья 3, уровень «Оранжевый» (временное отстранение)."
+                },
+                {
+                    id: 4,
+                    title: "Анонимность",
+                    description: "Новый участник с пустым профилем и ником 'user123' ведет провокационные беседы.",
+                    message: {
+                        user: "user123",
+                        text: "Всем привет! А кто здесь админ? Хочу узнать побольше о вашей организации... И почему у вас такие правила?",
+                        time: "18:45, сегодня"
+                    },
+                    correctAction: "warning", // желтый — предупреждение о необходимости заполнить профиль
+                    explanation: "Использование пустого ника без аватара — статус агента: нарушение легенды. Желтый уровень (предупреждение)."
+                },
+                {
+                    id: 5,
+                    title: "Шок-контент",
+                    description: "Пользователь выкладывает изображение жестокого содержания.",
+                    message: {
+                        user: "gore_fan",
+                        text: "[Фото: расчлененка] Крутое видео, как башку отрезали! Кому еще скинуть?",
+                        time: "22:10, сегодня"
+                    },
+                    correctAction: "ban", // красный
+                    explanation: "Распространение шок-контента 18+ — статья 2, уровень «Красный» (немедленная ликвидация)."
+                }
+            ];
+
+            let currentCaseIndex = 0; // индекс текущего кейса
+            let correctStats = 0;
+            let incorrectStats = 0;
+
+            // DOM элементы
+            const caseContainer = document.getElementById('case-container');
+            const correctSpan = document.getElementById('correct-count');
+            const incorrectSpan = document.getElementById('incorrect-count');
+            const resetBtn = document.getElementById('reset-stats');
+            const caseNumberSpan = document.getElementById('case-number');
+
+            // Функция обновления статистики
+            function updateStats() {
+                correctSpan.textContent = correctStats;
+                incorrectSpan.textContent = incorrectStats;
+            }
+
+            // Сброс статистики
+            resetBtn.addEventListener('click', function() {
+                correctStats = 0;
+                incorrectStats = 0;
+                updateStats();
+                // перемешаем порядок кейсов? можно сбросить индекс
+                currentCaseIndex = 0;
+                renderCase(currentCaseIndex);
+            });
+
+            // Отображение конкретного кейса по индексу
+            function renderCase(index) {
+                if (index >= cases.length) {
+                    // Все кейсы пройдены, показываем сообщение
+                    caseContainer.innerHTML = `
+                        <div class="case-card" style="text-align:center; padding:40px;">
+                            <div style="font-size:3rem; color:#00ffff;">🏆</div>
+                            <h3 style="color:#ffaa00;">Миссия выполнена, агент!</h3>
+                            <p style="margin-top:20px;">Ты обработал все инциденты. Сектор чист. Жди новых поступлений.</p>
+                            <button class="action-btn report" id="restart-training" style="margin-top:20px;">⟲ Начать заново</button>
+                        </div>
+                    `;
+                    document.getElementById('restart-training')?.addEventListener('click', function() {
+                        currentCaseIndex = 0;
+                        correctStats = 0;
+                        incorrectStats = 0;
+                        updateStats();
+                        renderCase(currentCaseIndex);
+                    });
+                    return;
+                }
+
+                const c = cases[index];
+                caseNumberSpan.textContent = c.id;
+
+                // Формируем HTML
+                let html = `
+                    <div class="case-card" data-id="${c.id}">
+                        <div class="case-header">
+                            <span class="case-icon">⚠️</span>
+                            <span class="case-title">${c.title}</span>
+                        </div>
+                        <div class="case-description">
+                            ${c.description}
+                        </div>
+                        <div class="message-sample">
+                            <div class="message-header">
+                                <span class="user-info">
+                                    <span class="avatar-placeholder"></span>
+                                    <span class="username">${c.message.user}</span>
+                                </span>
+                                <span style="color:#446688;">[сообщение]</span>
+                            </div>
+                            <div class="message-content">
+                                ${c.message.text}
+                            </div>
+                            <div class="message-footer">
+                                ${c.message.time}
+                            </div>
+                        </div>
+                        <div class="actions-area">
+                            <div class="action-label">
+                                <span>🔻</span> Выбери санкцию согласно протоколу:
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn warning" data-action="warning">Желтый уровень (пред)</button>
+                                <button class="action-btn mute" data-action="mute">Оранжевый (мут)</button>
+                                <button class="action-btn ban" data-action="ban">Красный (бан)</button>
+                                <button class="action-btn ignore" data-action="ignore">Игнорировать</button>
+                                <button class="action-btn report" data-action="report">Доложить куратору</button>
+                            </div>
+                        </div>
+                        <div class="feedback" id="feedback-${c.id}"></div>
+                    </div>
+                `;
+
+                caseContainer.innerHTML = html;
+
+                // Навешиваем обработчики на кнопки
+                const buttons = document.querySelectorAll('.action-btn');
+                const feedbackDiv = document.getElementById(`feedback-${c.id}`);
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const action = this.dataset.action;
+                        let isCorrect = (action === c.correctAction);
+
+                        // Особый случай: если правильный ответ "warning", а выбран "ignore" или "report" — неверно
+                        if (isCorrect) {
+                            feedbackDiv.className = 'feedback correct';
+                            feedbackDiv.innerHTML = `✅ ВЕРНО, агент. ${c.explanation}`;
+                            correctStats++;
+                        } else {
+                            feedbackDiv.className = 'feedback incorrect';
+                            let correctText = {
+                                warning: 'Желтый (предупреждение)',
+                                mute: 'Оранжевый (мут)',
+                                ban: 'Красный (бан)',
+                                ignore: 'игнорирование',
+                                report: 'доклад'
+                            };
+                            feedbackDiv.innerHTML = `❌ ОШИБКА. Ты выбрал: ${correctText[action] || action}. Правильно: ${correctText[c.correctAction]}. ${c.explanation}`;
+                            incorrectStats++;
+                        }
+
+                        updateStats();
+
+                        // Блокируем кнопки после ответа
+                        document.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
+                        // Даем возможность перейти дальше через 1.5 сек
+                        setTimeout(() => {
+                            if (currentCaseIndex < cases.length - 1) {
+                                currentCaseIndex++;
+                                renderCase(currentCaseIndex);
+                            } else {
+                                // Конец
+                                renderCase(cases.length); // вызовет финишный экран
+                            }
+                        }, 2000);
+                    });
+                });
+            }
+
+            // Старт с первого кейса
+            renderCase(0);
+            updateStats();
+        })();
+    </script>
+</body>
+</html>
